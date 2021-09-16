@@ -2,6 +2,8 @@ package devjluvisi.fb;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import devjluvisi.fb.cmds.VersionCommand;
+
 
 /**
  * FortuneBlocks - 1.17
@@ -18,20 +20,51 @@ public class FortuneBlocks extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		getLogger().info("LuckyBlocks 1.17 has started!");
+		
+		getLogger().info("*-----------------------------------------*");
+		getLogger().info("FortuneBlocks v" + this.getVersion() + " has started!");
+		getLogger().info("Server Version -> " + super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('(')));
+		getLogger().info("*-----------------------------------------*");
+		
+		setupConfig();
+		registerCommands();
+		registerEvents();
+		
 		super.onEnable();
+	}
+	
+	/**
+	 * Sets up the configuration files for the plugin.
+	 */
+	private void setupConfig() {
+		
+	}
+	
+	/**
+	 * Registers all of the commands in the plugin.
+	 */
+	private void registerCommands() {
+		getCommand(new VersionCommand(this).name()).setExecutor(new VersionCommand(this));
+	}
+	
+	/**
+	 * Registers all of the events in the plugin.
+	 */
+	private void registerEvents() {
+		
 	}
 	
 	@Override
 	public void onDisable() {
-		getLogger().info("LuckyBlocks 1.17 has stopped!");
+		getLogger().info("*-----------------------------------------*");
+		getLogger().info("FortuneBlocks v" + this.getVersion() + " has been disabled!");
+		getLogger().info("Server Version -> " + super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('(')));
+		getLogger().info("*-----------------------------------------*");
 		super.onDisable();
 	}
 	
-	public static void main(String[] args) {
-		System.out.println("Hello");
+	public String getVersion() {
+		return super.getDescription().getVersion() + " for Minecraft Version [" + super.getDescription().getAPIVersion() + "]";
 	}
 	
-	
-
 }
