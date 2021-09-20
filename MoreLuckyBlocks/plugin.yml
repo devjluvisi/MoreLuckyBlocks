@@ -1,0 +1,13 @@
+name: MoreLuckyBlocks
+main: devjluvisi.mlb.MoreLuckyBlocks
+version: 1.0
+author: devjluvisi
+description: A fully customizable lucky blocks plugin for Minecraft 1.17+
+website: https://github.com/devjluvisi/FortuneBlocks
+api-version: 1.17
+
+commands:
+  mlbver:
+    description: Version Command
+  mlb:
+   description: Main plugin command.

@@ -1,4 +1,4 @@
-package devjluvisi.fb.util;
+package devjluvisi.mlb.util;
 
 /**
  * Represents a numerical range between two numbers.

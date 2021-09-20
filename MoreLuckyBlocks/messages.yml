@@ -1,0 +1,4 @@
+# MoreLuckyBlocks v1.0 Messages File
+no-permission-msg: "&cYou do not have permission to perform this command!"
+must-be-player-msg: "&cYou must be a player to execute this command!"
+incorrect-usage: "&cIncorrect Command Usage.\nUsage: %usage%"

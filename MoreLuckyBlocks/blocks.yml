@@ -1,0 +1,25 @@
+# A configuration file for all lucky blocks in MoreLuckyBlocks.
+# Version: v1.0
+
+# Lore placeholders:
+# %luck%, %player%, %block_type%
+lucky-blocks:
+  default:
+    item-name: "&6Lucky Block"
+    block: "SPONGE"
+    item-lore:
+      - "A mythical lucky block of luck %luck%"
+    permission: "mlb.block.default"
+    items:
+      - OAK_PLANK
+    default-luck: 0.0
+  lucky2:
+    item-name: "&6Lucky Block"
+    block: "SPONGE"
+    item-lore:
+      - "A mythical lucky block of luck %luck%"
+    permission: "mlb.block.default"
+    items:
+      - OAK_PLANK
+    default-luck: 0.0
+    

@@ -1,4 +1,4 @@
-package devjluvisi.fb.util;
+package devjluvisi.mlb.util;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -6,18 +6,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import devjluvisi.fb.FortuneBlocks;
-import devjluvisi.fb.cmds.VersionCommand;
+import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.cmds.VersionCommand;
 import net.md_5.bungee.api.ChatColor;
 
 /**
- * A class which represents a command in the FortuneBlocks plugin.
+ * A class which represents a command in the MoreLuckyBlocks plugin.
  * Automatically provides execution and main class access through abstraction.
  * 
  * @author jacob
  *
  */
-public abstract class FBCommand implements CommandExecutor {
+public abstract class BaseCommand implements CommandExecutor {
 	
 	/**
 	 * Represents different errors which can occur when attempting to execute commands.
@@ -33,11 +33,12 @@ public abstract class FBCommand implements CommandExecutor {
 	private Range argsLength;
 	private String usage;
 	private boolean allowConsole;
-	private FortuneBlocks plugin;
+	private MoreLuckyBlocks plugin;
 	
 	// Command Defined Variables
 	
 	private Player p;
+	private CommandSender s;
 	private String[] commandArguments;
 	
 	/**
@@ -49,7 +50,7 @@ public abstract class FBCommand implements CommandExecutor {
 	 * @param plugin The main plugin class to reference.
 	 * @param commandName The name of the command
 	 */
-	public FBCommand(FortuneBlocks plugin, String commandName) {
+	public BaseCommand(MoreLuckyBlocks plugin, String commandName) {
 		this.plugin = plugin;
 		this.commandName = commandName;
 		this.argsLength = new Range(0, 0);
@@ -67,7 +68,7 @@ public abstract class FBCommand implements CommandExecutor {
 	 * @param argsLength The number of arguments to execute.
 	 * @param usage The proper command usage.
 	 */
-	public FBCommand(FortuneBlocks plugin, String commandName, int argsLength, String usage) {
+	public BaseCommand(MoreLuckyBlocks plugin, String commandName, int argsLength, String usage) {
 		this.plugin = plugin;
 		this.commandName = commandName;
 		this.argsLength = new Range(argsLength, argsLength);
@@ -85,7 +86,7 @@ public abstract class FBCommand implements CommandExecutor {
 	 * @param usage The proper command usage.
 	 * @param allowConsole If the command can be executed from the console.
 	 */
-	public FBCommand(FortuneBlocks plugin, String commandName, int argsLength, String usage, boolean allowConsole) {
+	public BaseCommand(MoreLuckyBlocks plugin, String commandName, int argsLength, String usage, boolean allowConsole) {
 		this.plugin = plugin;
 		this.commandName = commandName;
 		this.argsLength = new Range(argsLength, argsLength);
@@ -106,7 +107,7 @@ public abstract class FBCommand implements CommandExecutor {
 	 * @param usage The proper command usage.
 	 * @param allowConsole If the command can be executed from the console.
 	 */
-	public FBCommand(FortuneBlocks plugin, String commandName, Range argsLengthSpan, String usage, boolean allowConsole) {
+	public BaseCommand(MoreLuckyBlocks plugin, String commandName, Range argsLengthSpan, String usage, boolean allowConsole) {
 		this.plugin = plugin;
 		this.commandName = commandName;
 		this.argsLength = argsLengthSpan;
@@ -119,16 +120,17 @@ public abstract class FBCommand implements CommandExecutor {
 	 * @return The player who is executing the command if there is one.
 	 */
 	public Player getPlayer() {
-		if(p == null) {
-			throw new NullPointerException("The getPlayer() call was called on a non-player sender!");
-		}
 		return p;
+	}
+	
+	public CommandSender getSender() {
+		return s;
 	}
 	
 	/**
 	 * @return Reference to the main plugin class.
 	 */
-	public FortuneBlocks getPlugin() {
+	public MoreLuckyBlocks getPlugin() {
 		return plugin;
 	}
 	
@@ -140,10 +142,17 @@ public abstract class FBCommand implements CommandExecutor {
 		return index < commandArguments.length ? commandArguments[index] : null;
 	}
 	
+	public int length() {
+		return commandArguments.length;
+	}
+	
 	public String name() {
 		return this.commandName;
 	}
 	
+	public String[] getArguments() {
+		return this.commandArguments;
+	}
 	
 	/**
 	 * Sends an error to a sender with a message.
@@ -156,14 +165,13 @@ public abstract class FBCommand implements CommandExecutor {
 		if(sender == null) return;
 		switch(type) {
 		case BAD_ARGUMENTS:
-			sender.sendMessage(ChatColor.RED + "Bad Arguments Specified.");
-			sender.sendMessage(ChatColor.RED + "Usage: " + usage);
+			sender.sendMessage(ChatColor.RED + getPlugin().getMessagesYaml().getString("incorrect-usage").replaceAll("%usage%", this.usage));
 			break;
 		case NO_PERMISSION:
-			sender.sendMessage(ChatColor.RED + "You do not have permission to do this!");
+			sender.sendMessage(ChatColor.RED + getPlugin().getMessagesYaml().getString("no-permission-msg"));
 			break;
 		case NOT_A_PLAYER:
-			sender.sendMessage(ChatColor.RED + "You must be a player to use this command!");
+			sender.sendMessage(ChatColor.RED + getPlugin().getMessagesYaml().getString("must-be-player-msg"));
 			break;
 		default:
 			sender.sendMessage(ChatColor.RED + "Could not execute this command.");
@@ -191,6 +199,10 @@ public abstract class FBCommand implements CommandExecutor {
 					return true;
 				}
 			}
+			if(sender instanceof Player) {
+				this.p = (Player) sender;
+			}
+			this.s = sender;
 			// If the user has the permission to execute the command.
 			if(!sender.hasPermission(this.getPermissionNode())) {
 				this.sendError(sender, CommandError.NO_PERMISSION);
