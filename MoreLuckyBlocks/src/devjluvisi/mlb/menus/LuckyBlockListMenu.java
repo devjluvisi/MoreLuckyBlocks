@@ -10,31 +10,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.util.ConfigManager;
 
-public class LuckyBlockListMenu extends SimpleMenu {
+public class LuckyBlockListMenu extends BaseMenu {
 	
-	private ConfigManager blocksYaml;
+	private MoreLuckyBlocks plugin;
+	private Random rand;
 	
-	public LuckyBlockListMenu(ConfigManager blocksYaml) {
-		this.blocksYaml = blocksYaml;
+	public LuckyBlockListMenu(MoreLuckyBlocks plugin) {
+		super(plugin, ChatColor.DARK_PURPLE + "Your Lucky Blocks", PageType.DOUBLE_CHEST);
+		this.rand = new Random();
+		this.plugin = plugin;
 	}
 	
-	Random rand;
-
-    @Override
-    public String getName() {
-        return ChatColor.DARK_PURPLE + "Your Lucky Blocks";
-    }
-
-
     @Override
     public ItemStack[] getContent() {
         // Methode to generate a 2D array of the shape of the inventory
@@ -50,20 +47,20 @@ public class LuckyBlockListMenu extends SimpleMenu {
         content[2][8] =new ItemCreator(randomPane()).setName("").getItem();
         content[3][8] =new ItemCreator(randomPane()).setName("").getItem();
         int luckyBlockIndex = 0;
-        ArrayList<LuckyBlock> lb = new ArrayList<LuckyBlock>(LuckyBlockHelper.getLuckyBlocks(blocksYaml));
+
         
         for(int i = 2; i != 4; i++) {
-        	for(int j = 1; j < 9 && luckyBlockIndex != lb.size(); j++) {
-        		ItemStack luckyBlock = new ItemStack(lb.get(luckyBlockIndex).getBlockMaterial());
+        	for(int j = 1; j < 9 && luckyBlockIndex != plugin.getLuckyBlocks().size(); j++) {
+        		ItemStack luckyBlock = new ItemStack(plugin.getLuckyBlocks().get(luckyBlockIndex).getBlockMaterial());
             	ItemMeta meta = luckyBlock.getItemMeta();
-            	meta.setDisplayName(ChatColor.WHITE + lb.get(luckyBlockIndex).getInternalName());
+            	meta.setDisplayName(ChatColor.WHITE + plugin.getLuckyBlocks().get(luckyBlockIndex).getInternalName());
             	meta.setLore(Arrays.asList(
-            			ChatColor.DARK_AQUA + "Item Name" + ChatColor.GRAY + ": " + lb.get(luckyBlockIndex).getName(),
-            			ChatColor.DARK_AQUA + "Break Permission" + ChatColor.GRAY + ": " + lb.get(luckyBlockIndex).getBreakPermission(),
-            			ChatColor.DARK_AQUA + "Material" + ChatColor.GRAY + ": " + lb.get(luckyBlockIndex).getBlockMaterial().name(),
-            			ChatColor.DARK_AQUA + "Default Luck" + ChatColor.GRAY + ": " + lb.get(luckyBlockIndex).getDefaultBlockLuck(),
-            			ChatColor.DARK_AQUA + "# of Droppable Items" + ChatColor.GRAY + ": " + lb.get(luckyBlockIndex).getDroppableItems().size(),
-            			ChatColor.DARK_AQUA + "Lore Length" + ChatColor.GRAY + ": " + lb.get(luckyBlockIndex).getRefreshedLore().size(),
+            			ChatColor.DARK_AQUA + "Item Name" + ChatColor.GRAY + ": " + plugin.getLuckyBlocks().get(luckyBlockIndex).getName(),
+            			ChatColor.DARK_AQUA + "Break Permission" + ChatColor.GRAY + ": " + plugin.getLuckyBlocks().get(luckyBlockIndex).getBreakPermission(),
+            			ChatColor.DARK_AQUA + "Material" + ChatColor.GRAY + ": " + plugin.getLuckyBlocks().get(luckyBlockIndex).getBlockMaterial().name(),
+            			ChatColor.DARK_AQUA + "Default Luck" + ChatColor.GRAY + ": " + plugin.getLuckyBlocks().get(luckyBlockIndex).getDefaultBlockLuck(),
+            			ChatColor.DARK_AQUA + "# of Droppable Items" + ChatColor.GRAY + ": " + plugin.getLuckyBlocks().get(luckyBlockIndex).getDroppableItems().size(),
+            			ChatColor.DARK_AQUA + "Lore Length" + ChatColor.GRAY + ": " + plugin.getLuckyBlocks().get(luckyBlockIndex).getRefreshedLore().size(),
             			"",
             			ChatColor.YELLOW.toString() + ChatColor.BOLD.toString() + "CLICK TO CONFIGURE"
             			));
@@ -104,17 +101,14 @@ public class LuckyBlockListMenu extends SimpleMenu {
     }
 
     @Override
-    public PageType getPageType() {
-        return PageType.DOUBLE_CHEST;
-    }
-
-    @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
+    	// Check if the user clicked on a lucky block.
         if(itemStack == null) return;
-
-        switch(itemStack.getType()) {
-            default:
-                break;
+        for(int i = 0; i < plugin.getLuckyBlocks().size(); i++) {
+        	if(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(plugin.getLuckyBlocks().get(i).getInternalName()))) {
+        		view.getPlayer().closeInventory();
+        		new LuckyBlockItemsMenu(plugin, plugin.getLuckyBlocks().get(i)).open(view.getPlayer());
+        	}
         }
     }
 }

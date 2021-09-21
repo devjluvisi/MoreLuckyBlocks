@@ -1,15 +1,20 @@
 package devjluvisi.mlb;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.UUID;
 
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.cmds.MainCommand;
 import devjluvisi.mlb.cmds.VersionCommand;
 import devjluvisi.mlb.cmds.sub.CreateSubCommand;
+import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.util.ConfigManager;
+import devjluvisi.mlb.util.Range;
 
 
 /**
@@ -27,6 +32,13 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	private ConfigManager configYaml;
 	private ConfigManager messagesYaml;
 	private ConfigManager blocksYaml;
+	
+	/**
+	 * An array list to track all of the lucky blocks on the server.
+	 * Tracks only the default values of the lucky blocks to be used as references rather then accessing config.
+	 * Does NOT store individual data such as block placements, etc.
+	 */
+	private ArrayList<LuckyBlock> serverLuckyBlocks;
 	
 	
 	/**
@@ -60,8 +72,18 @@ public class MoreLuckyBlocks extends JavaPlugin {
 		registerCommands();
 		registerEvents();
 		
+		serverLuckyBlocks = LuckyBlockHelper.getLuckyBlocks(blocksYaml);
+		
+		getLogger().info(serverLuckyBlocks.toString());
+		
 		super.onEnable();
 	}
+	
+	public ArrayList<LuckyBlock> getLuckyBlocks() {
+		return serverLuckyBlocks;
+		
+	}
+	
 	
 	/**
 	 * Sets up the configuration files for the plugin.

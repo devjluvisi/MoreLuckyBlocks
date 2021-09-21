@@ -109,7 +109,6 @@ public final class LuckyBlockHelper {
 					commands.add(new LuckyBlockCommand(s));
 				}
 				for(String s : blocksYaml.getConfig().getStringList("lucky-blocks." + internalName + ".drops." + key + ".potions")) {
-					Bukkit.getConsoleSender().sendMessage(s);
 					potionEffects.add(LuckyBlockPotionEffect.parseFromFile(s));
 					
 				}
@@ -118,7 +117,6 @@ public final class LuckyBlockHelper {
 				drop.setItems(items);
 				drop.setPotionEffects(potionEffects);
 				drops.add(drop);
-				Bukkit.getConsoleSender().sendMessage(drop.toString());
 			}
 			
 			block.setDroppableItems(new ArrayList<LuckyBlockDrop>(drops));

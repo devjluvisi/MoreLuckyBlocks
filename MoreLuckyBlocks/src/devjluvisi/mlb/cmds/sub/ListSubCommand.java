@@ -19,7 +19,7 @@ public class ListSubCommand extends SubCommand {
 
 	@Override
 	public void execute() {
-		MenuView view = new LuckyBlockListMenu(plugin.getBlocksYaml()).open(p, 0);
+		MenuView view = new LuckyBlockListMenu(plugin).open(p, 0);
 	}
 	
 	
