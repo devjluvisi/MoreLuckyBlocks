@@ -17,12 +17,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
 
-public class LuckyBlockItemsMenu extends BaseMenu {
+public class LuckyBlockDropsMenu extends BaseMenu {
 	
 	private LuckyBlock block;
 	private MoreLuckyBlocks plugin;
 	
-	public LuckyBlockItemsMenu(MoreLuckyBlocks plugin, LuckyBlock block) {
+	public LuckyBlockDropsMenu(MoreLuckyBlocks plugin, LuckyBlock block) {
 		super(plugin, ChatColor.DARK_PURPLE + "Viewing: " + block.getInternalName(), PageType.CHEST);
 		this.plugin = plugin;
 		this.block = block;
@@ -69,18 +69,10 @@ public class LuckyBlockItemsMenu extends BaseMenu {
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
         if(itemStack == null) return;
-        
-        switch(itemStack.getType()) {
-            case APPLE:
-                view.close();
-                view.getPlayer().sendMessage("You clicked on an Apple!");
-                break;
-            case ARROW:
-                view.close();
-                view.getPlayer().sendMessage("You clicked on to go to the next page!");
-                break;
-            default:
-                break;
+        if(itemStack.getItemMeta().getDisplayName().contains("Drop:")) {
+        	int dropIndex = Integer.parseInt(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).split(": ")[1]);
+        	view.getPlayer().closeInventory();
+        	new LuckyBlockViewDropLootMenu(plugin, block.getDroppableItems().get(dropIndex-1), dropIndex).open(view.getPlayer());
         }
     }
 }

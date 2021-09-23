@@ -1,20 +1,12 @@
 package devjluvisi.mlb;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.UUID;
-
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import devjluvisi.mlb.blocks.LuckyBlock;
-import devjluvisi.mlb.cmds.MainCommand;
-import devjluvisi.mlb.cmds.VersionCommand;
-import devjluvisi.mlb.cmds.sub.CreateSubCommand;
 import devjluvisi.mlb.helper.LuckyBlockHelper;
+import devjluvisi.mlb.util.CommandManager;
 import devjluvisi.mlb.util.ConfigManager;
-import devjluvisi.mlb.util.Range;
 
 
 /**
@@ -109,15 +101,14 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	 * Registers all of the commands in the plugin.
 	 */
 	private void registerCommands() {
-		getCommand(new VersionCommand(this).name()).setExecutor(new VersionCommand(this));
-		getCommand(new MainCommand(this).name()).setExecutor(new MainCommand(this));
+		getCommand("mlb").setExecutor(new CommandManager(this));
 	}
 	
 	/**
 	 * Registers all of the events in the plugin.
 	 */
 	private void registerEvents() {
-		getServer().getPluginManager().registerEvents(new CreateSubCommand(new MainCommand(this)), this);
+		//getServer().getPluginManager().registerEvents(new CreateSubCommand(new MainCommand(this)), this);
 	}
 	
 	@Override

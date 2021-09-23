@@ -107,7 +107,7 @@ public class LuckyBlockListMenu extends BaseMenu {
         for(int i = 0; i < plugin.getLuckyBlocks().size(); i++) {
         	if(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(plugin.getLuckyBlocks().get(i).getInternalName()))) {
         		view.getPlayer().closeInventory();
-        		new LuckyBlockItemsMenu(plugin, plugin.getLuckyBlocks().get(i)).open(view.getPlayer());
+        		new LuckyBlockDropsMenu(plugin, plugin.getLuckyBlocks().get(i)).open(view.getPlayer());
         	}
         }
     }

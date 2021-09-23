@@ -8,7 +8,6 @@ api-version: 1.17
 depend: [DSMAPI]
 
 commands:
-  mlbver:
-    description: Version Command
   mlb:
    description: Main plugin command.
+   aliases: [moreluckyblocks, mluckyblocks, mlblocks, mlbplugin]

@@ -1,25 +1,108 @@
 # A configuration file for all lucky blocks in MoreLuckyBlocks.
 # Version: v1.0
-
-# Lore placeholders:
-# %luck%, %player%, %block_type%
 lucky-blocks:
   default:
     item-name: "&6Lucky Block"
     block: "SPONGE"
+    # Lore placeholders:
+    # %luck%, %default_luck%, %internal_name%, %break_perm%
     item-lore:
-      - "A mythical lucky block of luck %luck%"
+      - "&7A mythical lucky block of luck &c%luck%"
+      - "&7Default Luck of &5%default_luck%"
     permission: "mlb.block.default"
-    items:
-      - OAK_PLANK
+    drops:
+      0:
+        rarity: 65.0
+        items:
+          SPONGE:
+            amount: 64
+            enchants: "[SHARPNESS:1,UNBREAKING:3]"
+            display-name: "&cSuper Sponge"
+            lore:
+            - "&cLine 1"
+            - "Line 2"
+        commands:
+        - "/kill %player%"
+        potions:
+        - "[SPEED, 1, 100]"
+        - "[FAST_DIGGING, 56, 100]"
+      1:
+        rarity: 50.0
+        items:
+          SPONGE:
+            amount: 64
+            enchants: "[SHARPNESS:1,UNBREAKING:3]"
+            display-name: "&cSuper Sponge"
+            lore:
+            - "&cLine 1"
+            - "Line 2"
+          IRON_HELMET:
+            amount: 1
+            enchants: "[UNBREAKING:3]"
+            display-name: "&cSuper Sponge"
+            lore:
+            - "&cLine 1"
+            - "Line 2"
+        commands:
+        - "/kill %player%"
+        potions:
+        - "[STRENGTH, 1, 100]"
+        - "[JUMP_BOOST, 56, 100]"
+      2:
+        rarity: 50.0
+        items:
+          SPONGE:
+            amount: 64
+            enchants: "[SHARPNESS:1,UNBREAKING:3]"
+            display-name: "&cSuper Sponge"
+            lore:
+            - "&cLine 1"
+            - "Line 2"
+        commands:
+        - "/kill %player%"
+        potions:
+        - "[STRENGTH, 1, 100]"
+        - "[JUMP_BOOST, 56, 100]"
     default-luck: 0.0
   lucky2:
-    item-name: "&6Lucky Block"
-    block: "SPONGE"
+    item-name: "&6Lucky Block v2"
+    block: "GOLD_BLOCK"
+    # Lore placeholders:
+    # %luck%, %default_luck%, %internal_name%, %break_perm%
     item-lore:
-      - "A mythical lucky block of luck %luck%"
-    permission: "mlb.block.default"
-    items:
-      - OAK_PLANK
+      - "&7A mythical lucky block of luck &c%luck%"
+      - "&7Default Luck of &5%default_luck%"
+    permission: "mlb.block.vip"
+    drops:
+      0:
+        rarity: 65.0
+        items:
+          SPONGE:
+            amount: 64
+            enchants: "[SHARPNESS:1,UNBREAKING:3]"
+            display-name: "&cSuper Sponge"
+            lore:
+            - "&cLine 1"
+            - "Line 2"
+        commands:
+        - "/kill %player%"
+        potions:
+        - "[SPEED, 1, 100]"
+        - "[FAST_DIGGING, 56, 100]"
+      1:
+        rarity: 50.0
+        items:
+          SPONGE:
+            amount: 64
+            enchants: "[SHARPNESS:1,UNBREAKING:3]"
+            display-name: "&cSuper Sponge"
+            lore:
+            - "&cLine 1"
+            - "Line 2"
+        commands:
+        - "/kill %player%"
+        potions:
+        - "[STRENGTH, 1, 100]"
+        - "[JUMP_BOOST, 56, 100]"
     default-luck: 0.0
     
