@@ -54,6 +54,7 @@ public class HelpCommand implements SubCommand {
 
 	@Override
 	public ExecutionResult perform(CommandSender sender, String[] args) {
+		// "/mlb help"
 		if(args.length == 1) {
 			sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH.toString() + "-----------------" + ChatColor.RESET.toString() + ChatColor.GRAY.toString() + ChatColor.BOLD.toString() + "[" + ChatColor.RESET + ChatColor.GOLD.toString()+ChatColor.BOLD.toString()+"MoreLuckyBlocks" + ChatColor.RESET.toString() + ChatColor.GRAY.toString() + ChatColor.BOLD.toString() + "]" + ChatColor.RESET + ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH.toString() + "-----------------");
 			for(int i = 0; i < MAX_COMMANDS_PER_PAGE && i < commands.size(); i++) {
@@ -63,18 +64,22 @@ public class HelpCommand implements SubCommand {
 			sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH.toString() + "----------------------------------------------------");
 			return ExecutionResult.PASSED;
 		}
+		// "/mlb help <page>
 		int page;
 		try {
 			page = Integer.parseInt(args[1]);
 		} catch (NumberFormatException e) {
 			return ExecutionResult.BAD_ARGUMENT_TYPE;
 		}
+		// Make sure the page is not over the limit.
 		if(page > ((commands.size()/MAX_COMMANDS_PER_PAGE)+commands.size()%MAX_COMMANDS_PER_PAGE != 0 ? 1 : 0)) {
 			sender.sendMessage(ChatColor.RED + "There are no commands to view on this page.");
 			return ExecutionResult.PASSED;
 		}
+		// Get the range of commands to show the player.
 		final int commandRangeMin = (page * MAX_COMMANDS_PER_PAGE) - MAX_COMMANDS_PER_PAGE;
 		final int commandRangeMax = page * MAX_COMMANDS_PER_PAGE;
+		
 		sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH.toString() + "-----------------" + ChatColor.RESET.toString() + ChatColor.GRAY.toString() + ChatColor.BOLD.toString() + "[" + ChatColor.RESET + ChatColor.GOLD.toString()+ChatColor.BOLD.toString()+"MoreLuckyBlocks" + ChatColor.RESET.toString() + ChatColor.GRAY.toString() + ChatColor.BOLD.toString() + "]" + ChatColor.RESET + ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH.toString() + "-----------------");
 		for(int i = commandRangeMin; i < commandRangeMax && i < commands.size(); i++) {
 			sender.sendMessage(ChatColor.LIGHT_PURPLE + "/mlb " + commands.get(i).getName() + ChatColor.GRAY + " - " + ChatColor.GREEN + commands.get(i).getDescription());

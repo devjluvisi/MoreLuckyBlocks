@@ -5,15 +5,12 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import fr.dwightstudio.dsmapi.MenuView;
 import fr.dwightstudio.dsmapi.SimpleMenu;
 import fr.dwightstudio.dsmapi.pages.PageType;
-import fr.dwightstudio.dsmapi.utils.ItemCreator;
 import net.md_5.bungee.api.ChatColor;
 
 /**

@@ -2,9 +2,7 @@ package devjluvisi.mlb.blocks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -170,8 +168,13 @@ public class LuckyBlock {
 		this.blockLuck = blockLuck;
 	}
 	 
+	/**
+	 * Saves a lucky block and all of its drops.
+	 * @param blocksYaml The config file to save at.
+	 */
 	public void saveConfig(ConfigManager blocksYaml) {
 		String path = "lucky-blocks." + internalName;
+		blocksYaml.getConfig().set(path, null);
 		blocksYaml.getConfig().set(path + ".item-name", name);
 		blocksYaml.getConfig().set(path + ".block", blockMaterial.name());
 		blocksYaml.getConfig().set(path + ".item-lore", lore);

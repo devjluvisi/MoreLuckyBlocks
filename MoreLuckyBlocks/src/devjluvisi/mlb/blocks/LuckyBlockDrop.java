@@ -3,8 +3,6 @@ package devjluvisi.mlb.blocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.inventory.ItemStack;
-
 import devjluvisi.mlb.blocks.drops.DropProperty;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.drops.LuckyBlockItem;
@@ -12,7 +10,9 @@ import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
 import devjluvisi.mlb.util.ConfigManager;
 
 /**
- * An item which can be dropped from the block.
+ * A "drop" that can be rewarded by breaking a lucky block.
+ * Note that a drop is NOT an individual item. A drop is a group of items the user should get from breaking the
+ * lucky block.
  * @author jacob
  *
  */
@@ -74,6 +74,9 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		this.rarity = rarity;
 	}
 	
+	/**
+	 * @return An array list of all of the drops from the luckyblock under the parent "DropProperty" interface.
+	 */
 	public ArrayList<DropProperty> getAllDrops() {
 		ArrayList<DropProperty> drops = new ArrayList<DropProperty>();
 		drops.addAll(items);
@@ -82,6 +85,12 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		return drops;
 	}
 	
+	/**
+	 * Saves the current drop information to the configuration file.
+	 * @param blocksYaml The block configuration file.
+	 * @param internalName The internal name of the luckyblock.
+	 * @param dropLabel The label that specifies the specific drop, ex (0) or (1).
+	 */
 	public void saveConfig(ConfigManager blocksYaml, String internalName, String dropLabel) {
 		final String path = "lucky-blocks." + internalName + ".drops."+dropLabel;
 		blocksYaml.getConfig().set(path + ".rarity", rarity);
@@ -93,7 +102,6 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 			blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() +".display-name", item.getItem().getItemMeta().getDisplayName().toString());
 			blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() +".lore", item.getItem().getItemMeta().getLore());
 		}
-		blocksYaml.save();
 		
 		// SAVING POTIONS
 		List<String> potionStringList = new ArrayList<String>();
@@ -117,6 +125,9 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 				+ ", rarity=" + rarity + "]";
 	}
 
+	/**
+	 * Sort based on LuckyBlock rarity.
+	 */
 	@Override
 	public int compareTo(LuckyBlockDrop o) {
 		if(o.rarity > this.rarity) {
@@ -127,6 +138,17 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 			return 1;
 		}
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof LuckyBlockDrop)) {
+			return false;
+		}
+		LuckyBlockDrop d = (LuckyBlockDrop)obj;
+		return d.rarity == rarity && d.commands.containsAll(commands) && d.items.containsAll(items) && d.potionEffects.containsAll(potionEffects);
+	}
+	
+	
 	
 	
 	

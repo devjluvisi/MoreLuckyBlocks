@@ -2,9 +2,6 @@ package devjluvisi.mlb.menus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -14,9 +11,8 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.blocks.drops.DropProperty;
-import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
-import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
-import devjluvisi.mlb.util.Range;
+import devjluvisi.mlb.queries.Query;
+import devjluvisi.mlb.queries.RemoveDropRequest;
 import fr.dwightstudio.dsmapi.MenuView;
 import fr.dwightstudio.dsmapi.pages.PageType;
 import fr.dwightstudio.dsmapi.utils.ItemCreator;
@@ -27,16 +23,19 @@ public class LuckyBlockViewDropLootMenu extends BaseMenu {
 	private LuckyBlockDrop blockDrop;
 	private MoreLuckyBlocks plugin;
 	private int dropIndex;
+	private int blockIndexLocation;
 
-	public LuckyBlockViewDropLootMenu(MoreLuckyBlocks plugin, LuckyBlockDrop blockDrop, int drop) {
+	public LuckyBlockViewDropLootMenu(MoreLuckyBlocks plugin, LuckyBlockDrop blockDrop, int blockIndexLocation, int drop) {
 		super(plugin, ChatColor.BLACK + "Viewing Loot for Drop #" + drop, PageType.CHEST);
 		this.plugin = plugin;
 		this.blockDrop = blockDrop;
 		this.dropIndex = drop;
+		this.blockIndexLocation = blockIndexLocation;
 	}
 
 	@Override
 	public ItemStack[] getContent() {
+		
 		ItemStack[][] content = getPageType().getBlank2DArray();
 
 		ItemStack dropViewInfo = new ItemStack(Material.OAK_SIGN);
@@ -69,8 +68,43 @@ public class LuckyBlockViewDropLootMenu extends BaseMenu {
         return getPageType().flatten(content);
 	}
 
+	
+	// Slots go from 0 to 26
 	@Override
 	public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
+		if(itemStack==null) return;
+		switch(slot) {
+		// Edit Drop
+		case 23:
+		{
+			this.getContent()[0] = new ItemCreator(Material.ACACIA_FENCE).getItem();
+			break;
+		}
+		// Duplicate Drop
+		case 24:
+		{
+			
+			LuckyBlock block = plugin.getLuckyBlocks().get(blockIndexLocation);
+			block.addDrop(blockDrop);
+			block.saveConfig(plugin.getBlocksYaml());
+			new LuckyBlockDropsMenu(plugin, plugin.getLuckyBlocks().get(blockIndexLocation)).open(view.getPlayer());
+			view.getPlayer().sendMessage(ChatColor.GREEN + "You duplicated a drop.\nConfig was automatically updated.");
+			break;
+		}
+		// Delete Drop
+		case 25:
+		{
+			Query requestRemove = new RemoveDropRequest(plugin, view.getPlayer().getUniqueId(), blockDrop, blockIndexLocation);
+			requestRemove.add();
+			new ConfirmMenu(plugin, this).open(view.getPlayer());
+			break;
+		}
+		// exit
+		case 26: {
+			new LuckyBlockDropsMenu(plugin, plugin.getLuckyBlocks().get(blockIndexLocation)).open(view.getPlayer());
+			break;
+		}
+		}
 		
 	}
 

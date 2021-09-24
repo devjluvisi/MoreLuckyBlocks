@@ -9,15 +9,13 @@ import devjluvisi.mlb.blocks.LuckyBlock;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * <h2>Config Manager</h2>
- * <p>A class which manages all of the different configuration files in ContraCore.</p>
+ * <p>A class which manages all of the different configuration files in MoreLuckyBlocks.</p>
  *
- * @see me.paroxi.contracore.enums.Resource
  */
 public class ConfigManager {
 

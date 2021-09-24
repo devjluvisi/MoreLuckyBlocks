@@ -1,11 +1,8 @@
 package devjluvisi.mlb.helper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
-import java.util.TreeSet;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -21,6 +18,11 @@ import devjluvisi.mlb.util.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.world.item.enchantment.Enchantment;
 
+/**
+ * Static methods to help with configuration and lucky blocks.
+ * @author jacob
+ *
+ */
 public final class LuckyBlockHelper {
 	
 	public static Set<String> getLuckyBlockNames(ConfigManager blocksYaml) {
@@ -75,7 +77,12 @@ public final class LuckyBlockHelper {
 		return itemObject;
 	}
 
-	
+	/**
+	 * Returns a lucky block object provided an internalName is specified.
+	 * @param blocksYaml Config "blocks.yml" file.
+	 * @param internalName Internal name of the lucky block as specified in config.
+	 * @return LuckyBlock if it exists.
+	 */
 	public static LuckyBlock getLuckyBlock(ConfigManager blocksYaml, String internalName) {
 			LuckyBlock block = new LuckyBlock();
 			block.setInternalName(internalName);

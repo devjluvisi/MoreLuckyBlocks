@@ -1,25 +1,19 @@
 package devjluvisi.mlb.menus;
 
 import fr.dwightstudio.dsmapi.MenuView;
-import fr.dwightstudio.dsmapi.SimpleMenu;
 import fr.dwightstudio.dsmapi.pages.PageType;
 import fr.dwightstudio.dsmapi.utils.ItemCreator;
 import net.md_5.bungee.api.ChatColor;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import devjluvisi.mlb.blocks.LuckyBlock;
-import devjluvisi.mlb.helper.LuckyBlockHelper;
-import devjluvisi.mlb.util.ConfigManager;
 
 public class LuckyBlockListMenu extends BaseMenu {
 	
@@ -106,7 +100,6 @@ public class LuckyBlockListMenu extends BaseMenu {
         if(itemStack == null) return;
         for(int i = 0; i < plugin.getLuckyBlocks().size(); i++) {
         	if(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(plugin.getLuckyBlocks().get(i).getInternalName()))) {
-        		view.getPlayer().closeInventory();
         		new LuckyBlockDropsMenu(plugin, plugin.getLuckyBlocks().get(i)).open(view.getPlayer());
         	}
         }
