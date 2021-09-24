@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import devjluvisi.mlb.util.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -168,9 +169,21 @@ public class LuckyBlock {
 		}
 		this.blockLuck = blockLuck;
 	}
-	
-	public String getDroppableItemsAsString() {
-		return "";
+	 
+	public void saveConfig(ConfigManager blocksYaml) {
+		String path = "lucky-blocks." + internalName;
+		blocksYaml.getConfig().set(path + ".item-name", name);
+		blocksYaml.getConfig().set(path + ".block", blockMaterial.name());
+		blocksYaml.getConfig().set(path + ".item-lore", lore);
+		blocksYaml.getConfig().set(path + ".permission", breakPermission);
+		
+		int index = 0;
+		for(LuckyBlockDrop drop : droppableItems) {
+			drop.saveConfig(blocksYaml, internalName, String.valueOf(index));
+			index++;
+		}
+		blocksYaml.save();
+		blocksYaml.reload();
 	}
 	
 	public void addDrop(LuckyBlockDrop drop) {

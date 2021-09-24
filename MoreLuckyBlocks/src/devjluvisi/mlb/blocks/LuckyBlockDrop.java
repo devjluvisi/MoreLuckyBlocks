@@ -1,8 +1,15 @@
 package devjluvisi.mlb.blocks;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.inventory.ItemStack;
+
+import devjluvisi.mlb.blocks.drops.DropProperty;
+import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
+import devjluvisi.mlb.blocks.drops.LuckyBlockItem;
+import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
+import devjluvisi.mlb.util.ConfigManager;
 
 /**
  * An item which can be dropped from the block.
@@ -11,16 +18,22 @@ import org.bukkit.inventory.ItemStack;
  */
 public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	
-	private ArrayList<ItemStack> items; // Items to be dropped.
+	/**
+	 * The maximum allowed number of drops a single drop in a lucky block can have.
+	 */
+	public static final byte MAX_ALLOWED_LOOT = 7 * 2;
+	
+	private ArrayList<LuckyBlockItem> items; // Items to be dropped.
 	private ArrayList<LuckyBlockCommand> commands; // Commands to be executed.
 	private ArrayList<LuckyBlockPotionEffect> potionEffects; // Potion effects applied.
+	
 	private float rarity; // Rarity of this drop.
 	
 	public LuckyBlockDrop() {
 		super();
 	}
 	
-	public LuckyBlockDrop(ArrayList<ItemStack> items, ArrayList<LuckyBlockCommand> commands,
+	public LuckyBlockDrop(ArrayList<LuckyBlockItem> items, ArrayList<LuckyBlockCommand> commands,
 			ArrayList<LuckyBlockPotionEffect> potionEffects, float rarity) {
 		super();
 		this.items = items;
@@ -29,11 +42,11 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		this.rarity = rarity;
 	}
 
-	public ArrayList<ItemStack> getItems() {
+	public ArrayList<LuckyBlockItem> getItems() {
 		return items;
 	}
 
-	public void setItems(ArrayList<ItemStack> items) {
+	public void setItems(ArrayList<LuckyBlockItem> items) {
 		this.items = items;
 	}
 
@@ -59,6 +72,43 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 
 	public void setRarity(float rarity) {
 		this.rarity = rarity;
+	}
+	
+	public ArrayList<DropProperty> getAllDrops() {
+		ArrayList<DropProperty> drops = new ArrayList<DropProperty>();
+		drops.addAll(items);
+		drops.addAll(potionEffects);
+		drops.addAll(commands);
+		return drops;
+	}
+	
+	public void saveConfig(ConfigManager blocksYaml, String internalName, String dropLabel) {
+		final String path = "lucky-blocks." + internalName + ".drops."+dropLabel;
+		blocksYaml.getConfig().set(path + ".rarity", rarity);
+		
+		// SAVING ITEMS
+		for(LuckyBlockItem item : getItems()) {
+			blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() + ".amount", item.getItem().getAmount());
+			blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() + ".enchants", item.enchantsConfigString());
+			blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() +".display-name", item.getItem().getItemMeta().getDisplayName().toString());
+			blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() +".lore", item.getItem().getItemMeta().getLore());
+		}
+		blocksYaml.save();
+		
+		// SAVING POTIONS
+		List<String> potionStringList = new ArrayList<String>();
+		
+		for(LuckyBlockPotionEffect effect : getPotionEffects()) {
+			potionStringList.add(effect.asConfigString());
+		}
+		blocksYaml.getConfig().set(path + ".potions", potionStringList);
+		
+		// SAVING COMMANDS
+		List<String> commandStringList = new ArrayList<String>();
+		for(LuckyBlockCommand cmd : getCommands()) {
+			commandStringList.add(cmd.getCommand().toLowerCase());
+		}
+		blocksYaml.getConfig().set(path + ".commands", commandStringList);
 	}
 
 	@Override

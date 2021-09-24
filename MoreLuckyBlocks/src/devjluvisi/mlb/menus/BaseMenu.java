@@ -70,6 +70,31 @@ public abstract class BaseMenu extends SimpleMenu {
 	    	meta = i.getItemMeta();
 	    	meta.setDisplayName(ChatColor.YELLOW + "Next Page");
 	    	break;
+		case EDIT_DROP:
+			i = new ItemStack(Material.WRITABLE_BOOK);
+			meta = i.getItemMeta();
+			meta.setDisplayName(ChatColor.GREEN + "Edit Drop");
+			meta.setLore(Arrays.asList(
+					ChatColor.GRAY + "Enable edit mode and edit",
+					ChatColor.GRAY + "the content of the lucky block."
+					));
+			break;
+		case COPY_DROP:
+			i = new ItemStack(Material.DIAMOND);
+			meta = i.getItemMeta();
+			meta.setDisplayName(ChatColor.BLUE + "Duplicate Drop");
+			meta.setLore(Arrays.asList(
+					ChatColor.GRAY + "Copies the contents of this",
+					ChatColor.GRAY + "drop and adds it as a new drop",
+					ChatColor.GRAY + "to the lucky block."
+					));
+			break;
+		case DELETE_DROP:
+			i = new ItemStack(Material.TNT);
+			meta = i.getItemMeta();
+			meta.setDisplayName(ChatColor.DARK_RED + "Delete Drop");
+			meta.setLore(Arrays.asList(ChatColor.GRAY + "Delete this drop and", ChatColor.GRAY + "all of its contents."));
+			break;
 		default:
 			Bukkit.getLogger().severe("Could not read specific value of getSpecialItem method.");
 			return null;

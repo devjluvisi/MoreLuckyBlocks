@@ -55,7 +55,7 @@ public class CommandManager implements CommandExecutor {
 					return true;
 				}
 				
-				ExecutionResult result = sub.perform(sender, args);
+				final ExecutionResult result = sub.perform(sender, args);
 				switch(result) {
 				case PASSED:
 					break;

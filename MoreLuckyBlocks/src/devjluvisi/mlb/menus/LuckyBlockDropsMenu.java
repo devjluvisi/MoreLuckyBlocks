@@ -42,7 +42,7 @@ public class LuckyBlockDropsMenu extends BaseMenu {
         	ItemMeta meta = dropSlot.getItemMeta();
         	meta.setDisplayName(ChatColor.GREEN + "Drop: " + (i+1));
         	int size = block.getDroppableItems().get(i).getItems().size() + block.getDroppableItems().get(i).getCommands().size() + block.getDroppableItems().get(i).getPotionEffects().size();
-        	meta.setLore(Arrays.asList(ChatColor.AQUA + "You have a drop set for this item.", ChatColor.GRAY.toString()+ChatColor.BOLD + "Total Drops: " + ChatColor.GREEN + size, ChatColor.GRAY.toString() + ChatColor.ITALIC + "Click to configure/delete drop."));
+        	meta.setLore(Arrays.asList(ChatColor.AQUA + "You have a drop set for this item.", ChatColor.GRAY.toString()+ChatColor.BOLD + "Total Drops: " + ChatColor.GREEN + size, ChatColor.GRAY.toString()+ChatColor.BOLD.toString() + "Rarity: " + ChatColor.LIGHT_PURPLE + block.getDroppableItems().get(i).getRarity(), ChatColor.GRAY.toString() + ChatColor.ITALIC + "Click to configure/delete drop."));
         	dropSlot.setItemMeta(meta);
         	content[rowCount][colCount] = dropSlot;
         	colCount++;

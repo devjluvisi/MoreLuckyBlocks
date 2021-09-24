@@ -20,6 +20,16 @@ public class Range {
 		this.max = max;
 	}
 	
+	
+	public int getMax() {
+		return max;
+	}
+
+	public int getMin() {
+		return min;
+	}
+
+
 	/**
 	 * Check if a value is in range of a specified min and max.
 	 * This method is inclusive.

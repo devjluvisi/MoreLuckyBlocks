@@ -12,9 +12,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import devjluvisi.mlb.blocks.LuckyBlock;
-import devjluvisi.mlb.blocks.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
-import devjluvisi.mlb.blocks.LuckyBlockPotionEffect;
+import devjluvisi.mlb.blocks.drops.DropProperty;
+import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
+import devjluvisi.mlb.blocks.drops.LuckyBlockItem;
+import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
 import devjluvisi.mlb.util.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -96,13 +98,13 @@ public final class LuckyBlockHelper {
 				drop.setRarity((float) blocksYaml.getConfig().getDouble("lucky-blocks." + internalName + ".drops." + key + ".rarity"));
 				
 				// First get all of the items, commands, and potion effects.
-				ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+				ArrayList<LuckyBlockItem> items = new ArrayList<LuckyBlockItem>();
 				ArrayList<LuckyBlockCommand> commands = new ArrayList<LuckyBlockCommand>();
 				ArrayList<LuckyBlockPotionEffect> potionEffects = new ArrayList<LuckyBlockPotionEffect>();
 				
 
 				for(String s : blocksYaml.getConfig().getConfigurationSection("lucky-blocks." + internalName + ".drops." + key + ".items").getKeys(false)) {
-					items.add(getItem(blocksYaml, "lucky-blocks." + internalName + ".drops." + key + ".items", s));
+					items.add(new LuckyBlockItem(getItem(blocksYaml, "lucky-blocks." + internalName + ".drops." + key + ".items", s)));
 				}
 				
 				for(String s : blocksYaml.getConfig().getStringList("lucky-blocks." + internalName + ".drops." + key + ".commands")) {
@@ -127,8 +129,28 @@ public final class LuckyBlockHelper {
 	 * Ensures that the blocks.yml file is valid.
 	 * @return If there are any errors in the blocks.yml file.
 	 */
-	public static boolean validateBlocksYaml() {
+	public static boolean validateBlocksYaml(ArrayList<LuckyBlock> arr) {
+		for(LuckyBlock block : arr) {
+			
+			if(block.getInternalName().contains(" ")) return false;
+			if(block.getBlockMaterial() == null || !block.getBlockMaterial().isBlock()) return false;
+			if(block.getDroppableItems().size() < 1) return false;
+			
+			for(LuckyBlockDrop drop : block.getDroppableItems()) {
+				if(drop.getAllDrops().size() > LuckyBlockDrop.MAX_ALLOWED_LOOT || drop.getAllDrops().size() == 0) {
+					return false;
+				}
+				for(DropProperty loot : drop.getAllDrops()) {
+					if(!loot.isValid()) {
+						return false;
+					}
+				}
+			}
+			
+		}
+		
 		return true;
+		
 	}
 	
 	

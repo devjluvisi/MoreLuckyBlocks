@@ -1,6 +1,8 @@
 package devjluvisi.mlb;
 
 import java.util.ArrayList;
+
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import devjluvisi.mlb.blocks.LuckyBlock;
@@ -65,8 +67,14 @@ public class MoreLuckyBlocks extends JavaPlugin {
 		registerEvents();
 		
 		serverLuckyBlocks = LuckyBlockHelper.getLuckyBlocks(blocksYaml);
-		
-		getLogger().info(serverLuckyBlocks.toString());
+		if(LuckyBlockHelper.validateBlocksYaml(serverLuckyBlocks) == false) {
+			getServer().getLogger().severe("Could not start server due to invalid blocks.yml file.");
+			getServer().getLogger().severe("Please ensure that the plugin config file follows proper formatting.");
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+		serverLuckyBlocks.get(0).saveConfig(blocksYaml);
+		//getLogger().info(serverLuckyBlocks.toString());
 		
 		super.onEnable();
 	}
