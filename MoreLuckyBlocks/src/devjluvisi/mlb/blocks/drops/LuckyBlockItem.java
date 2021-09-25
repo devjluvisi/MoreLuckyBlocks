@@ -49,6 +49,13 @@ public class LuckyBlockItem implements DropProperty {
 		if(item.getType() == null) return false;
 		return true;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return item.equals(((LuckyBlockItem)obj).item);
+	}
+	
+	
 	
 	
 

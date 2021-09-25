@@ -51,6 +51,21 @@ public class LuckyBlockCommand implements DropProperty {
 		if(!command.contains("/")) return false;
 		return true;
 	}
+
+	@Override
+	public int hashCode() {
+		return command.toLowerCase().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof LuckyBlockCommand)) {
+			return false;
+		}
+		return ((LuckyBlockCommand)obj).hashCode() == this.hashCode();
+	}
+	
+	
 	
 	
 	

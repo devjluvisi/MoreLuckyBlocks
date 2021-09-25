@@ -104,6 +104,21 @@ public class LuckyBlockPotionEffect implements DropProperty {
 		if(amplifier < 0) return false;
 		return true;
 	}
+
+	@Override
+	public int hashCode() {
+		return type.getName().hashCode() + duration + amplifier;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof LuckyBlockPotionEffect)) {
+			return false;
+		}
+		return ((LuckyBlockPotionEffect)obj).hashCode() == this.hashCode();
+	}
+	
+	
 	
 	
 	

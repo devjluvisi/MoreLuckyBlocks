@@ -54,7 +54,6 @@ public class VersionCommand implements SubCommand {
 		sender.sendMessage("");
 		sender.sendMessage(ChatColor.BLUE.toString() + ChatColor.UNDERLINE + plugin.getDescription().getWebsite());
 		sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD.toString() + ChatColor.STRIKETHROUGH.toString() + "--------------------------------");
-		
 		return ExecutionResult.PASSED;
 	}
 

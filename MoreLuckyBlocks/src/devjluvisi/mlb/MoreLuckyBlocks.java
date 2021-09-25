@@ -3,14 +3,18 @@ package devjluvisi.mlb;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.helper.LuckyBlockHelper;
+import devjluvisi.mlb.menus.EditDropMenu;
 import devjluvisi.mlb.queries.Query;
 import devjluvisi.mlb.util.CommandManager;
 import devjluvisi.mlb.util.ConfigManager;
 import devjluvisi.mlb.util.SubCommand;
+import net.md_5.bungee.api.ChatColor;
 
 
 /**
@@ -92,6 +96,20 @@ public class MoreLuckyBlocks extends JavaPlugin {
 			return;
 		}
 		
+		BukkitScheduler scheduler = getServer().getScheduler();
+        scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+        	long maxRamPrevious = 0;
+        	
+            @Override
+            public void run() {
+            	if(Math.abs(Runtime.getRuntime().freeMemory()-Runtime.getRuntime().maxMemory()) > maxRamPrevious) {
+            		maxRamPrevious = Math.abs(Runtime.getRuntime().freeMemory()-Runtime.getRuntime().maxMemory());
+            	}
+            	String util = String.valueOf(String.format("%.0f", (double)(((double)Runtime.getRuntime().freeMemory() / (((double)Runtime.getRuntime().maxMemory()))) * 100)));
+                Bukkit.getServer().broadcastMessage( ChatColor.GREEN + String.valueOf(((Runtime.getRuntime().freeMemory()/1000)/1000)) + ChatColor.RESET + "/" + ChatColor.GOLD + String.valueOf(((Runtime.getRuntime().maxMemory()/1000)/1000)) + ChatColor.RESET + " - New Max: " + ChatColor.RED.toString() + ChatColor.BOLD.toString() + (maxRamPrevious/1000/1000) + "MB " + ChatColor.RESET + ChatColor.BLUE + util + "%");
+            }
+         }, 0L, 20L);
+		
 		super.onEnable();
 	}
 	
@@ -154,7 +172,9 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	/**
 	 * Registers all of the events in the plugin.
 	 */
-	private void registerEvents() {}
+	private void registerEvents() {
+		getServer().getPluginManager().registerEvents(EditDropMenu.getEvent(this), this);
+	}
 	
 	@Override
 	public void onDisable() {

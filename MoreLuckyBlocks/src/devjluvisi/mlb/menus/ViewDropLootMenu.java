@@ -18,19 +18,27 @@ import fr.dwightstudio.dsmapi.pages.PageType;
 import fr.dwightstudio.dsmapi.utils.ItemCreator;
 import net.md_5.bungee.api.ChatColor;
 
-public class LuckyBlockViewDropLootMenu extends BaseMenu {
+public class ViewDropLootMenu extends BaseMenu {
 	
 	private LuckyBlockDrop blockDrop;
 	private MoreLuckyBlocks plugin;
 	private int dropIndex;
 	private int blockIndexLocation;
 
-	public LuckyBlockViewDropLootMenu(MoreLuckyBlocks plugin, LuckyBlockDrop blockDrop, int blockIndexLocation, int drop) {
+	public ViewDropLootMenu(MoreLuckyBlocks plugin, LuckyBlockDrop blockDrop, int blockIndexLocation, int drop) {
 		super(plugin, ChatColor.BLACK + "Viewing Loot for Drop #" + drop, PageType.CHEST);
 		this.plugin = plugin;
 		this.blockDrop = blockDrop;
 		this.dropIndex = drop;
 		this.blockIndexLocation = blockIndexLocation;
+	}
+	
+	public ViewDropLootMenu(ViewDropLootMenu ctr) {
+		super(ctr.plugin, ctr.getName(), ctr.getPageType());
+		blockDrop = ctr.blockDrop;
+		plugin = ctr.plugin;
+		dropIndex = ctr.dropIndex;
+		blockIndexLocation = ctr.blockIndexLocation;
 	}
 
 	@Override
@@ -40,7 +48,7 @@ public class LuckyBlockViewDropLootMenu extends BaseMenu {
 
 		ItemStack dropViewInfo = new ItemStack(Material.OAK_SIGN);
 		ItemMeta dropViewMeta = dropViewInfo.getItemMeta();
-		dropViewMeta.setDisplayName(ChatColor.GRAY + "Viewing Drop " + ChatColor.DARK_GRAY + "-> " + ChatColor.DARK_AQUA + dropIndex);
+		dropViewMeta.setDisplayName(ChatColor.GRAY + "Viewing Drop " + ChatColor.DARK_GRAY + "-> " + ChatColor.DARK_AQUA + (dropIndex));
 		dropViewMeta.setLore(Arrays.asList(ChatColor.GRAY + "You are currently viewing all of the loot", ChatColor.GRAY + "that can drop from this drop.", ChatColor.GOLD + "Click the Book & Quill to edit the drop."));
 		dropViewInfo.setItemMeta(dropViewMeta);
 		
@@ -54,7 +62,7 @@ public class LuckyBlockViewDropLootMenu extends BaseMenu {
         content[2][7] = super.getSpecialItem(SpecialItem.DELETE_DROP);
         content[2][8] = super.getSpecialItem(SpecialItem.EXIT_BUTTON);
         
-        ArrayList<DropProperty> dropList = blockDrop.getAllDrops();
+        ArrayList<DropProperty> dropList = blockDrop.getLoot();
         
         int arrIndex = 0;
         
@@ -77,7 +85,7 @@ public class LuckyBlockViewDropLootMenu extends BaseMenu {
 		// Edit Drop
 		case 23:
 		{
-			this.getContent()[0] = new ItemCreator(Material.ACACIA_FENCE).getItem();
+			new EditDropMenu(plugin, this, blockDrop, String.valueOf(dropIndex), view.getPlayer().getUniqueId()).open(view.getPlayer());
 			break;
 		}
 		// Duplicate Drop
@@ -85,9 +93,9 @@ public class LuckyBlockViewDropLootMenu extends BaseMenu {
 		{
 			
 			LuckyBlock block = plugin.getLuckyBlocks().get(blockIndexLocation);
-			block.addDrop(blockDrop);
+			block.addDrop(blockDrop.ofUniqueCopy());
 			block.saveConfig(plugin.getBlocksYaml());
-			new LuckyBlockDropsMenu(plugin, plugin.getLuckyBlocks().get(blockIndexLocation)).open(view.getPlayer());
+			new ViewDropsMenu(plugin, plugin.getLuckyBlocks().get(blockIndexLocation)).open(view.getPlayer());
 			view.getPlayer().sendMessage(ChatColor.GREEN + "You duplicated a drop.\nConfig was automatically updated.");
 			break;
 		}
@@ -101,7 +109,7 @@ public class LuckyBlockViewDropLootMenu extends BaseMenu {
 		}
 		// exit
 		case 26: {
-			new LuckyBlockDropsMenu(plugin, plugin.getLuckyBlocks().get(blockIndexLocation)).open(view.getPlayer());
+			new ViewDropsMenu(plugin, plugin.getLuckyBlocks().get(blockIndexLocation)).open(view.getPlayer());
 			break;
 		}
 		}

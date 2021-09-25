@@ -15,12 +15,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 
-public class LuckyBlockListMenu extends BaseMenu {
+public class ListBlocksMenu extends BaseMenu {
 	
 	private MoreLuckyBlocks plugin;
 	private Random rand;
 	
-	public LuckyBlockListMenu(MoreLuckyBlocks plugin) {
+	public ListBlocksMenu(MoreLuckyBlocks plugin) {
 		super(plugin, ChatColor.DARK_PURPLE + "Your Lucky Blocks", PageType.DOUBLE_CHEST);
 		this.rand = new Random();
 		this.plugin = plugin;
@@ -100,7 +100,7 @@ public class LuckyBlockListMenu extends BaseMenu {
         if(itemStack == null) return;
         for(int i = 0; i < plugin.getLuckyBlocks().size(); i++) {
         	if(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(plugin.getLuckyBlocks().get(i).getInternalName()))) {
-        		new LuckyBlockDropsMenu(plugin, plugin.getLuckyBlocks().get(i)).open(view.getPlayer());
+        		new ViewDropsMenu(plugin, plugin.getLuckyBlocks().get(i)).open(view.getPlayer());
         	}
         }
     }

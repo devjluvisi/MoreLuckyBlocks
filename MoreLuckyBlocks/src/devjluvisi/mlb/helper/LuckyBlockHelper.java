@@ -144,10 +144,10 @@ public final class LuckyBlockHelper {
 			if(block.getDroppableItems().size() < 1) return false;
 			
 			for(LuckyBlockDrop drop : block.getDroppableItems()) {
-				if(drop.getAllDrops().size() > LuckyBlockDrop.MAX_ALLOWED_LOOT || drop.getAllDrops().size() == 0) {
+				if(drop.getLoot().size() > LuckyBlockDrop.MAX_ALLOWED_LOOT || drop.getLoot().size() == 0) {
 					return false;
 				}
-				for(DropProperty loot : drop.getAllDrops()) {
+				for(DropProperty loot : drop.getLoot()) {
 					if(!loot.isValid()) {
 						return false;
 					}

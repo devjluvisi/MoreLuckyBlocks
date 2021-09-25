@@ -26,7 +26,7 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 public abstract class Query {
 	private UUID playerUUID;
 	private MoreLuckyBlocks plugin;
-	
+
 	public Query(UUID u, MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
 		this.playerUUID = u;
@@ -38,7 +38,6 @@ public abstract class Query {
 	 */
 	public void add() {
 		plugin.getRequests().add(this);
-		Bukkit.getConsoleSender().sendMessage(plugin.getRequests().toString());
 	}
 	
 
@@ -71,7 +70,17 @@ public abstract class Query {
 		plugin.getRequests().remove(this);
 		runProcess();
 	}
+	
+	public static Query queryContains(MoreLuckyBlocks plugin, UUID playerUUID) {
+		for(Query q: plugin.getRequests()) {
+			if(q.playerUUID == playerUUID) {
+				return q;
+			}
+		}
+		return null;
+	}
+	
 
-	public abstract void runProcess();
+	protected abstract void runProcess();
 
 }

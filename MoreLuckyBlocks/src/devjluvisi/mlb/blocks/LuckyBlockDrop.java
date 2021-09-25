@@ -2,6 +2,9 @@ package devjluvisi.mlb.blocks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import org.bukkit.inventory.ItemStack;
 
 import devjluvisi.mlb.blocks.drops.DropProperty;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
@@ -23,6 +26,9 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	 */
 	public static final byte MAX_ALLOWED_LOOT = 7 * 2;
 	
+	private Random rand;
+	private long uniqueId;
+	
 	private ArrayList<LuckyBlockItem> items; // Items to be dropped.
 	private ArrayList<LuckyBlockCommand> commands; // Commands to be executed.
 	private ArrayList<LuckyBlockPotionEffect> potionEffects; // Potion effects applied.
@@ -31,6 +37,8 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	
 	public LuckyBlockDrop() {
 		super();
+		rand = new Random();
+		uniqueId = rand.nextLong();
 	}
 	
 	public LuckyBlockDrop(ArrayList<LuckyBlockItem> items, ArrayList<LuckyBlockCommand> commands,
@@ -77,12 +85,23 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	/**
 	 * @return An array list of all of the drops from the luckyblock under the parent "DropProperty" interface.
 	 */
-	public ArrayList<DropProperty> getAllDrops() {
+	public ArrayList<DropProperty> getLoot() {
 		ArrayList<DropProperty> drops = new ArrayList<DropProperty>();
 		drops.addAll(items);
 		drops.addAll(potionEffects);
 		drops.addAll(commands);
 		return drops;
+	}
+	
+	
+	public int indexOf(ItemStack lootAsItem) {
+		ArrayList<DropProperty> lootList = getLoot();
+		for(int i = 0; i < lootList.size(); i++) {
+			if(lootAsItem.equals(lootList.get(i).asItem())) {
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 	/**
@@ -138,6 +157,23 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 			return 1;
 		}
 	}
+	
+	
+
+	/**
+	 * @return Copy of the current object with a different uniqueId.
+	 * 
+	 */
+	public LuckyBlockDrop ofUniqueCopy() {
+		LuckyBlockDrop d = new LuckyBlockDrop();
+		d.commands = commands;
+		d.items = items;
+		d.potionEffects = potionEffects;
+		d.rarity = rarity;
+		return d;
+	}
+	
+	
 
 	@Override
 	public boolean equals(Object obj) {
@@ -145,7 +181,7 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 			return false;
 		}
 		LuckyBlockDrop d = (LuckyBlockDrop)obj;
-		return d.rarity == rarity && d.commands.containsAll(commands) && d.items.containsAll(items) && d.potionEffects.containsAll(potionEffects);
+		return d.uniqueId == this.uniqueId;
 	}
 	
 	

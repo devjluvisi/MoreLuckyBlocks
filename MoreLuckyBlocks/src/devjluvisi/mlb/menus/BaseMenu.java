@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -91,6 +92,29 @@ public abstract class BaseMenu extends SimpleMenu {
 			meta = i.getItemMeta();
 			meta.setDisplayName(ChatColor.DARK_RED + "Delete Drop");
 			meta.setLore(Arrays.asList(ChatColor.GRAY + "Delete this drop and", ChatColor.GRAY + "all of its contents."));
+			break;
+		case ADD_POTION_EFFECT:
+			i = new ItemStack(Material.POTION);
+			meta = i.getItemMeta();
+			meta.setDisplayName(ChatColor.YELLOW + "Add Potion Effect");
+			meta.setLore(Arrays.asList(ChatColor.GRAY + "Add a potion effect to", ChatColor.GRAY + "be applied to the player."));
+			meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+			break;
+		case ADD_COMMAND:
+			i = new ItemStack(Material.OAK_SIGN);
+			meta = i.getItemMeta();
+			meta.setDisplayName(ChatColor.YELLOW + "Add Command");
+			meta.setLore(Arrays.asList(ChatColor.GRAY + "Add a command to be", ChatColor.GRAY + "executed by console."));
+			break;
+		case SAVE_BUTTON:
+			i = new ItemStack(Material.WRITTEN_BOOK);
+			meta = i.getItemMeta();
+			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+			meta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
+			meta.setDisplayName(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "Save");
+			meta.setLore(Arrays.asList(ChatColor.GRAY + "Will save this edit to config."));
 			break;
 		default:
 			Bukkit.getLogger().severe("Could not read specific value of getSpecialItem method.");

@@ -15,12 +15,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
 
-public class LuckyBlockDropsMenu extends BaseMenu {
+public class ViewDropsMenu extends BaseMenu {
 	
 	private LuckyBlock block;
 	private MoreLuckyBlocks plugin;
 	
-	public LuckyBlockDropsMenu(MoreLuckyBlocks plugin, LuckyBlock block) {
+	public ViewDropsMenu(MoreLuckyBlocks plugin, LuckyBlock block) {
 		super(plugin, ChatColor.DARK_PURPLE + "Viewing: " + block.getInternalName(), PageType.CHEST);
 		this.plugin = plugin;
 		this.block = block;
@@ -38,7 +38,7 @@ public class LuckyBlockDropsMenu extends BaseMenu {
         	}
         	ItemStack dropSlot = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
         	ItemMeta meta = dropSlot.getItemMeta();
-        	meta.setDisplayName(ChatColor.GREEN + "Drop: " + (i+1));
+        	meta.setDisplayName(ChatColor.GREEN + "Drop: " + (i));
         	int size = block.getDroppableItems().get(i).getItems().size() + block.getDroppableItems().get(i).getCommands().size() + block.getDroppableItems().get(i).getPotionEffects().size();
         	meta.setLore(Arrays.asList(ChatColor.AQUA + "You have a drop set for this item.", ChatColor.GRAY.toString()+ChatColor.BOLD + "Total Drops: " + ChatColor.GREEN + size, ChatColor.GRAY.toString()+ChatColor.BOLD.toString() + "Rarity: " + ChatColor.LIGHT_PURPLE + block.getDroppableItems().get(i).getRarity(), ChatColor.GRAY.toString() + ChatColor.ITALIC + "Click to configure/delete drop."));
         	dropSlot.setItemMeta(meta);
@@ -68,8 +68,9 @@ public class LuckyBlockDropsMenu extends BaseMenu {
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
         if(itemStack == null) return;
         if(itemStack.getItemMeta().getDisplayName().contains("Drop:")) {
+        	
         	int dropIndex = Integer.parseInt(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).split(": ")[1]);
-        	new LuckyBlockViewDropLootMenu(plugin, block.getDroppableItems().get(dropIndex-1), plugin.getLuckyBlocks().indexOf(block), dropIndex).open(view.getPlayer());
+        	new ViewDropLootMenu(plugin, block.getDroppableItems().get(dropIndex), plugin.getLuckyBlocks().indexOf(block), dropIndex).open(view.getPlayer());
         }
     }
 }

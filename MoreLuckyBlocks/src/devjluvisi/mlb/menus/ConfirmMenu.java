@@ -59,7 +59,7 @@ public class ConfirmMenu extends BaseMenu {
 		if(item.getType().equals(Material.GREEN_TERRACOTTA)) {
 			for(Query q : plugin.getRequests()) {
 				if(q.getPlayerUUID() == view.getPlayer().getUniqueId()) {
-					q.runProcess();
+					q.execute();
 					return;
 				}
 			}

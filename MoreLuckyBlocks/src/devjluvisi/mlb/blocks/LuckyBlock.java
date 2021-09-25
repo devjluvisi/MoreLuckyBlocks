@@ -196,6 +196,15 @@ public class LuckyBlock {
 	public void removeDrop(LuckyBlockDrop drop) {
 		this.droppableItems.remove(drop);
 	}
+	
+	public int indexOf(LuckyBlockDrop drop) {
+		for(int i = 0; i < droppableItems.size(); i++) {
+			if(droppableItems.get(i).equals(drop)) {
+				return i;
+			}
+		}
+		return -1;
+	}
 
 	@Override
 	public String toString() {

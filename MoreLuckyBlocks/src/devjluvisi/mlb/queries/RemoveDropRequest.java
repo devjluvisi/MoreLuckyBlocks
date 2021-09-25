@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
-import devjluvisi.mlb.menus.LuckyBlockDropsMenu;
+import devjluvisi.mlb.menus.ViewDropsMenu;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -27,13 +27,12 @@ public class RemoveDropRequest extends Query {
 	}
 //TODO: Fix
 	@Override
-	public void runProcess() {
+	protected void runProcess() {
 		LuckyBlock block = super.getPlugin().getLuckyBlocks().get(blockIndex);
 		Player p = super.getPlugin().getServer().getPlayer(super.getPlayerUUID());
 		block.removeDrop(blockDrop);
 		block.saveConfig(super.getPlugin().getBlocksYaml());
-		new LuckyBlockDropsMenu(super.getPlugin(), super.getPlugin().getLuckyBlocks().get(blockIndex)).open(p);
-		p.sendMessage(ChatColor.GREEN + "You deleted a drop.\nConfig was automatically updated.");
+		new ViewDropsMenu(super.getPlugin(), super.getPlugin().getLuckyBlocks().get(blockIndex)).open(p);
 	}
 	
 	
