@@ -1,37 +1,38 @@
-package devjluvisi.mlb.menus;
-
-import fr.dwightstudio.dsmapi.MenuView;
-import fr.dwightstudio.dsmapi.pages.PageType;
-import fr.dwightstudio.dsmapi.utils.ItemCreator;
-import net.md_5.bungee.api.ChatColor;
+package devjluvisi.mlb.menus.pages;
 
 import java.util.Arrays;
 import java.util.Random;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.api.gui.MenuView;
+import devjluvisi.mlb.api.gui.pages.PageType;
+import devjluvisi.mlb.api.gui.utils.ItemCreator;
+import devjluvisi.mlb.menus.BasePage;
+import devjluvisi.mlb.menus.LuckyMenu;
+import devjluvisi.mlb.menus.LuckyMenu.View;
 
-public class ListBlocksMenu extends BaseMenu {
+public class ListPage extends BasePage {
 	
-	private MoreLuckyBlocks plugin;
 	private Random rand;
-	
-	public ListBlocksMenu(MoreLuckyBlocks plugin) {
-		super(plugin, ChatColor.DARK_PURPLE + "Your Lucky Blocks", PageType.DOUBLE_CHEST);
-		this.rand = new Random();
-		this.plugin = plugin;
-	}
-	
-    @Override
-    public ItemStack[] getContent() {
-        // Methode to generate a 2D array of the shape of the inventory
-        ItemStack[][] content = getPageType().getBlank2DArray();
 
-        // Add the items
+	public ListPage(MoreLuckyBlocks plugin) {
+		super(plugin, "Lucky Block List", PageType.DOUBLE_CHEST);
+		rand = new Random();
+	}
+
+	@Override
+	public ItemStack[] getContent() {
+		
+		ItemStack[][] content = getPageType().getBlank2DArray();
+		
+		// Add the items
         for(int i = 0; i < 9; i++) content[0][i] = new ItemCreator(Material.BLACK_STAINED_GLASS_PANE).setName("").getItem();
         for(int i = 0; i < 9; i++) content[5][i] = new ItemCreator(Material.BLACK_STAINED_GLASS_PANE).setName("").getItem();
         for(int i = 0; i < 9; i++) content[1][i] = new ItemCreator(randomPane()).setName("").getItem();
@@ -78,9 +79,10 @@ public class ListBlocksMenu extends BaseMenu {
         	}
         }
         return getPageType().flatten(content);
-    }
-    
-    private Material randomPane() {
+		
+	}
+	
+	private Material randomPane() {
     	Material[] glassPanes = new Material[] {
     			Material.BLUE_STAINED_GLASS_PANE, Material.BROWN_STAINED_GLASS_PANE, Material.CYAN_STAINED_GLASS_PANE,
     			Material.YELLOW_STAINED_GLASS_PANE, Material.LIGHT_BLUE_STAINED_GLASS_PANE, Material.LIME_STAINED_GLASS_PANE,
@@ -94,14 +96,18 @@ public class ListBlocksMenu extends BaseMenu {
     	return glassPanes[paneIndex-1];
     }
 
-    @Override
-    public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-    	// Check if the user clicked on a lucky block.
-        if(itemStack == null) return;
-        for(int i = 0; i < plugin.getLuckyBlocks().size(); i++) {
-        	if(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(plugin.getLuckyBlocks().get(i).getInternalName()))) {
-        		new ViewDropsMenu(plugin, plugin.getLuckyBlocks().get(i)).open(view.getPlayer());
+	@Override
+	public void onClick(MenuView view, ClickType clickType, int slot, ItemStack item) {
+		if(item == null) return;
+		for(int i = 0; i < plugin.getLuckyBlocks().size(); i++) {
+        	if(ChatColor.stripColor(item.getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(plugin.getLuckyBlocks().get(i).getInternalName()))) {
+        		
+        		new LuckyMenu(plugin, i).open(view.getPlayer(), View.LIST_DROPS);
         	}
         }
-    }
+	}
+
+	
+	
+
 }

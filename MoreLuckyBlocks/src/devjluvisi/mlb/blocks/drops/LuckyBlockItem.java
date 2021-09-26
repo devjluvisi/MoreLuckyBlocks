@@ -3,7 +3,7 @@ package devjluvisi.mlb.blocks.drops;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-public class LuckyBlockItem implements DropProperty {
+public class LuckyBlockItem implements LootProperty {
 	
 	private ItemStack item;
 

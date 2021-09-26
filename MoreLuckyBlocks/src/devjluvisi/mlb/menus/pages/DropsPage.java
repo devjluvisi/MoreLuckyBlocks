@@ -1,9 +1,4 @@
-package devjluvisi.mlb.menus;
-
-import fr.dwightstudio.dsmapi.MenuView;
-import fr.dwightstudio.dsmapi.pages.PageType;
-import fr.dwightstudio.dsmapi.utils.ItemCreator;
-import net.md_5.bungee.api.ChatColor;
+package devjluvisi.mlb.menus.pages;
 
 import java.util.Arrays;
 
@@ -13,25 +8,30 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.api.gui.MenuView;
+import devjluvisi.mlb.api.gui.utils.ItemCreator;
+import devjluvisi.mlb.menus.BasePage;
+import devjluvisi.mlb.menus.BasePage.SpecialItem;
+import devjluvisi.mlb.menus.LuckyMenu;
+import devjluvisi.mlb.menus.LuckyMenu.View;
+import net.md_5.bungee.api.ChatColor;
 
-public class ViewDropsMenu extends BaseMenu {
+public class DropsPage extends BasePage {
 	
-	private LuckyBlock block;
-	private MoreLuckyBlocks plugin;
-	
-	public ViewDropsMenu(MoreLuckyBlocks plugin, LuckyBlock block) {
-		super(plugin, ChatColor.DARK_PURPLE + "Viewing: " + block.getInternalName(), PageType.CHEST);
-		this.plugin = plugin;
-		this.block = block;
+	int blockIndex;
+
+	public DropsPage(MoreLuckyBlocks plugin, int blockIndex) {
+		super(plugin, ChatColor.DARK_PURPLE + "Viewing: " + plugin.getLuckyBlocks().get(blockIndex).getInternalName());
+		// TODO Auto-generated constructor stub
+		this.blockIndex = blockIndex;
 	}
 
-    @Override
-    public ItemStack[] getContent() {
-        ItemStack[][] content = getPageType().getBlank2DArray();
+	@Override
+	public ItemStack[] getContent() {
+		ItemStack[][] content = getPageType().getBlank2DArray();
         int rowCount = 0;
         int colCount = 0;
-        for(int i = 0; i < block.getDroppableItems().size(); i++) {
+        for(int i = 0; i < plugin.getLuckyBlocks().get(blockIndex).getDroppableItems().size(); i++) {
         	if(colCount == 9) {
         		colCount = 0;
         		rowCount++;
@@ -39,8 +39,8 @@ public class ViewDropsMenu extends BaseMenu {
         	ItemStack dropSlot = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
         	ItemMeta meta = dropSlot.getItemMeta();
         	meta.setDisplayName(ChatColor.GREEN + "Drop: " + (i));
-        	int size = block.getDroppableItems().get(i).getItems().size() + block.getDroppableItems().get(i).getCommands().size() + block.getDroppableItems().get(i).getPotionEffects().size();
-        	meta.setLore(Arrays.asList(ChatColor.AQUA + "You have a drop set for this item.", ChatColor.GRAY.toString()+ChatColor.BOLD + "Total Drops: " + ChatColor.GREEN + size, ChatColor.GRAY.toString()+ChatColor.BOLD.toString() + "Rarity: " + ChatColor.LIGHT_PURPLE + block.getDroppableItems().get(i).getRarity(), ChatColor.GRAY.toString() + ChatColor.ITALIC + "Click to configure/delete drop."));
+        	int size = plugin.getLuckyBlocks().get(blockIndex).getDroppableItems().get(i).getItems().size() + plugin.getLuckyBlocks().get(blockIndex).getDroppableItems().get(i).getCommands().size() + plugin.getLuckyBlocks().get(blockIndex).getDroppableItems().get(i).getPotionEffects().size();
+        	meta.setLore(Arrays.asList(ChatColor.AQUA + "You have a drop set for this item.", ChatColor.GRAY.toString()+ChatColor.BOLD + "Total Drops: " + ChatColor.GREEN + size, ChatColor.GRAY.toString()+ChatColor.BOLD.toString() + "Rarity: " + ChatColor.LIGHT_PURPLE + plugin.getLuckyBlocks().get(blockIndex).getDroppableItems().get(i).getRarity(), ChatColor.GRAY.toString() + ChatColor.ITALIC + "Click to configure/delete drop."));
         	dropSlot.setItemMeta(meta);
         	content[rowCount][colCount] = dropSlot;
         	colCount++;
@@ -62,15 +62,23 @@ public class ViewDropsMenu extends BaseMenu {
         content[2][7] = super.getSpecialItem(SpecialItem.PREVIOUS_PAGE);
         content[2][8] = super.getSpecialItem(SpecialItem.NEXT_PAGE);
         return getPageType().flatten(content);
-    }
+	}
 
-    @Override
-    public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-        if(itemStack == null) return;
-        if(itemStack.getItemMeta().getDisplayName().contains("Drop:")) {
+	@Override
+	public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
+			if(itemStack.getItemMeta().getDisplayName().contains("Drop:")) {
         	
         	int dropIndex = Integer.parseInt(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).split(": ")[1]);
-        	new ViewDropLootMenu(plugin, block.getDroppableItems().get(dropIndex), plugin.getLuckyBlocks().indexOf(block), dropIndex).open(view.getPlayer());
+        	
+        	new LuckyMenu(plugin, blockIndex, dropIndex).open(view.getPlayer(), View.LIST_LOOT);
         }
-    }
+		if(itemStack.equals(getSpecialItem(SpecialItem.EXIT_BUTTON))) {
+			view.setPage(View.LIST_LUCKYBLOCKS.toInt());
+		}
+	}
+	
+	
+	
+	
+
 }

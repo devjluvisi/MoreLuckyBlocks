@@ -2,9 +2,10 @@ package devjluvisi.mlb.cmds.lb;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import devjluvisi.mlb.menus.ListBlocksMenu;
+import devjluvisi.mlb.menus.LuckyMenu;
 import devjluvisi.mlb.util.Range;
 import devjluvisi.mlb.util.SubCommand;
 
@@ -47,7 +48,7 @@ public class ListCommand implements SubCommand {
 
 	@Override
 	public ExecutionResult perform(CommandSender sender, String[] args) {
-		new ListBlocksMenu(plugin).open((Player)sender, 0);
+		new LuckyMenu(plugin).open((Player)sender, 0);
 		return ExecutionResult.PASSED;
 	}
 	

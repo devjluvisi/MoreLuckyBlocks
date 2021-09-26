@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
-import devjluvisi.mlb.blocks.drops.DropProperty;
+import devjluvisi.mlb.blocks.drops.LootProperty;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.drops.LuckyBlockItem;
 import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
@@ -147,7 +147,7 @@ public final class LuckyBlockHelper {
 				if(drop.getLoot().size() > LuckyBlockDrop.MAX_ALLOWED_LOOT || drop.getLoot().size() == 0) {
 					return false;
 				}
-				for(DropProperty loot : drop.getLoot()) {
+				for(LootProperty loot : drop.getLoot()) {
 					if(!loot.isValid()) {
 						return false;
 					}

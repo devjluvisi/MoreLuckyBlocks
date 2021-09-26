@@ -4,7 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 import devjluvisi.mlb.util.ConfigManager;
 
-public interface DropProperty {
+public interface LootProperty {
 	
 	/**
 	 * @return The drop but converted into an item that can be displayed.

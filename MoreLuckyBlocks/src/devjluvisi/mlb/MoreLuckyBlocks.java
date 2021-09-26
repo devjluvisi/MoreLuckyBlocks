@@ -1,16 +1,20 @@
 package devjluvisi.mlb;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.events.EditDropInChatEvent;
 import devjluvisi.mlb.helper.LuckyBlockHelper;
-import devjluvisi.mlb.menus.EditDropMenu;
-import devjluvisi.mlb.queries.Query;
+import devjluvisi.mlb.menus.LuckyMenu;
+import devjluvisi.mlb.menus.pages.EditDrop;
 import devjluvisi.mlb.util.CommandManager;
 import devjluvisi.mlb.util.ConfigManager;
 import devjluvisi.mlb.util.SubCommand;
@@ -45,13 +49,11 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	 * @see LuckyBlock
 	 */
 	private ArrayList<LuckyBlock> serverLuckyBlocks;
-	
 	/**
-	 * Tracks all of the current queries the server has to handle.
-	 * @see Query
+	 * Tracks which players are attempting to add commands to a lucky block
+	 * in edit mode.
 	 */
-	private HashSet<Query> requestQueries;
-	
+	private HashMap<UUID, LuckyMenu> playersEditingDrop;
 	
 	/**
 	 * Planned commands:
@@ -84,9 +86,8 @@ public class MoreLuckyBlocks extends JavaPlugin {
 		registerCommands();
 		registerEvents();
 		
-		requestQueries = new HashSet<Query>();
-		
 		serverLuckyBlocks = LuckyBlockHelper.getLuckyBlocks(blocksYaml);
+		playersEditingDrop = new HashMap<UUID, LuckyMenu>();
 		
 		// Check if the config is valid and has no errors.
 		if(LuckyBlockHelper.validateBlocksYaml(serverLuckyBlocks) == false) {
@@ -102,6 +103,7 @@ public class MoreLuckyBlocks extends JavaPlugin {
         	
             @Override
             public void run() {
+            	
             	if(Math.abs(Runtime.getRuntime().freeMemory()-Runtime.getRuntime().maxMemory()) > maxRamPrevious) {
             		maxRamPrevious = Math.abs(Runtime.getRuntime().freeMemory()-Runtime.getRuntime().maxMemory());
             	}
@@ -118,16 +120,11 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	 */
 	public ArrayList<LuckyBlock> getLuckyBlocks() {
 		return serverLuckyBlocks;
-		
 	}
 	
-	/**
-	 * @return Get a list of all waiting queries on the server.
-	 */
-	public HashSet<Query> getRequests() {
-		return this.requestQueries;
+	public HashMap<UUID, LuckyMenu> getPlayersEditingDrop() {
+		return this.playersEditingDrop;
 	}
-	
 	
 	/**
 	 * Sets up the configuration files for the plugin.
@@ -173,7 +170,7 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	 * Registers all of the events in the plugin.
 	 */
 	private void registerEvents() {
-		getServer().getPluginManager().registerEvents(EditDropMenu.getEvent(this), this);
+		getServer().getPluginManager().registerEvents(new EditDropInChatEvent(this), this);
 	}
 	
 	@Override

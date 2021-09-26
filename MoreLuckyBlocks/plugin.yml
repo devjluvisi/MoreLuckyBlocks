@@ -5,7 +5,6 @@ author: devjluvisi
 description: A fully customizable lucky blocks plugin for Minecraft 1.17+
 website: https://github.com/devjluvisi/FortuneBlocks
 api-version: 1.17
-depend: [DSMAPI]
 
 commands:
   mlb:

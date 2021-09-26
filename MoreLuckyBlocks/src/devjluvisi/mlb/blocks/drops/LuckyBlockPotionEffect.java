@@ -11,13 +11,13 @@ import org.bukkit.potion.PotionEffectType;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class LuckyBlockPotionEffect implements DropProperty {
+public class LuckyBlockPotionEffect implements LootProperty {
 	
 	private PotionEffectType type;
-	private short duration;
-	private byte amplifier;
+	private int duration;
+	private int amplifier;
 	
-	public LuckyBlockPotionEffect(PotionEffectType type, short duration, byte amplifier) {
+	public LuckyBlockPotionEffect(PotionEffectType type, int duration, int amplifier) {
 		super();
 		this.type = type;
 		this.duration = duration;
@@ -33,14 +33,14 @@ public class LuckyBlockPotionEffect implements DropProperty {
 	public int getDuration() {
 		return duration;
 	}
-	public void setDuration(short duration) {
-		this.duration = duration;
+	public void setDuration(int duration2) {
+		this.duration = duration2;
 	}
 	public int getAmplifier() {
 		return amplifier;
 	}
-	public void setAmplifier(byte amplifier) {
-		this.amplifier = amplifier;
+	public void setAmplifier(int amplifier2) {
+		this.amplifier = amplifier2;
 	}
 	
 	/**

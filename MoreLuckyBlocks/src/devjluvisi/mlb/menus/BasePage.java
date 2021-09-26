@@ -5,36 +5,55 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import fr.dwightstudio.dsmapi.SimpleMenu;
-import fr.dwightstudio.dsmapi.pages.PageType;
+import devjluvisi.mlb.api.gui.MenuView;
+import devjluvisi.mlb.api.gui.pages.Page;
+import devjluvisi.mlb.api.gui.pages.PageType;
+import devjluvisi.mlb.menus.LuckyMenu.View;
 import net.md_5.bungee.api.ChatColor;
 
-/**
- * The base menu class represents what every menu in MoreLuckyBlocks should contain.
- * Contains useful methods and utility tools.
- * @author jacob
- *
- */
-public abstract class BaseMenu extends SimpleMenu {
+public abstract class BasePage implements Page {
 	
 	protected MoreLuckyBlocks plugin;
 	private String menuName;
 	private PageType pageType;
 	
-	public BaseMenu(MoreLuckyBlocks plugin, String menuName, PageType pageType) {
+	public BasePage(MoreLuckyBlocks plugin, String menuName) {
+		this.plugin = plugin;
+		this.menuName = menuName;
+		this.pageType = PageType.CHEST;
+	}
+	
+	public BasePage(MoreLuckyBlocks plugin, String menuName, PageType pageType) {
 		this.plugin = plugin;
 		this.menuName = menuName;
 		this.pageType = pageType;
+	}
+
+
+	@Override
+	public String getName() {
+		return menuName;
+	}
+
+	@Override
+	public PageType getPageType() {
+		return pageType;
 	}
 	
 	public enum SpecialItem {
 		EXIT_BUTTON, ADD_NEW_DROP, REMOVE_ALL_DROPS, PREVIOUS_PAGE, NEXT_PAGE, EDIT_DROP, DELETE_DROP, COPY_DROP, ADD_POTION_EFFECT, ADD_COMMAND, SAVE_BUTTON, CANCEL_BUTTON, CONFIRM_BUTTON; 
 	}
+	
+	public boolean isPlayerSlot(int rawSlot) {
+		return !(pageType.getSize()-rawSlot > 0);
+	}
+	
 	
 	public ItemStack getSpecialItem(SpecialItem type) {
 		ItemStack i;
@@ -140,15 +159,8 @@ public abstract class BaseMenu extends SimpleMenu {
     	return i;
 	}
 	
-	@Override
-    public String getName() {
-        return menuName;
-    }
-
-    @Override
-    public PageType getPageType() {
-        return pageType;
-    }
-
+	
+	
+	
 
 }

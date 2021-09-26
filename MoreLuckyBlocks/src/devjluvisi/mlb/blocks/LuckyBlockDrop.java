@@ -6,7 +6,7 @@ import java.util.Random;
 
 import org.bukkit.inventory.ItemStack;
 
-import devjluvisi.mlb.blocks.drops.DropProperty;
+import devjluvisi.mlb.blocks.drops.LootProperty;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.drops.LuckyBlockItem;
 import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
@@ -85,8 +85,8 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	/**
 	 * @return An array list of all of the drops from the luckyblock under the parent "DropProperty" interface.
 	 */
-	public ArrayList<DropProperty> getLoot() {
-		ArrayList<DropProperty> drops = new ArrayList<DropProperty>();
+	public ArrayList<LootProperty> getLoot() {
+		ArrayList<LootProperty> drops = new ArrayList<LootProperty>();
 		drops.addAll(items);
 		drops.addAll(potionEffects);
 		drops.addAll(commands);
@@ -95,13 +95,27 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	
 	
 	public int indexOf(ItemStack lootAsItem) {
-		ArrayList<DropProperty> lootList = getLoot();
+		ArrayList<LootProperty> lootList = getLoot();
 		for(int i = 0; i < lootList.size(); i++) {
 			if(lootAsItem.equals(lootList.get(i).asItem())) {
 				return i;
 			}
 		}
 		return -1;
+	}
+	
+	public void removeLoot(ItemStack lootAsItem) {
+		ArrayList<LootProperty> lootList = getLoot();
+		LootProperty loot = lootList.get(indexOf(lootAsItem));
+			if(loot instanceof LuckyBlockItem) {
+				items.remove((LuckyBlockItem)loot);
+			}
+			if(loot instanceof LuckyBlockPotionEffect) {
+				potionEffects.remove((LuckyBlockPotionEffect)loot);
+			}
+			if(loot instanceof LuckyBlockCommand) {
+				commands.remove((LuckyBlockCommand)loot);
+			}
 	}
 	
 	/**

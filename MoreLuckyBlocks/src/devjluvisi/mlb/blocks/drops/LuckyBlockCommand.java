@@ -10,7 +10,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import devjluvisi.mlb.util.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 
-public class LuckyBlockCommand implements DropProperty {
+public class LuckyBlockCommand implements LootProperty {
 	
 	private String command;
 
