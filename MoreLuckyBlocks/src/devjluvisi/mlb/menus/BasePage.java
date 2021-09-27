@@ -5,35 +5,52 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.api.gui.Menu;
 import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.api.gui.pages.Page;
 import devjluvisi.mlb.api.gui.pages.PageType;
 import devjluvisi.mlb.menus.LuckyMenu.View;
+import devjluvisi.mlb.menus.pages.Confirm.Action;
 import net.md_5.bungee.api.ChatColor;
 
 public abstract class BasePage implements Page {
 	
 	protected MoreLuckyBlocks plugin;
+	
 	private String menuName;
 	private PageType pageType;
 	
-	public BasePage(MoreLuckyBlocks plugin, String menuName) {
-		this.plugin = plugin;
+	private LuckyMenu baseMenu;
+	
+	public BasePage(LuckyMenu menu) {
+		this.baseMenu = menu;
+		this.plugin = menu.getPlugin();
+		this.menuName = "UNKNOWN";
+		this.pageType = PageType.CHEST;
+	}
+	
+	public BasePage(LuckyMenu menu, String menuName) {
+		this.baseMenu = menu;
+		this.plugin = menu.getPlugin();
 		this.menuName = menuName;
 		this.pageType = PageType.CHEST;
 	}
 	
-	public BasePage(MoreLuckyBlocks plugin, String menuName, PageType pageType) {
-		this.plugin = plugin;
+	public BasePage(LuckyMenu menu, String menuName, PageType pageType) {
+		this.baseMenu = menu;
+		this.plugin = menu.getPlugin();
 		this.menuName = menuName;
 		this.pageType = pageType;
 	}
+	
+	
 
 
 	@Override
@@ -47,12 +64,15 @@ public abstract class BasePage implements Page {
 	}
 	
 	public enum SpecialItem {
-		EXIT_BUTTON, ADD_NEW_DROP, REMOVE_ALL_DROPS, PREVIOUS_PAGE, NEXT_PAGE, EDIT_DROP, DELETE_DROP, COPY_DROP, ADD_POTION_EFFECT, ADD_COMMAND, SAVE_BUTTON, CANCEL_BUTTON, CONFIRM_BUTTON; 
+		EXIT_BUTTON, ADD_NEW_DROP, REMOVE_ALL_DROPS, EDIT_DROP, DELETE_DROP, COPY_DROP, CHANGE_RARITY, ADD_POTION_EFFECT, ADD_COMMAND, SAVE_BUTTON, CANCEL_BUTTON, CONFIRM_BUTTON,
+		INCREASE_RARITY, DECREASE_RARITY, DELETE_LUCKY_BLOCK;
 	}
 	
 	public boolean isPlayerSlot(int rawSlot) {
 		return !(pageType.getSize()-rawSlot > 0);
 	}
+	
+	public abstract View identity();
 	
 	
 	public ItemStack getSpecialItem(SpecialItem type) {
@@ -75,17 +95,8 @@ public abstract class BasePage implements Page {
 	    	i = new ItemStack(Material.LAVA_BUCKET);
 	    	meta = i.getItemMeta();
 	    	meta.setDisplayName(ChatColor.DARK_RED + "Remove All Drops");
-	    	meta.setLore(Arrays.asList(ChatColor.GRAY + "Remove all drops from the lucky block."));
-	    	break;
-		case PREVIOUS_PAGE:
-	    	i = new ItemStack(Material.FEATHER);
-	    	meta = i.getItemMeta();
-	    	meta.setDisplayName(ChatColor.YELLOW + "Previous Page");
-	    	break;
-		case NEXT_PAGE:
-	    	i = new ItemStack(Material.ARROW);
-	    	meta = i.getItemMeta();
-	    	meta.setDisplayName(ChatColor.YELLOW + "Next Page");
+	    	meta.setLore(Arrays.asList(ChatColor.GRAY + "Remove all drops from the lucky block.", ChatColor.DARK_GRAY + "Will leave the first drop as at least", ChatColor.DARK_GRAY + "one drop is required per block."));
+	    	
 	    	break;
 		case EDIT_DROP:
 			i = new ItemStack(Material.WRITABLE_BOOK);
@@ -135,12 +146,93 @@ public abstract class BasePage implements Page {
 			meta.setDisplayName(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "Save");
 			meta.setLore(Arrays.asList(ChatColor.GRAY + "Will save this edit to config."));
 			break;
+		case CHANGE_RARITY:
+			i = new ItemStack(Material.EXPERIENCE_BOTTLE);
+			meta = i.getItemMeta();
+			meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+			meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+			meta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
+			meta.setDisplayName(ChatColor.DARK_AQUA.toString() +  "Change Rarity");
+			meta.setLore(Arrays.asList(ChatColor.GRAY + "Edit the rarity of this drop."));
+			break;
+		case INCREASE_RARITY:
+			i = new ItemStack(Material.SLIME_BALL);
+			meta = i.getItemMeta();
+			meta.setDisplayName(ChatColor.DARK_GREEN + "Increase Rarity");
+			meta.setLore(Arrays.asList(ChatColor.GRAY + "Increase the rarity of this", ChatColor.GRAY + "drop by " + ChatColor.GREEN + "5" + ChatColor.GRAY + " points.", ChatColor.DARK_GRAY + "(Less Common)"));
+			break;
+		case DECREASE_RARITY:
+			i = new ItemStack(Material.MAGMA_CREAM);
+			meta = i.getItemMeta();
+			meta.setDisplayName(ChatColor.RED + "Decrease Rarity");
+			meta.setLore(Arrays.asList(ChatColor.GRAY + "Decrease the rarity of this", ChatColor.GRAY + "drop by " + ChatColor.RED + "5" + ChatColor.GRAY + " points.", ChatColor.DARK_GRAY + "(More Common)"));
+			break;
+		case DELETE_LUCKY_BLOCK:
+			i = new ItemStack(Material.TNT);
+			meta = i.getItemMeta();
+			meta.setDisplayName(ChatColor.DARK_RED.toString() + ChatColor.BOLD.toString() + "Delete Lucky Block");
+			meta.setLore(Arrays.asList(ChatColor.GRAY + "Delete this lucky block and", ChatColor.GRAY + "all of its contents.", ChatColor.DARK_GRAY + "(Cannot be undone)"));
+			break;
 		default:
 			Bukkit.getLogger().severe("Could not read specific value of getSpecialItem method.");
 			return null;
 		}
 		i.setItemMeta(meta);
 		return i;
+	}
+	
+	
+	public String getMenuName() {
+		return menuName;
+	}
+
+
+	public void setMenuName(String menuName) {
+		this.menuName = menuName;
+	}
+
+	public void setPageType(PageType pageType) {
+		this.pageType = pageType;
+	}
+	
+	protected int getBlockIndex() {
+		return baseMenu.getBlockIndex();
+	}
+
+	protected void setBlockIndex(int blockIndex) {
+		baseMenu.setBlockIndex(blockIndex);
+	}
+
+	protected int getDropIndex() {
+		return baseMenu.getDropIndex();
+	}
+
+	protected void setDropIndex(int dropIndex) {
+		baseMenu.setDropIndex(dropIndex);
+	}
+
+	protected Action getConfirmAction() {
+		return baseMenu.getConfirmAction();
+	}
+
+	protected void setConfirmAction(Action confirmAction) {
+		baseMenu.setConfirmAction(confirmAction);
+	}
+
+	/**
+	 * Goes through all of the pages and finds a page with the
+	 * view requested.
+	 * @param view Current GUI.
+	 * @param v View to open.
+	 */
+	public void traverse(MenuView view, View v) {
+		for(int i = 0; i < baseMenu.getPages().length; i++) {
+			if(((BasePage)baseMenu.getPage(i)).identity().equals(v)) {
+					baseMenu.refresh();
+					view.setPage(i);
+			}
+		}
 	}
 	
 	/**

@@ -51,7 +51,4 @@ public abstract class Menu {
     public MenuView open(Player player, int page) {
         return new MenuView(this, player, page);
     }
-    public MenuView open(Player player, View view) {
-        return new MenuView(this, player, view.toInt());
-    }
 }

@@ -3,6 +3,7 @@ package devjluvisi.mlb.menus.pages;
 import java.util.Arrays;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,13 +18,14 @@ import devjluvisi.mlb.api.gui.utils.ItemCreator;
 import devjluvisi.mlb.menus.BasePage;
 import devjluvisi.mlb.menus.LuckyMenu;
 import devjluvisi.mlb.menus.LuckyMenu.View;
+import devjluvisi.mlb.menus.pages.Confirm.Action;
 
 public class ListPage extends BasePage {
 	
 	private Random rand;
 
-	public ListPage(MoreLuckyBlocks plugin) {
-		super(plugin, "Lucky Block List", PageType.DOUBLE_CHEST);
+	public ListPage(LuckyMenu menu) {
+		super(menu, "Lucky Block List", PageType.DOUBLE_CHEST);
 		rand = new Random();
 	}
 
@@ -102,9 +104,15 @@ public class ListPage extends BasePage {
 		for(int i = 0; i < plugin.getLuckyBlocks().size(); i++) {
         	if(ChatColor.stripColor(item.getItemMeta().getDisplayName()).equalsIgnoreCase(ChatColor.stripColor(plugin.getLuckyBlocks().get(i).getInternalName()))) {
         		
-        		new LuckyMenu(plugin, i).open(view.getPlayer(), View.LIST_DROPS);
+        		setBlockIndex(i);
+        		traverse(view, View.LIST_DROPS);
         	}
         }
+	}
+
+	@Override
+	public View identity() {
+		return View.LIST_LUCKYBLOCKS;
 	}
 
 	

@@ -159,9 +159,8 @@ public class MenuView implements Listener {
     public void onClick(InventoryClickEvent event) {
 
         if (event.getView() == this.getInventoryView()) {
-        	
-
-        		GUI_API.getInstance().getServer().getScheduler().runTask(GUI_API.getInstance(), () -> MenuView.this.getCurrentPage().onClick(MenuView.this, event.getClick(), event.getRawSlot(), event.getCurrentItem()));
+        	if(event.getRawSlot() < 0) return;
+        	GUI_API.getInstance().getServer().getScheduler().runTask(GUI_API.getInstance(), () -> MenuView.this.getCurrentPage().onClick(MenuView.this, event.getClick(), event.getRawSlot(), event.getCurrentItem()));
 
         	
         	// Allow the event to pick up when the player clicks their inventory.

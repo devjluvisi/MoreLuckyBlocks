@@ -1,6 +1,7 @@
 package devjluvisi.mlb.blocks;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -25,7 +26,7 @@ public class LuckyBlock {
 	private Material blockMaterial;
 	private List<String> lore;
 	private float defaultBlockLuck;
-	private ArrayList<LuckyBlockDrop> droppableItems;
+	private LinkedList<LuckyBlockDrop> droppableItems;
 	
 	// Per-Item Fields (For individual lucky blocks)
 	private Location blockLocation;
@@ -38,7 +39,7 @@ public class LuckyBlock {
 	}
 	
 	public LuckyBlock(String internalName, String name, String breakPermission, Material blockMaterial,
-			List<String> lore, float defaultBlockLuck, ArrayList<LuckyBlockDrop> droppableItems, Location blockLocation) {
+			List<String> lore, float defaultBlockLuck, LinkedList<LuckyBlockDrop> droppableItems, Location blockLocation) {
 		super();
 		this.internalName = internalName;
 		this.name = name;
@@ -135,11 +136,11 @@ public class LuckyBlock {
 		this.defaultBlockLuck = defaultBlockLuck;
 	}
 
-	public ArrayList<LuckyBlockDrop> getDroppableItems() {
+	public LinkedList<LuckyBlockDrop> getDroppableItems() {
 		return droppableItems;
 	}
 
-	public void setDroppableItems(ArrayList<LuckyBlockDrop> arrayList) {
+	public void setDroppableItems(LinkedList<LuckyBlockDrop> arrayList) {
 		this.droppableItems = arrayList;
 	}
 

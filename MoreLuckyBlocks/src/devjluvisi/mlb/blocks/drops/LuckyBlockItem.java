@@ -21,6 +21,9 @@ public class LuckyBlockItem implements LootProperty {
 	}
 	
 	public String enchantsConfigString() {
+		if(item.getEnchantments().size() == 0) {
+			return "";
+		}
 		String str = "[";
 		for(Enchantment e : item.getEnchantments().keySet()) {
 			str += e.getKey().getKey().toString().toUpperCase() + ":" + item.getEnchantments().get(e) + ",";

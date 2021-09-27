@@ -1,6 +1,7 @@
 package devjluvisi.mlb.helper;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.bukkit.Material;
@@ -52,18 +53,23 @@ public final class LuckyBlockHelper {
 				}
 				if(itemKeyValues.equalsIgnoreCase("enchants")) {
 					String enchants = blocksYaml.getConfig().getString(accessor + ".enchants");
-					enchants = enchants.replace("[", "").replace("]", "");
-					
-					String[] splitter = enchants.split(",");
-					for(String s : splitter) {
-						String[] enc = s.split(":");
-						itemObject.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByKey(NamespacedKey.minecraft(enc[0].toLowerCase())), Integer.parseInt(enc[1]));
+					if(enchants != null && enchants.isEmpty()==false) {
+						enchants = enchants.replace("[", "").replace("]", "");
+						
+						String[] splitter = enchants.split(",");
+						for(String s : splitter) {
+							String[] enc = s.split(":");
+							itemObject.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment.getByKey(NamespacedKey.minecraft(enc[0].toLowerCase())), Integer.parseInt(enc[1]));
+						}
 					}
 				}
+				
 				if(itemKeyValues.equalsIgnoreCase("display-name")) {
-					ItemMeta meta = itemObject.getItemMeta();
-					meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', blocksYaml.getConfig().getString(accessor + ".display-name")));
-					itemObject.setItemMeta(meta);
+					if(blocksYaml.getConfig().getString(accessor + ".display-name") != null && !blocksYaml.getConfig().getString(accessor + ".display-name").isEmpty()) {
+						ItemMeta meta = itemObject.getItemMeta();
+						meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', blocksYaml.getConfig().getString(accessor + ".display-name")));
+						itemObject.setItemMeta(meta);
+					}
 				}
 				if(itemKeyValues.equalsIgnoreCase("lore")) {
 					ItemMeta meta = itemObject.getItemMeta();
@@ -128,7 +134,7 @@ public final class LuckyBlockHelper {
 				drops.add(drop);
 			}
 			
-			block.setDroppableItems(new ArrayList<LuckyBlockDrop>(drops));
+			block.setDroppableItems(new LinkedList<LuckyBlockDrop>(drops));
 			return block;
 	}
 	

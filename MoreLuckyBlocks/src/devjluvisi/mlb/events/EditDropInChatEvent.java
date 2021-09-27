@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -12,6 +13,8 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.potion.PotionEffectType;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
 import devjluvisi.mlb.menus.BasePage;
@@ -27,36 +30,42 @@ public class EditDropInChatEvent implements Listener {
 		this.plugin = plugin;
 	}
 
+	// TODO: Test to ensure that it works.
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void commandEvent(PlayerCommandPreprocessEvent e) {
 		if (!plugin.getPlayersEditingDrop().containsKey(e.getPlayer().getUniqueId())) {
 			return;
 		}
 
-		EditDrop b = (EditDrop) plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId())
-				.getPage(View.EDIT_DROP.toInt());
+		final EditDrop b = (EditDrop)plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()).getCurrentPage();
+
+		final Player p = e.getPlayer();
+		final String command = ChatColor.stripColor(e.getMessage());
 
 		if (b.getAddPotionEffectStage() == 0) {
 			e.setCancelled(true);
 
-			if (ChatColor.stripColor(e.getMessage()).equalsIgnoreCase("/exit")) {
-				plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()).open(e.getPlayer(), View.EDIT_DROP);
-				plugin.getPlayersEditingDrop().remove(e.getPlayer().getUniqueId());
+			if (command.equalsIgnoreCase("/exit")) {
+				
+				b.traverse(plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
+			
+				plugin.getPlayersEditingDrop().remove(p.getUniqueId());
 				e.getPlayer().sendMessage(ChatColor.GREEN + "You have cancelled your command action.");
 				return;
 			}
-			if (!e.getMessage().startsWith("/")) {
-				e.getPlayer().sendMessage(ChatColor.RED + "Command to add must start with a \"/\"");
+			if (!command.startsWith("/")) {
+				p.sendMessage(ChatColor.RED + "Command to add must start with a \"/\"");
 				return;
 			}
 
-			e.getPlayer().sendMessage(ChatColor.GREEN + "Added command " + ChatColor.YELLOW + e.getMessage()
-					+ ChatColor.GREEN + " to the lucky block you selected.");
+			p.sendMessage(ChatColor.GREEN + "Added command " + ChatColor.YELLOW + command + ChatColor.GREEN
+					+ " to the lucky block you selected.");
 			plugin.getLuckyBlocks().get(b.getBlockIndex()).getDroppableItems().get(b.getDropIndex()).getCommands()
-					.add(new LuckyBlockCommand(e.getMessage()));
+					.add(new LuckyBlockCommand(command));
 
-			plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()).open(e.getPlayer(), View.EDIT_DROP);
-			plugin.getPlayersEditingDrop().remove(e.getPlayer().getUniqueId());
+			b.traverse(plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
+			plugin.getPlayersEditingDrop().remove(p.getUniqueId());
 			return;
 		}
 		return;
@@ -68,113 +77,106 @@ public class EditDropInChatEvent implements Listener {
 			return;
 		}
 
-		EditDrop b = (EditDrop) plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId())
-				.getPage(View.EDIT_DROP.toInt());
+		final EditDrop b = (EditDrop) plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()).getCurrentPage();
+		final Player p = e.getPlayer();
+		final String message = ChatColor.stripColor(e.getMessage());
+		final LuckyBlockDrop luckyBlockDrop = plugin.getLuckyBlocks().get(b.getBlockIndex()).getDroppableItems()
+				.get(b.getDropIndex());
 
 		Bukkit.getConsoleSender().sendMessage(b.getAddPotionEffectStage() + "");
 		if (b.getAddPotionEffectStage() == 0) {
 			return;
 		}
-		
-		if (e.getMessage().equalsIgnoreCase("exit")) {
+
+		if (message.equalsIgnoreCase("exit")) {
 			e.setCancelled(true);
-			if (plugin.getLuckyBlocks().get(b.getBlockIndex()).getDroppableItems().get(b.getDropIndex())
-					.getPotionEffects().size() != 0 && b.getAddPotionEffectStage() != 1) {
-				plugin.getLuckyBlocks().get(b.getBlockIndex()).getDroppableItems().get(b.getDropIndex()).getPotionEffects().remove(plugin.getLuckyBlocks().get(b.getBlockIndex()).getDroppableItems().get(b.getDropIndex())
-					.getPotionEffects().size()-1);
+			if (luckyBlockDrop.getPotionEffects().size() != 0 && b.getAddPotionEffectStage() != 1) {
+				luckyBlockDrop.getPotionEffects().remove(luckyBlockDrop.getPotionEffects().size() - 1);
 			}
-			e.getPlayer().sendMessage(ChatColor.GRAY + "You have stopped adding a potion effect.");
-			
+			p.sendMessage(ChatColor.GRAY + "You have stopped adding a potion effect.");
+
 			Bukkit.getScheduler().runTask(plugin, () -> {
+				b.traverse(plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
+				plugin.getPlayersEditingDrop().remove(p.getUniqueId());
 
-				plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()).open(e.getPlayer(), View.EDIT_DROP);
-				plugin.getPlayersEditingDrop().remove(e.getPlayer().getUniqueId());
+			});
 
-				});
-			
-			
-			
 			return;
 		}
 
 		e.setCancelled(true);
 
 		if (b.getAddPotionEffectStage() == 1) {
-			if (PotionEffectType.getByName(e.getMessage().toUpperCase()) == null) {
-				e.getPlayer().sendMessage(ChatColor.DARK_RED + "Unknown potion effect type. Try again.");
-				e.getPlayer().sendMessage(ChatColor.GRAY + "Type \"exit\" to exit.");
+			if (PotionEffectType.getByName(message.toUpperCase()) == null) {
+				p.sendMessage(ChatColor.DARK_RED + "Unknown potion effect type. Try again.");
+				p.sendMessage(ChatColor.GRAY + "Type \"exit\" to exit.");
 				return;
 			}
-			plugin.getLuckyBlocks().get(b.getBlockIndex()).getDroppableItems().get(b.getDropIndex()).getPotionEffects()
-					.add(new LuckyBlockPotionEffect(PotionEffectType.getByName(e.getMessage()), -1, -1));
+			luckyBlockDrop.getPotionEffects()
+					.add(new LuckyBlockPotionEffect(PotionEffectType.getByName(message), -1, -1));
 
-			e.getPlayer().sendMessage(
-					ChatColor.GRAY + "Potion Effect Type: " + ChatColor.YELLOW + e.getMessage().toUpperCase());
-			e.getPlayer().sendMessage(ChatColor.GRAY + "Amplifier: " + ChatColor.YELLOW + "Unset");
-			e.getPlayer().sendMessage(ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + "Unset");
+			p.sendMessage(ChatColor.GRAY + "Potion Effect Type: " + ChatColor.YELLOW + message.toUpperCase());
+			p.sendMessage(ChatColor.GRAY + "Amplifier: " + ChatColor.YELLOW + "Unset");
+			p.sendMessage(ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + "Unset");
 			b.setAddPotionEffectStage(2);
-			e.getPlayer().sendMessage(ChatColor.GOLD + "(2/3) > " + ChatColor.YELLOW + "Please enter the amplifier of the potion. (0-255)");
+			p.sendMessage(ChatColor.GOLD + "(2/3) > " + ChatColor.YELLOW
+					+ "Please enter the amplifier of the potion. (0-255)");
 			return;
 		} else if (b.getAddPotionEffectStage() == 2) {
-			
-			ArrayList<LuckyBlockPotionEffect> effects = plugin.getLuckyBlocks().get(b.getBlockIndex())
-					.getDroppableItems().get(b.getDropIndex()).getPotionEffects();
+
 			int amplifier = -1;
 			try {
-				amplifier = Integer.parseInt(e.getMessage());
+				amplifier = Integer.parseInt(message);
 				if (amplifier > 255 || amplifier < 0) {
 					throw new NumberFormatException();
 				}
 
 			} catch (NumberFormatException exc) {
-				e.getPlayer().sendMessage(
-						ChatColor.RED + "Please enter a positive integer (0-255) for potion effect duration.");
+				p.sendMessage(ChatColor.RED + "Please enter a positive integer (0-255) for potion effect duration.");
 				return;
 			}
-			effects.get(effects.size() - 1).setAmplifier(amplifier);
+			luckyBlockDrop.getPotionEffects().get(luckyBlockDrop.getPotionEffects().size() - 1).setAmplifier(amplifier);
 
-			e.getPlayer().sendMessage(ChatColor.GRAY + "Potion Effect Type: " + ChatColor.YELLOW
-					+ effects.get(effects.size() - 1).getType().getName());
-			e.getPlayer().sendMessage(ChatColor.GRAY + "Amplifier: " + ChatColor.YELLOW + amplifier);
-			e.getPlayer().sendMessage(ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + "Unset");
+			p.sendMessage(ChatColor.GRAY + "Potion Effect Type: " + ChatColor.YELLOW + luckyBlockDrop.getPotionEffects()
+					.get(luckyBlockDrop.getPotionEffects().size() - 1).getType().getName());
+			p.sendMessage(ChatColor.GRAY + "Amplifier: " + ChatColor.YELLOW + amplifier);
+			p.sendMessage(ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + "Unset");
 			b.setAddPotionEffectStage(3);
-			e.getPlayer().sendMessage(ChatColor.GOLD + "(3/3) > " + ChatColor.YELLOW + "Please enter the duration of the potion. (0-32768)");
-			
+			p.sendMessage(ChatColor.GOLD + "(3/3) > " + ChatColor.YELLOW
+					+ "Please enter the duration of the potion. (0-32768)");
+
 			return;
 		} else if (b.getAddPotionEffectStage() == 3) {
-			ArrayList<LuckyBlockPotionEffect> effects = plugin.getLuckyBlocks().get(b.getBlockIndex())
-					.getDroppableItems().get(b.getDropIndex()).getPotionEffects();
+
 			int duration = -1;
 			try {
-				duration = Integer.parseInt(e.getMessage());
+				duration = Integer.parseInt(message);
 
 				if (duration <= 0) {
 					throw new NumberFormatException();
 				}
 			} catch (NumberFormatException exc) {
-				e.getPlayer().sendMessage(
-						ChatColor.RED + "Please enter a positive integer (0-32768) for potion effect duration.");
+				p.sendMessage(ChatColor.RED + "Please enter a positive integer (0-32768) for potion effect duration.");
 				return;
 			}
-			effects.get(effects.size() - 1).setDuration(duration);
+			luckyBlockDrop.getPotionEffects().get(luckyBlockDrop.getPotionEffects().size() - 1).setDuration(duration);
 
-			e.getPlayer().sendMessage(ChatColor.GRAY + "Potion Effect Type: " + ChatColor.YELLOW
-					+ effects.get(effects.size() - 1).getType().getName());
-			e.getPlayer().sendMessage(
-					ChatColor.GRAY + "Amplifier" + ChatColor.YELLOW + effects.get(effects.size() - 1).getAmplifier());
-			e.getPlayer().sendMessage(ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + duration);
+			p.sendMessage(ChatColor.GRAY + "Potion Effect Type: " + ChatColor.YELLOW + luckyBlockDrop.getPotionEffects()
+					.get(luckyBlockDrop.getPotionEffects().size() - 1).getType().getName());
+			p.sendMessage(ChatColor.GRAY + "Amplifier" + ChatColor.YELLOW + luckyBlockDrop.getPotionEffects()
+					.get(luckyBlockDrop.getPotionEffects().size() - 1).getAmplifier());
+			p.sendMessage(ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + duration);
 
-			e.getPlayer().sendMessage("");
-			e.getPlayer().sendMessage(ChatColor.GREEN + "You successfully added a potion effect to this drop!");
+			p.sendMessage("");
+			p.sendMessage(ChatColor.GREEN + "You successfully added a potion effect to this drop!");
 			Bukkit.getScheduler().runTask(plugin, () -> {
-				plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()).open(e.getPlayer(), View.EDIT_DROP);
-				plugin.getPlayersEditingDrop().remove(e.getPlayer().getUniqueId());
 				
-				
+				b.traverse(plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
+				plugin.getPlayersEditingDrop().remove(p.getUniqueId());
 
-				});
+			});
 			b.setAddPotionEffectStage(0);
-			e.getPlayer().sendMessage("");
+			p.sendMessage("");
 		}
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import devjluvisi.mlb.blocks.drops.LootProperty;
@@ -38,12 +39,21 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	public LuckyBlockDrop() {
 		super();
 		rand = new Random();
+		
 		uniqueId = rand.nextLong();
+		Bukkit.getServer().getConsoleSender().sendMessage("New Instance created of unique id: "+ uniqueId);
+		
+		this.rarity = 50.0F; // Default
+		items = new ArrayList<LuckyBlockItem>();
+		commands = new ArrayList<LuckyBlockCommand>();
+		potionEffects = new ArrayList<LuckyBlockPotionEffect>();
 	}
 	
 	public LuckyBlockDrop(ArrayList<LuckyBlockItem> items, ArrayList<LuckyBlockCommand> commands,
 			ArrayList<LuckyBlockPotionEffect> potionEffects, float rarity) {
 		super();
+		rand = new Random();
+		uniqueId = rand.nextLong();
 		this.items = items;
 		this.commands = commands;
 		this.potionEffects = potionEffects;
@@ -87,6 +97,7 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	 */
 	public ArrayList<LootProperty> getLoot() {
 		ArrayList<LootProperty> drops = new ArrayList<LootProperty>();
+		//TODO: Exclude potions which are still being edited.
 		drops.addAll(items);
 		drops.addAll(potionEffects);
 		drops.addAll(commands);
@@ -118,6 +129,8 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 			}
 	}
 	
+	
+	
 	/**
 	 * Saves the current drop information to the configuration file.
 	 * @param blocksYaml The block configuration file.
@@ -132,7 +145,14 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		for(LuckyBlockItem item : getItems()) {
 			blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() + ".amount", item.getItem().getAmount());
 			blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() + ".enchants", item.enchantsConfigString());
-			blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() +".display-name", item.getItem().getItemMeta().getDisplayName().toString());
+			if(item.getItem().getItemMeta().getDisplayName().isEmpty() || item.getItem().getItemMeta().getDisplayName() == null) {
+				blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() +".display-name", "");
+				
+			}else {
+				blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() +".display-name", item.getItem().getItemMeta().getDisplayName().toString());
+				
+			}
+			
 			blocksYaml.getConfig().set(path + ".items." + item.getItem().getType().name() +".lore", item.getItem().getItemMeta().getLore());
 		}
 		
@@ -163,12 +183,12 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	 */
 	@Override
 	public int compareTo(LuckyBlockDrop o) {
-		if(o.rarity > this.rarity) {
-			return -1;
-		}else if(o.rarity == this.rarity) {
+		if(o.uniqueId > this.uniqueId) {
+			return 0;
+		}else if(o.uniqueId == this.uniqueId) {
 			return 0;
 		}else {
-			return 1;
+			return 0;
 		}
 	}
 	
@@ -180,6 +200,7 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	 */
 	public LuckyBlockDrop ofUniqueCopy() {
 		LuckyBlockDrop d = new LuckyBlockDrop();
+		d.uniqueId = rand.nextLong();
 		d.commands = commands;
 		d.items = items;
 		d.potionEffects = potionEffects;
@@ -195,7 +216,10 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 			return false;
 		}
 		LuckyBlockDrop d = (LuckyBlockDrop)obj;
-		return d.uniqueId == this.uniqueId;
+		if(d.uniqueId == this.uniqueId) {
+			return true;
+		}
+		return false;
 	}
 	
 	

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.cmds.admin.GiveCommand;
 import devjluvisi.mlb.cmds.admin.ReloadConfigCommand;
+import devjluvisi.mlb.cmds.admin.SaveConfigCommand;
 import devjluvisi.mlb.cmds.general.HelpCommand;
 import devjluvisi.mlb.cmds.general.VersionCommand;
 import devjluvisi.mlb.cmds.lb.ListCommand;
@@ -38,7 +39,7 @@ public class CommandManager implements CommandExecutor {
 		subcommands.add(new ListCommand(plugin));
 		subcommands.add(new GiveCommand(plugin));
 		subcommands.add(new ReloadConfigCommand(plugin));
-		
+		subcommands.add(new SaveConfigCommand(plugin));
 		// Make sure this help command stays at the bottom other wise other commands will not show up in /mlb help
 		subcommands.add(new HelpCommand(subcommands));
 	}

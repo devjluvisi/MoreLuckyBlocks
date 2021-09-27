@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.events.EditDropInChatEvent;
 import devjluvisi.mlb.helper.LuckyBlockHelper;
@@ -34,12 +35,11 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class MoreLuckyBlocks extends JavaPlugin {
 	
-	/**A reference to the config.yml file in the plugin. */
 	private ConfigManager configYaml;
-	/**A reference to the messages.yml file in the plugin. */
 	private ConfigManager messagesYaml;
-	/**A reference to the blocks.yml file in the plugin. */
 	private ConfigManager blocksYaml;
+	private ConfigManager worldDataYaml;
+	private ConfigManager playersYaml;
 	
 	/**
 	 * An array list to track all of the lucky blocks on the server.
@@ -53,7 +53,7 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	 * Tracks which players are attempting to add commands to a lucky block
 	 * in edit mode.
 	 */
-	private HashMap<UUID, LuckyMenu> playersEditingDrop;
+	private HashMap<UUID, MenuView> playersEditingDrop;
 	
 	/**
 	 * Planned commands:
@@ -87,7 +87,7 @@ public class MoreLuckyBlocks extends JavaPlugin {
 		registerEvents();
 		
 		serverLuckyBlocks = LuckyBlockHelper.getLuckyBlocks(blocksYaml);
-		playersEditingDrop = new HashMap<UUID, LuckyMenu>();
+		playersEditingDrop = new HashMap<UUID, MenuView>();
 		
 		// Check if the config is valid and has no errors.
 		if(LuckyBlockHelper.validateBlocksYaml(serverLuckyBlocks) == false) {
@@ -103,12 +103,13 @@ public class MoreLuckyBlocks extends JavaPlugin {
         	
             @Override
             public void run() {
-            	
+            	/*
             	if(Math.abs(Runtime.getRuntime().freeMemory()-Runtime.getRuntime().maxMemory()) > maxRamPrevious) {
             		maxRamPrevious = Math.abs(Runtime.getRuntime().freeMemory()-Runtime.getRuntime().maxMemory());
             	}
             	String util = String.valueOf(String.format("%.0f", (double)(((double)Runtime.getRuntime().freeMemory() / (((double)Runtime.getRuntime().maxMemory()))) * 100)));
                 Bukkit.getServer().broadcastMessage( ChatColor.GREEN + String.valueOf(((Runtime.getRuntime().freeMemory()/1000)/1000)) + ChatColor.RESET + "/" + ChatColor.GOLD + String.valueOf(((Runtime.getRuntime().maxMemory()/1000)/1000)) + ChatColor.RESET + " - New Max: " + ChatColor.RED.toString() + ChatColor.BOLD.toString() + (maxRamPrevious/1000/1000) + "MB " + ChatColor.RESET + ChatColor.BLUE + util + "%");
+            	*/
             }
          }, 0L, 20L);
 		
@@ -122,7 +123,10 @@ public class MoreLuckyBlocks extends JavaPlugin {
 		return serverLuckyBlocks;
 	}
 	
-	public HashMap<UUID, LuckyMenu> getPlayersEditingDrop() {
+	/**
+	 * @return All of the players attempting to "edit" a drop in a luckyblock.
+	 */
+	public HashMap<UUID, MenuView> getPlayersEditingDrop() {
 		return this.playersEditingDrop;
 	}
 	
@@ -133,6 +137,8 @@ public class MoreLuckyBlocks extends JavaPlugin {
 		this.configYaml = new ConfigManager(this, "config.yml");
 		this.messagesYaml = new ConfigManager(this, "messages.yml");
 		this.blocksYaml = new ConfigManager(this, "blocks.yml");
+		this.playersYaml = new ConfigManager(this, "players.yml");
+		this.worldDataYaml = new ConfigManager(this, "world-data.yml");
 	}
 	
 	/**
@@ -157,6 +163,20 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	}
 	
 	
+	/**
+	 * @return The "world-data.yml" file.
+	 */
+	public ConfigManager getWorldDataYaml() {
+		return worldDataYaml;
+	}
+
+	/**
+	 * @return The players.yml file
+	 */
+	public ConfigManager getPlayersYaml() {
+		return playersYaml;
+	}
+
 	/**
 	 * Registers all of the commands in the plugin.
 	 * @see CommandManager
