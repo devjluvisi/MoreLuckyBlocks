@@ -1,6 +1,5 @@
 package devjluvisi.mlb.menus;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
@@ -15,26 +14,27 @@ import devjluvisi.mlb.menus.pages.ListPage;
 import devjluvisi.mlb.menus.pages.LootPage;
 
 /**
- * The main GUI for the application in which all various pages are run on.
- * There is only one of these GUIs in the application, different visual GUIs are different pages.
- * 
+ * The main GUI for the application in which all various pages are run on. There
+ * is only one of these GUIs in the application, different visual GUIs are
+ * different pages.
+ *
  * @author jacob
  *
  */
 public class LuckyMenu extends Menu {
 
 	private MoreLuckyBlocks plugin;
-	
+
 	private int blockIndex;
 	private int dropIndex;
 	private Action confirmAction;
-	
+
 	private LinkedList<BasePage> pages;
 
 	/*
 	 * Various instance variables are here for this menu in order to track pages
 	 * such as what lucky block the user is on and what they are trying to edit.
-	 * 
+	 *
 	 * Not all instance variables will be used by every page but they can be set
 	 * whenever to maintain data.
 	 */
@@ -43,28 +43,25 @@ public class LuckyMenu extends Menu {
 		LIST_LUCKYBLOCKS, LIST_DROPS, LIST_LOOT, EDIT_DROP, CHANGE_RARITY, CONFIRM_ACTION;
 	}
 
+	private void addPages() {
+		pages.add(new ListPage(this));
+		pages.add(new DropsPage(this));
+		pages.add(new LootPage(this));
+		pages.add(new EditDrop(this));
+		pages.add(new Confirm(this));
+		pages.add(new ChangeRarity(this));
+	}
+
 	public LuckyMenu(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
-		pages = new LinkedList<BasePage>();
+		pages = new LinkedList<>();
 		// Note: order does not matter
-		pages.add(new ListPage(this));
-		pages.add(new DropsPage(this));
-		pages.add(new LootPage(this));
-		pages.add(new EditDrop(this));
-		pages.add(new Confirm(this));
-		pages.add(new ChangeRarity(this));
-		
+		addPages();
 	}
-	
+
 	public void refresh() {
 		pages.clear();
-		pages.add(new ListPage(this));
-		pages.add(new DropsPage(this));
-		pages.add(new LootPage(this));
-		pages.add(new EditDrop(this));
-		pages.add(new Confirm(this));
-		pages.add(new ChangeRarity(this));
-		
+		addPages();
 	}
 
 	@Override
@@ -109,7 +106,7 @@ public class LuckyMenu extends Menu {
 	public Page[] getPages() {
 		Page[] pages = new Page[getPageCount()];
 		for (int i = 0; i < getPageCount(); i++) {
-			pages[i] = (Page) this.pages.get(i);
+			pages[i] = this.pages.get(i);
 		}
 		return pages;
 	}

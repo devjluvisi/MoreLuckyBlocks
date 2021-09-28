@@ -12,8 +12,9 @@ import devjluvisi.mlb.util.SubCommand;
 import net.md_5.bungee.api.ChatColor;
 
 public class GiveCommand implements SubCommand {
-	
+
 	private MoreLuckyBlocks plugin;
+
 	public GiveCommand(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
 	}
@@ -52,32 +53,32 @@ public class GiveCommand implements SubCommand {
 	public ExecutionResult perform(CommandSender sender, String[] args) {
 
 		Player p = Bukkit.getPlayerExact(args[1]);
-		
-		if(p == null) {
+
+		if (p == null) {
 			return ExecutionResult.INVALID_PLAYER;
 		}
-		
-		if(!LuckyBlockHelper.doesExist(plugin.getBlocksYaml(), args[2].toLowerCase())) {
+
+		if (!LuckyBlockHelper.doesExist(plugin.getBlocksYaml(), args[2].toLowerCase())) {
 			sender.sendMessage(ChatColor.RED + "Lucky block does not exist.");
 			return ExecutionResult.PASSED;
 		}
-		
+
 		LuckyBlock block = LuckyBlockHelper.getLuckyBlock(plugin.getBlocksYaml(), args[2].toLowerCase());
 		float luck = block.getDefaultBlockLuck();
 		int amount = 1;
-		
+
 		try {
-			if(args.length == 5) {
+			if (args.length == 5) {
 				luck = Float.parseFloat(args[3]);
 				amount = Integer.parseInt(args[4]);
-			}else {
+			} else {
 				amount = Integer.parseInt(args[3]);
 			}
-			
+
 		} catch (NumberFormatException e) {
 			return ExecutionResult.BAD_ARGUMENT_TYPE;
 		}
-		
+
 		block.setBlockLuck(luck);
 		p.getInventory().addItem(block.asItem(amount));
 		sender.sendMessage(ChatColor.GREEN + "Success!");

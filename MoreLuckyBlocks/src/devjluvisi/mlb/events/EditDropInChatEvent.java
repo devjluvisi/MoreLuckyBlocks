@@ -1,7 +1,5 @@
 package devjluvisi.mlb.events;
 
-import java.util.ArrayList;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,12 +11,9 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.potion.PotionEffectType;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
-import devjluvisi.mlb.menus.BasePage;
-import devjluvisi.mlb.menus.LuckyMenu;
 import devjluvisi.mlb.menus.LuckyMenu.View;
 import devjluvisi.mlb.menus.pages.EditDrop;
 
@@ -38,7 +33,7 @@ public class EditDropInChatEvent implements Listener {
 			return;
 		}
 
-		final EditDrop b = (EditDrop)plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()).getCurrentPage();
+		final EditDrop b = (EditDrop) plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()).getCurrentPage();
 
 		final Player p = e.getPlayer();
 		final String command = ChatColor.stripColor(e.getMessage());
@@ -47,9 +42,9 @@ public class EditDropInChatEvent implements Listener {
 			e.setCancelled(true);
 
 			if (command.equalsIgnoreCase("/exit")) {
-				
+
 				b.traverse(plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
-			
+
 				plugin.getPlayersEditingDrop().remove(p.getUniqueId());
 				e.getPlayer().sendMessage(ChatColor.GREEN + "You have cancelled your command action.");
 				return;
@@ -170,7 +165,7 @@ public class EditDropInChatEvent implements Listener {
 			p.sendMessage("");
 			p.sendMessage(ChatColor.GREEN + "You successfully added a potion effect to this drop!");
 			Bukkit.getScheduler().runTask(plugin, () -> {
-				
+
 				b.traverse(plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
 				plugin.getPlayersEditingDrop().remove(p.getUniqueId());
 

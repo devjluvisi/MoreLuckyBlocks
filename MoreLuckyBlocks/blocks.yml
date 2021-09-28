@@ -14,7 +14,8 @@ lucky-blocks:
       '0':
         rarity: 65.0
         items:
-          SPONGE:
+          '0':
+            type: 'SPONGE'
             amount: 64
             enchants: "[SHARPNESS:1,UNBREAKING:3]"
             display-name: "&cSuper Sponge"
@@ -29,7 +30,8 @@ lucky-blocks:
       '1':
         rarity: 65.0
         items:
-          DIAMOND_SWORD:
+          '0':
+            type: 'DIAMOND_SWORD'
             amount: 1
             enchants: "[SHARPNESS:5]"
             display-name: "&4&lULTRA SWORD"

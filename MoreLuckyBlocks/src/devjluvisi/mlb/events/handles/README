@@ -1,0 +1,2 @@
+This package is for using spigot events in order to account for potential user mistakes
+when adding/removing/editing lucky blocks or using various GUIs.

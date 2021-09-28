@@ -7,25 +7,25 @@ import devjluvisi.mlb.api.gui.MenuView;
 
 public interface Page {
 
-    /**
-     * Gets the name of the page.
-     * If the name is null, the name of the menu would be used.
-     *
-     * @return the name of the page
-     */
-    String getName();
+	/**
+	 * Gets the name of the page. If the name is null, the name of the menu would be
+	 * used.
+	 *
+	 * @return the name of the page
+	 */
+	String getName();
 
-    /**
-     * Gets the whole content of the page at this moment (it may be animated).
-     *
-     * @return an array of the items
-     */
-    ItemStack[] getContent();
+	/**
+	 * Gets the whole content of the page at this moment (it may be animated).
+	 *
+	 * @return an array of the items
+	 */
+	ItemStack[] getContent();
 
-    /**
-     * @return the type of the page
-     */
-    PageType getPageType();
+	/**
+	 * @return the type of the page
+	 */
+	PageType getPageType();
 
-    void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack);
+	void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack);
 }

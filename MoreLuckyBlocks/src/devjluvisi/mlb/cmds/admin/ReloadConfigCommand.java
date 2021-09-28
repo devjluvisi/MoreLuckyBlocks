@@ -8,8 +8,9 @@ import devjluvisi.mlb.util.SubCommand;
 import net.md_5.bungee.api.ChatColor;
 
 public class ReloadConfigCommand implements SubCommand {
-	
+
 	private MoreLuckyBlocks plugin;
+
 	public ReloadConfigCommand(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
 	}
@@ -53,10 +54,10 @@ public class ReloadConfigCommand implements SubCommand {
 		sender.sendMessage(ChatColor.BLUE + "Configuration files have been saved and reloaded.");
 		plugin.getBlocksYaml().save();
 		plugin.getBlocksYaml().reload();
-		
+
 		plugin.getConfigYaml().save();
 		plugin.getConfigYaml().reload();
-		
+
 		plugin.getMessagesYaml().save();
 		plugin.getMessagesYaml().reload();
 		return ExecutionResult.PASSED;
