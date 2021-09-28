@@ -8,9 +8,16 @@ import devjluvisi.mlb.util.Range;
 import devjluvisi.mlb.util.SubCommand;
 import net.md_5.bungee.api.ChatColor;
 
+/**
+ * Lists the commands available to the user. Will not display commands the user
+ * does not have permissions for.
+ *
+ * @author jacob
+ *
+ */
 public class HelpCommand implements SubCommand {
 
-	private ArrayList<SubCommand> commands;
+	private final ArrayList<SubCommand> commands;
 
 	/**
 	 * The maximum amount of commands the help command is allowed to display between
@@ -19,7 +26,7 @@ public class HelpCommand implements SubCommand {
 	private static final byte MAX_COMMANDS_PER_PAGE = 6;
 
 	public HelpCommand(ArrayList<SubCommand> list) {
-		commands = list;
+		this.commands = list;
 	}
 
 	@Override
@@ -54,7 +61,6 @@ public class HelpCommand implements SubCommand {
 
 	@Override
 	public ExecutionResult perform(CommandSender sender, String[] args) {
-		// "/mlb help"
 		if (args.length == 1) {
 			sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH.toString() + "-----------------"
 					+ ChatColor.RESET.toString() + ChatColor.GRAY.toString() + ChatColor.BOLD.toString() + "["
@@ -62,14 +68,15 @@ public class HelpCommand implements SubCommand {
 					+ ChatColor.RESET.toString() + ChatColor.GRAY.toString() + ChatColor.BOLD.toString() + "]"
 					+ ChatColor.RESET + ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH.toString()
 					+ "-----------------");
-			for (int i = 0; i < MAX_COMMANDS_PER_PAGE && i < commands.size(); i++) {
-				sender.sendMessage(ChatColor.LIGHT_PURPLE + "/mlb " + commands.get(i).getName() + ChatColor.GRAY + " - "
-						+ ChatColor.GREEN + commands.get(i).getDescription());
+			for (int i = 0; (i < MAX_COMMANDS_PER_PAGE) && (i < this.commands.size()); i++) {
+				sender.sendMessage(ChatColor.LIGHT_PURPLE + "/mlb " + this.commands.get(i).getName() + ChatColor.GRAY
+						+ " - " + ChatColor.GREEN + this.commands.get(i).getDescription());
 			}
-			sender.sendMessage(ChatColor.BLUE.toString() + ChatColor.BOLD + "<< " + ChatColor.RESET + ChatColor.BLUE
-					+ "Page 1/"
-					+ ((commands.size() / MAX_COMMANDS_PER_PAGE) + commands.size() % MAX_COMMANDS_PER_PAGE != 0 ? 1 : 0)
-					+ ChatColor.BOLD + " >>");
+			sender.sendMessage(
+					ChatColor.BLUE.toString() + ChatColor.BOLD + "<< " + ChatColor.RESET + ChatColor.BLUE + "Page 1/"
+							+ ((this.commands.size() / MAX_COMMANDS_PER_PAGE)
+									+ ((this.commands.size() % MAX_COMMANDS_PER_PAGE) != 0 ? 1 : 0))
+							+ ChatColor.BOLD + " >>");
 			sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH.toString()
 					+ "----------------------------------------------------");
 			return ExecutionResult.PASSED;
@@ -78,11 +85,15 @@ public class HelpCommand implements SubCommand {
 		int page;
 		try {
 			page = Integer.parseInt(args[1]);
-		} catch (NumberFormatException e) {
+			if (page < 1) {
+				throw new NumberFormatException("Bad Integer. Must be greater then 1.");
+			}
+		} catch (final NumberFormatException e) {
 			return ExecutionResult.BAD_ARGUMENT_TYPE;
 		}
 		// Make sure the page is not over the limit.
-		if (page > ((commands.size() / MAX_COMMANDS_PER_PAGE) + commands.size() % MAX_COMMANDS_PER_PAGE != 0 ? 1 : 0)) {
+		if (page > ((this.commands.size() / MAX_COMMANDS_PER_PAGE)
+				+ ((this.commands.size() % MAX_COMMANDS_PER_PAGE) != 0 ? 1 : 0))) {
 			sender.sendMessage(ChatColor.RED + "There are no commands to view on this page.");
 			return ExecutionResult.PASSED;
 		}
@@ -96,14 +107,16 @@ public class HelpCommand implements SubCommand {
 				+ ChatColor.RESET.toString() + ChatColor.GRAY.toString() + ChatColor.BOLD.toString() + "]"
 				+ ChatColor.RESET + ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH.toString()
 				+ "-----------------");
-		for (int i = commandRangeMin; i < commandRangeMax && i < commands.size(); i++) {
-			sender.sendMessage(ChatColor.LIGHT_PURPLE + "/mlb " + commands.get(i).getName() + ChatColor.GRAY + " - "
-					+ ChatColor.GREEN + commands.get(i).getDescription());
+		for (int i = commandRangeMin; (i < commandRangeMax) && (i < this.commands.size()); i++) {
+			sender.sendMessage(ChatColor.LIGHT_PURPLE + "/mlb " + this.commands.get(i).getName() + ChatColor.GRAY
+					+ " - " + ChatColor.GREEN + this.commands.get(i).getDescription());
 		}
-		sender.sendMessage(ChatColor.BLUE.toString() + ChatColor.BOLD + "<< " + ChatColor.RESET + ChatColor.BLUE
-				+ "Page " + page + "/"
-				+ ((commands.size() / MAX_COMMANDS_PER_PAGE) + commands.size() % MAX_COMMANDS_PER_PAGE != 0 ? 1 : 0)
-				+ ChatColor.BOLD + " >>");
+		sender.sendMessage(
+				ChatColor.BLUE.toString() + ChatColor.BOLD + "<< " + ChatColor.RESET + ChatColor.BLUE + "Page " + page
+						+ "/"
+						+ ((this.commands.size() / MAX_COMMANDS_PER_PAGE)
+								+ ((this.commands.size() % MAX_COMMANDS_PER_PAGE) != 0 ? 1 : 0))
+						+ ChatColor.BOLD + " >>");
 		sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.STRIKETHROUGH.toString()
 				+ "----------------------------------------------------");
 		return ExecutionResult.PASSED;

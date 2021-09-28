@@ -2,21 +2,27 @@ package devjluvisi.mlb;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import devjluvisi.mlb.api.gui.MenuView;
+import devjluvisi.mlb.api.items.CustomMetaFactory;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.events.EditDropInChatEvent;
 import devjluvisi.mlb.events.handles.InventoryCloseFix;
-import devjluvisi.mlb.events.luck.JoinLuckEvent;
-import devjluvisi.mlb.events.luck.LeaveLuckEvent;
+import devjluvisi.mlb.events.luckyblocks.BreakEvent;
+import devjluvisi.mlb.events.luckyblocks.PlaceEvent;
+import devjluvisi.mlb.events.players.JoinLuckEvent;
+import devjluvisi.mlb.events.players.LeaveLuckEvent;
 import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.util.CommandManager;
-import devjluvisi.mlb.util.ConfigManager;
 import devjluvisi.mlb.util.SubCommand;
+import devjluvisi.mlb.util.config.ConfigManager;
+import devjluvisi.mlb.util.luckyblocks.LuckyAudit;
 
 /**
  * FortuneBlocks - 1.17 -> LuckyBlocks plugin for Minecraft Spigot 1.17 <br />
@@ -26,16 +32,14 @@ import devjluvisi.mlb.util.SubCommand;
  * @author devjluvisi (Jacob Luvisi) IGN: Interryne
  *
  */
-public class MoreLuckyBlocks extends JavaPlugin {
-	
-	public static final float DEFAULT_LUCK = 0.0F;
+public final class MoreLuckyBlocks extends JavaPlugin {
 
 	/*
-	 * TODO:
-	 * - Use StringUtils and StringBuilder
-	 * - Cache variables
-	 * - Add particle effects for lucky block break.
-	 * - Add option to make lucky block break instant
+	 * TODO: - Use StringUtils and StringBuilder - Cache variables - Add particle
+	 * effects for lucky block break. - Add option to make lucky block break instant
+	 * - Make an option to break certain lucky blocks with only a certain tool
+	 * (config.yml) - Make classes, instance variables, and methods final where
+	 * possible - Documentation and additional comments.
 	 */
 
 	private ConfigManager configYaml;
@@ -43,46 +47,50 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	private ConfigManager blocksYaml;
 	private ConfigManager worldDataYaml;
 	private ConfigManager playersYaml;
+	private ConfigManager exchangesYaml;
 
-	/**
-	 * An array list to track all of the lucky blocks on the server. Tracks only the
-	 * default values of the lucky blocks to be used as references rather then
-	 * accessing config. Does NOT store individual data such as block placements,
-	 * etc.
-	 *
-	 * @see LuckyBlock
-	 */
 	private ArrayList<LuckyBlock> serverLuckyBlocks;
-	private ConcurrentHashMap<UUID, Float> playerLuckMap;
-	/**
-	 * Tracks which players are attempting to add commands to a lucky block in edit
-	 * mode.
-	 */
+
+	private HashMap<UUID, Float> playerLuckMap;
 	private HashMap<UUID, MenuView> playersEditingDrop;
+
+	private CustomMetaFactory metaFactory;
+	private LuckyAudit audit;
 
 	@Override
 	public void onEnable() {
 
-		getLogger().info("*-----------------------------------------*");
-		getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has started!");
-		getLogger().info("Server Version -> "
+		this.getLogger().info("*-----------------------------------------*");
+		this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has started!");
+		this.getLogger().info("Server Version -> "
 				+ super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('(')));
-		getLogger().info("*-----------------------------------------*");
+		this.getLogger().info("By Paroxi, (Jacob)");
+		this.getLogger().info("https://github.com/devjluvisi/MoreLuckyBlocks");
+		this.getLogger().info("*-----------------------------------------*");
 
-		setupConfig();
-		registerCommands();
-		registerEvents();
+		this.setupConfig();
+		this.registerCommands();
+		this.registerEvents();
 
-		this.serverLuckyBlocks = LuckyBlockHelper.getLuckyBlocks(blocksYaml);
-		this.playerLuckMap = new ConcurrentHashMap<UUID, Float>();
+		this.serverLuckyBlocks = LuckyBlockHelper.getLuckyBlocks(this.blocksYaml);
+		this.playerLuckMap = new HashMap<>();
 		this.playersEditingDrop = new HashMap<>();
+		this.metaFactory = new CustomMetaFactory(this);
+		this.audit = new LuckyAudit(this);
 
 		// Check if the config is valid and has no errors.
-		if (!LuckyBlockHelper.validateBlocksYaml(serverLuckyBlocks)) {
-			getServer().getLogger().severe("Could not start server due to invalid blocks.yml file.");
-			getServer().getLogger().severe("Please ensure that the plugin config file follows proper formatting.");
-			getServer().getPluginManager().disablePlugin(this);
+		if (!LuckyBlockHelper.validateBlocksYaml(this.serverLuckyBlocks)) {
+			this.getServer().getLogger().severe("Could not start server due to invalid blocks.yml file.");
+			this.getServer().getLogger().severe("Please ensure that the plugin config file follows proper formatting.");
+			this.getServer().getPluginManager().disablePlugin(this);
 			return;
+		}
+
+		// For Reloads, we ensure player luck remains
+		for (final Player p : this.getServer().getOnlinePlayers()) {
+			if (this.getPlayerFromConfig(p.getName()) != null) {
+				this.getPlayerLuckMap().put(p.getUniqueId(), this.getPlayerFromConfig(p.getName()).getValue());
+			}
 		}
 
 		super.onEnable();
@@ -92,7 +100,15 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	 * @return Get a list of all lucky blocks on the server.
 	 */
 	public ArrayList<LuckyBlock> getLuckyBlocks() {
-		return serverLuckyBlocks;
+		return this.serverLuckyBlocks;
+	}
+
+	public void setServerLuckyBlocks(ArrayList<LuckyBlock> serverLuckyBlocks) {
+		this.serverLuckyBlocks = serverLuckyBlocks;
+	}
+
+	public LuckyAudit getAudit() {
+		return this.audit;
 	}
 
 	/**
@@ -102,10 +118,69 @@ public class MoreLuckyBlocks extends JavaPlugin {
 		return this.playersEditingDrop;
 	}
 
-	public synchronized ConcurrentHashMap<UUID, Float> getPlayerLuckMap() {
-		return playerLuckMap;
+	public final CustomMetaFactory getMetaFactory() {
+		return this.metaFactory;
 	}
 
+	public HashMap<UUID, Float> getPlayerLuckMap() {
+		return this.playerLuckMap;
+	}
+
+	public void savePlayerLuckMap() {
+
+		for (final Map.Entry<UUID, Float> entry : this.playerLuckMap.entrySet()) {
+			String name;
+			if (Bukkit.getPlayer(entry.getKey()) == null) {
+				name = Bukkit.getOfflinePlayer(entry.getKey()).getName();
+			} else {
+				this.getServer().getConsoleSender().sendMessage("Saving player online.");
+				name = Bukkit.getPlayer(entry.getKey()).getName();
+			}
+			final String uuid = entry.getKey().toString();
+			this.playersYaml.getConfig().set("players." + uuid + ".name", name);
+			this.playersYaml.getConfig().set("players." + uuid + ".luck", entry.getValue().toString());
+		}
+		this.playersYaml.save();
+		this.playersYaml.reload();
+	}
+
+	public Map.Entry<UUID, Float> getPlayerFromConfig(String name) {
+		if (this.playersYaml.getConfig().getConfigurationSection("players") == null) {
+			return null;
+		}
+		for (final String playerUUIDs : this.playersYaml.getConfig().getConfigurationSection("players")
+				.getKeys(false)) {
+			if ((this.playersYaml.getConfig().get("players." + playerUUIDs + ".name") != null)
+					&& ((String) this.playersYaml.getConfig().get("players." + playerUUIDs + ".name"))
+							.equalsIgnoreCase(name)) {
+				return new Map.Entry<>() {
+					@Override
+					public UUID getKey() {
+						return UUID.fromString(playerUUIDs);
+					}
+
+					@Override
+					public Float getValue() {
+						return Float.parseFloat((String) MoreLuckyBlocks.this.playersYaml.getConfig()
+								.get("players." + playerUUIDs + ".luck"));
+					}
+
+					@Override
+					public Float setValue(Float value) {
+						MoreLuckyBlocks.this.updateOfflinePlayer(this.getKey(), value);
+						return value;
+					}
+				};
+			}
+		}
+		return null;
+	}
+
+	public void updateOfflinePlayer(UUID uuid, float luck) {
+		this.playersYaml.getConfig().set("players." + uuid.toString() + ".luck", String.valueOf(luck));
+		this.playersYaml.save();
+		this.playersYaml.reload();
+	}
 
 	/**
 	 * Sets up the configuration files for the plugin.
@@ -116,6 +191,7 @@ public class MoreLuckyBlocks extends JavaPlugin {
 		this.blocksYaml = new ConfigManager(this, "blocks.yml");
 		this.playersYaml = new ConfigManager(this, "players.yml");
 		this.worldDataYaml = new ConfigManager(this, "world-data.yml");
+		this.exchangesYaml = new ConfigManager(this, "exchanges.yml");
 	}
 
 	/**
@@ -143,14 +219,18 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	 * @return The "world-data.yml" file.
 	 */
 	public ConfigManager getWorldDataYaml() {
-		return worldDataYaml;
+		return this.worldDataYaml;
 	}
 
 	/**
 	 * @return The players.yml file
 	 */
 	public ConfigManager getPlayersYaml() {
-		return playersYaml;
+		return this.playersYaml;
+	}
+
+	public ConfigManager getExchangesYaml() {
+		return this.exchangesYaml;
 	}
 
 	/**
@@ -160,33 +240,38 @@ public class MoreLuckyBlocks extends JavaPlugin {
 	 * @see SubCommand
 	 */
 	private void registerCommands() {
-		getCommand("mlb").setExecutor(new CommandManager(this));
+		this.getCommand("mlb").setExecutor(new CommandManager(this));
 	}
 
 	/**
 	 * Registers all of the events in the plugin.
 	 */
 	private void registerEvents() {
-		getServer().getPluginManager().registerEvents(new EditDropInChatEvent(this), this);
-		getServer().getPluginManager().registerEvents(new InventoryCloseFix(this), this);
-		getServer().getPluginManager().registerEvents(new JoinLuckEvent(this), this);
-		getServer().getPluginManager().registerEvents(new LeaveLuckEvent(this), this);
+		this.getServer().getPluginManager().registerEvents(new EditDropInChatEvent(this), this);
+		this.getServer().getPluginManager().registerEvents(new InventoryCloseFix(this), this);
+		this.getServer().getPluginManager().registerEvents(new JoinLuckEvent(this), this);
+		this.getServer().getPluginManager().registerEvents(new LeaveLuckEvent(this), this);
+		this.getServer().getPluginManager().registerEvents(new BreakEvent(this), this);
+		this.getServer().getPluginManager().registerEvents(new PlaceEvent(this), this);
 	}
 
 	@Override
 	public void onDisable() {
-		getLogger().info("*-----------------------------------------*");
-		getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has been disabled!");
-		getLogger().info("Server Version -> "
+		this.savePlayerLuckMap();
+		this.getLogger().info("*-----------------------------------------*");
+		this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has been disabled!");
+		this.getLogger().info("Server Version -> "
 				+ super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('(')));
-		getLogger().info("*-----------------------------------------*");
+		this.getLogger().info("By Paroxi, (Jacob)");
+		this.getLogger().info("https://github.com/devjluvisi/MoreLuckyBlocks");
+		this.getLogger().info("*-----------------------------------------*");
 		super.onDisable();
 	}
 
 	/**
 	 * @return String representation of the version.
 	 */
-	private String getVersion() {
+	private final String getVersion() {
 		return super.getDescription().getVersion() + " for Minecraft Version [" + super.getDescription().getAPIVersion()
 				+ "]";
 	}

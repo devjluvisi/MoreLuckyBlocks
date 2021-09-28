@@ -49,12 +49,12 @@ public abstract class BasePage implements Page {
 
 	@Override
 	public String getName() {
-		return menuName;
+		return this.menuName;
 	}
 
 	@Override
 	public PageType getPageType() {
-		return pageType;
+		return this.pageType;
 	}
 
 	public enum SpecialItem {
@@ -64,7 +64,7 @@ public abstract class BasePage implements Page {
 	}
 
 	public boolean isPlayerSlot(int rawSlot) {
-		return !(pageType.getSize() - rawSlot > 0);
+		return !((this.pageType.getSize() - rawSlot) > 0);
 	}
 
 	public abstract View identity();
@@ -182,7 +182,7 @@ public abstract class BasePage implements Page {
 	}
 
 	public String getMenuName() {
-		return menuName;
+		return this.menuName;
 	}
 
 	public void setMenuName(String menuName) {
@@ -194,27 +194,27 @@ public abstract class BasePage implements Page {
 	}
 
 	protected int getBlockIndex() {
-		return baseMenu.getBlockIndex();
+		return this.baseMenu.getBlockIndex();
 	}
 
 	protected void setBlockIndex(int blockIndex) {
-		baseMenu.setBlockIndex(blockIndex);
+		this.baseMenu.setBlockIndex(blockIndex);
 	}
 
 	protected int getDropIndex() {
-		return baseMenu.getDropIndex();
+		return this.baseMenu.getDropIndex();
 	}
 
 	protected void setDropIndex(int dropIndex) {
-		baseMenu.setDropIndex(dropIndex);
+		this.baseMenu.setDropIndex(dropIndex);
 	}
 
 	protected Action getConfirmAction() {
-		return baseMenu.getConfirmAction();
+		return this.baseMenu.getConfirmAction();
 	}
 
 	protected void setConfirmAction(Action confirmAction) {
-		baseMenu.setConfirmAction(confirmAction);
+		this.baseMenu.setConfirmAction(confirmAction);
 	}
 
 	/**
@@ -224,9 +224,9 @@ public abstract class BasePage implements Page {
 	 * @param v    View to open.
 	 */
 	public void traverse(MenuView view, View v) {
-		for (byte i = 0; i < baseMenu.getPages().length; i++) {
-			if (((BasePage) baseMenu.getPage(i)).identity().equals(v)) {
-				baseMenu.refresh();
+		for (byte i = 0; i < this.baseMenu.getPages().length; i++) {
+			if (((BasePage) this.baseMenu.getPage(i)).identity().equals(v)) {
+				this.baseMenu.refresh();
 				view.setPage(i);
 				Bukkit.getServer().getConsoleSender().sendMessage("moved to view: " + v.name());
 				return;

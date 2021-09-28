@@ -6,24 +6,24 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class ItemCreator {
 
-	private ItemStack item;
+	private final ItemStack item;
 
 	public ItemCreator(Material material) {
-		item = new ItemStack(material);
+		this.item = new ItemStack(material);
 	}
 
 	public ItemStack getItem() {
-		return item;
+		return this.item;
 	}
 
 	public String getName() {
-		return item.getItemMeta().getDisplayName();
+		return this.item.getItemMeta().getDisplayName();
 	}
 
 	public ItemCreator setName(String name) {
-		ItemMeta meta = item.getItemMeta();
+		final ItemMeta meta = this.item.getItemMeta();
 		meta.setDisplayName(name);
-		item.setItemMeta(meta);
+		this.item.setItemMeta(meta);
 		return this;
 	}
 }

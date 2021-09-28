@@ -1,4 +1,4 @@
-package devjluvisi.mlb.util;
+package devjluvisi.mlb.util.config;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,13 +36,13 @@ public class ConfigManager {
 		this.name = name;
 		this.configFile = new File(plugin.getDataFolder(), name);
 
-		if (!configFile.exists()) {
+		if (!this.configFile.exists()) {
 			plugin.getLogger().warning("Configuration File could not be located... Generating new.");
 			// Save a version of the file with comments.
 			plugin.saveResource(name, false);
 		}
 		// Load the new configuration.
-		this.yamlConfig = YamlConfiguration.loadConfiguration(configFile);
+		this.yamlConfig = YamlConfiguration.loadConfiguration(this.configFile);
 
 	}
 
@@ -54,10 +54,11 @@ public class ConfigManager {
 	 */
 	public void save() {
 		try {
-			this.yamlConfig.save(configFile);
-			reload(); // Reload the config on the server now that the file has been saved.
-		} catch (IOException e) {
-			plugin.getLogger().severe("Could not save config file: " + configFile.getName() + ". No data was written.");
+			this.yamlConfig.save(this.configFile);
+			this.reload(); // Reload the config on the server now that the file has been saved.
+		} catch (final IOException e) {
+			this.plugin.getLogger()
+					.severe("Could not save config file: " + this.configFile.getName() + ". No data was written.");
 		}
 	}
 
@@ -65,7 +66,7 @@ public class ConfigManager {
 	 * Reloads the YAML configuration file. Keeps Comments.
 	 */
 	public void reload() {
-		this.yamlConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), name));
+		this.yamlConfig = YamlConfiguration.loadConfiguration(new File(this.plugin.getDataFolder(), this.name));
 	}
 
 	/**
@@ -85,8 +86,8 @@ public class ConfigManager {
 	public String getString(String node) {
 		try {
 			return ChatColor.translateAlternateColorCodes('&', Objects.requireNonNull(this.yamlConfig.getString(node)));
-		} catch (NullPointerException e) {
-			plugin.getLogger().severe("CONFIG EXCEPTION: Could not read String Value at node: " + node);
+		} catch (final NullPointerException e) {
+			this.plugin.getLogger().severe("CONFIG EXCEPTION: Could not read String Value at node: " + node);
 			return ChatColor.RED + "Error with message. Contact a server administrator for more help.";
 		}
 	}
@@ -102,7 +103,7 @@ public class ConfigManager {
 	 * @return The new string to send to the player.
 	 */
 	public String getString(String node, Map<String, String> placeHolders) {
-		return StringUtils.replaceEachRepeatedly(getString(node), placeHolders.keySet().toArray(new String[0]),
+		return StringUtils.replaceEachRepeatedly(this.getString(node), placeHolders.keySet().toArray(new String[0]),
 				placeHolders.values().toArray(new String[0]));
 	}
 
@@ -115,11 +116,11 @@ public class ConfigManager {
 	public float getFloat(String node) {
 		try {
 			return (float) this.yamlConfig.getDouble(node);
-		} catch (NullPointerException e) {
-			plugin.getLogger().severe("CONFIG EXCEPTION: Could not read Float Value at node: " + node);
+		} catch (final NullPointerException e) {
+			this.plugin.getLogger().severe("CONFIG EXCEPTION: Could not read Float Value at node: " + node);
 			return -1;
-		} catch (ClassCastException e) {
-			plugin.getLogger().severe("CONFIG EXCEPTION: Float value at node \"" + node
+		} catch (final ClassCastException e) {
+			this.plugin.getLogger().severe("CONFIG EXCEPTION: Float value at node \"" + node
 					+ "\" is not a valid floating point value. (Bad Type Cast)");
 			return -1;
 		}
@@ -140,11 +141,11 @@ public class ConfigManager {
 	public void setValue(String node, Object value) {
 		try {
 			this.yamlConfig.set(node, value);
-			this.yamlConfig.save(configFile);
-		} catch (IOException e) {
-			plugin.getLogger().severe("ERROR: Could not save value to configuration file.");
-			plugin.getLogger().severe("Could not write data to " + node);
-			plugin.getLogger().severe(e.getMessage());
+			this.yamlConfig.save(this.configFile);
+		} catch (final IOException e) {
+			this.plugin.getLogger().severe("ERROR: Could not save value to configuration file.");
+			this.plugin.getLogger().severe("Could not write data to " + node);
+			this.plugin.getLogger().severe(e.getMessage());
 		}
 	}
 

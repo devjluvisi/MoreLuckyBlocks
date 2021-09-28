@@ -7,11 +7,15 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.PluginConstants;
+import devjluvisi.mlb.api.items.CustomItemMeta;
 import devjluvisi.mlb.helper.Util;
-import devjluvisi.mlb.util.ConfigManager;
+import devjluvisi.mlb.util.config.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -41,11 +45,11 @@ public class LuckyBlock {
 		this.name = StringUtils.EMPTY;
 		this.breakPermission = StringUtils.EMPTY;
 		this.blockMaterial = Material.AIR;
-		this.lore = new ArrayList<String>();
-		this.defaultBlockLuck = 0.0F;
-		this.droppableItems = new LinkedList<LuckyBlockDrop>();
+		this.lore = new ArrayList<>();
+		this.defaultBlockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
+		this.droppableItems = new LinkedList<>();
 		this.blockLocation = null;
-		this.blockLuck = 0.0F;
+		this.blockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
 	}
 
 	public LuckyBlock(String internalName, String name, String breakPermission, Material blockMaterial,
@@ -63,21 +67,37 @@ public class LuckyBlock {
 		this.blockLuck = defaultBlockLuck;
 	}
 
-	public ItemStack asItem(int amount) {
+	public ItemStack asItem(MoreLuckyBlocks plugin, float luck, int amount) {
 		if (amount <= 0) {
 			amount = 1;
 		}
-		ItemStack luckyBlock = new ItemStack(this.blockMaterial, amount);
-		ItemMeta meta = luckyBlock.getItemMeta();
+		final ItemStack luckyBlock = new ItemStack(this.blockMaterial, amount);
+		final ItemMeta meta = luckyBlock.getItemMeta();
+		final CustomItemMeta specialMeta = plugin.getMetaFactory().createCustomMeta(meta);
+
+		this.setBlockLuck(luck);
+		specialMeta.setString(PluginConstants.LuckyIdentifier, this.internalName);
+		specialMeta.setFloat(PluginConstants.BlockLuckIdentifier, luck);
+		specialMeta.updateMeta(PluginConstants.LuckyIdentifier);
+
 		meta.setDisplayName(this.name);
-		meta.setLore(getRefreshedLore());
+		meta.setLore(this.getRefreshedLore());
+		meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		meta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
+		meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+
 		luckyBlock.setItemMeta(meta);
 		return luckyBlock;
 
 	}
 
+	public ItemStack asItem(MoreLuckyBlocks plugin, int amount) {
+		return this.asItem(plugin, this.defaultBlockLuck, amount);
+	}
+
 	public String getInternalName() {
-		return internalName;
+		return this.internalName;
 	}
 
 	public void setInternalName(String internalName) {
@@ -85,7 +105,7 @@ public class LuckyBlock {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
@@ -93,7 +113,7 @@ public class LuckyBlock {
 	}
 
 	public String getBreakPermission() {
-		return breakPermission;
+		return this.breakPermission;
 	}
 
 	public void setBreakPermission(String breakPermission) {
@@ -101,7 +121,7 @@ public class LuckyBlock {
 	}
 
 	public Material getBlockMaterial() {
-		return blockMaterial;
+		return this.blockMaterial;
 	}
 
 	public void setBlockMaterial(Material blockMaterial) {
@@ -109,12 +129,12 @@ public class LuckyBlock {
 	}
 
 	public List<String> getLore() {
-		return lore;
+		return this.lore;
 	}
 
 	public List<String> getRefreshedLore() {
-		ArrayList<String> copy = new ArrayList<>();
-		for (String s : lore) {
+		final ArrayList<String> copy = new ArrayList<>();
+		for (final String s : this.lore) {
 			copy.add(ChatColor.translateAlternateColorCodes('&',
 					s.replaceAll("%luck%", "" + this.blockLuck).replaceAll("%default_luck%", "" + this.defaultBlockLuck)
 							.replaceAll("%break_perm%", this.breakPermission)
@@ -129,7 +149,7 @@ public class LuckyBlock {
 	}
 
 	public float getDefaultBlockLuck() {
-		return defaultBlockLuck;
+		return this.defaultBlockLuck;
 	}
 
 	public void setDefaultBlockLuck(float defaultBlockLuck) {
@@ -145,7 +165,7 @@ public class LuckyBlock {
 	}
 
 	public LinkedList<LuckyBlockDrop> getDroppableItems() {
-		return droppableItems;
+		return this.droppableItems;
 	}
 
 	public void setDroppableItems(LinkedList<LuckyBlockDrop> arrayList) {
@@ -153,7 +173,7 @@ public class LuckyBlock {
 	}
 
 	public Location getBlockLocation() {
-		return blockLocation;
+		return this.blockLocation;
 	}
 
 	public void setBlockLocation(Location blockLocation) {
@@ -161,7 +181,7 @@ public class LuckyBlock {
 	}
 
 	public float getBlockLuck() {
-		return blockLuck;
+		return this.blockLuck;
 	}
 
 	public void setBlockLuck(float blockLuck) {
@@ -182,16 +202,17 @@ public class LuckyBlock {
 	 * @param blocksYaml The config file to save at.
 	 */
 	public void saveConfig(ConfigManager blocksYaml) {
-		String path = "lucky-blocks." + internalName;
+		final String path = "lucky-blocks." + this.internalName;
 		blocksYaml.getConfig().set(path, null);
-		blocksYaml.getConfig().set(path + ".item-name", Util.asNormalColoredString(name));
-		blocksYaml.getConfig().set(path + ".block", blockMaterial.name());
-		blocksYaml.getConfig().set(path + ".item-lore", Util.asNormalColoredString(lore));
-		blocksYaml.getConfig().set(path + ".permission", breakPermission);
+		blocksYaml.getConfig().set(path + ".item-name", Util.asNormalColoredString(this.name));
+		blocksYaml.getConfig().set(path + ".block", this.blockMaterial.name());
+		blocksYaml.getConfig().set(path + ".item-lore", Util.asNormalColoredString(this.lore));
+		blocksYaml.getConfig().set(path + ".permission", this.breakPermission);
+		blocksYaml.getConfig().set(path + ".default-luck", this.defaultBlockLuck);
 
 		int index = 0;
-		for (LuckyBlockDrop drop : droppableItems) {
-			drop.saveConfig(blocksYaml, internalName, String.valueOf(index));
+		for (final LuckyBlockDrop drop : this.droppableItems) {
+			drop.saveConfig(blocksYaml, this.internalName, String.valueOf(index));
 			index++;
 		}
 		blocksYaml.save();
@@ -207,8 +228,8 @@ public class LuckyBlock {
 	}
 
 	public int indexOf(LuckyBlockDrop drop) {
-		for (int i = 0; i < droppableItems.size(); i++) {
-			if (droppableItems.get(i).equals(drop)) {
+		for (int i = 0; i < this.droppableItems.size(); i++) {
+			if (this.droppableItems.get(i).equals(drop)) {
 				return i;
 			}
 		}
@@ -216,11 +237,42 @@ public class LuckyBlock {
 	}
 
 	@Override
-	public String toString() {
-		return "LuckyBlock [internalName=" + internalName + ", name=" + name + ", breakPermission=" + breakPermission
-				+ ", blockMaterial=" + blockMaterial + ", lore=" + lore + ", defaultBlockLuck=" + defaultBlockLuck
-				+ ", droppableItems=" + droppableItems + ", blockLocation=" + blockLocation + ", blockLuck=" + blockLuck
-				+ "]";
+	public boolean equals(Object obj) {
+		if (!(obj instanceof LuckyBlock)) {
+			return false;
+		}
+		return this.hashCode() == ((LuckyBlock) obj).hashCode();
 	}
 
+	@Override
+	public int hashCode() {
+		// There will never be another lucky block with the same internal name.
+		return this.internalName.hashCode();
+		// return this.toString().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("LuckyBlock [internalName=");
+		builder.append(this.internalName);
+		builder.append(", name=");
+		builder.append(this.name);
+		builder.append(", breakPermission=");
+		builder.append(this.breakPermission);
+		builder.append(", blockMaterial=");
+		builder.append(this.blockMaterial);
+		builder.append(", lore=");
+		builder.append(this.lore);
+		builder.append(", defaultBlockLuck=");
+		builder.append(this.defaultBlockLuck);
+		builder.append(", droppableItems=");
+		builder.append(this.droppableItems);
+		builder.append(", blockLocation=");
+		builder.append(this.blockLocation);
+		builder.append(", blockLuck=");
+		builder.append(this.blockLuck);
+		builder.append("]");
+		return builder.toString();
+	}
 }

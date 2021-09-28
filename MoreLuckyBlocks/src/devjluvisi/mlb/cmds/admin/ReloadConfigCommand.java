@@ -3,13 +3,14 @@ package devjluvisi.mlb.cmds.admin;
 import org.bukkit.command.CommandSender;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.util.Range;
 import devjluvisi.mlb.util.SubCommand;
 import net.md_5.bungee.api.ChatColor;
 
 public class ReloadConfigCommand implements SubCommand {
 
-	private MoreLuckyBlocks plugin;
+	private final MoreLuckyBlocks plugin;
 
 	public ReloadConfigCommand(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
@@ -52,14 +53,16 @@ public class ReloadConfigCommand implements SubCommand {
 	@Override
 	public ExecutionResult perform(CommandSender sender, String[] args) {
 		sender.sendMessage(ChatColor.BLUE + "Configuration files have been saved and reloaded.");
-		plugin.getBlocksYaml().save();
-		plugin.getBlocksYaml().reload();
+		this.plugin.getBlocksYaml().save();
+		this.plugin.getBlocksYaml().reload();
 
-		plugin.getConfigYaml().save();
-		plugin.getConfigYaml().reload();
+		this.plugin.getConfigYaml().save();
+		this.plugin.getConfigYaml().reload();
 
-		plugin.getMessagesYaml().save();
-		plugin.getMessagesYaml().reload();
+		this.plugin.getMessagesYaml().save();
+		this.plugin.getMessagesYaml().reload();
+
+		this.plugin.setServerLuckyBlocks(LuckyBlockHelper.getLuckyBlocks(this.plugin.getBlocksYaml()));
 		return ExecutionResult.PASSED;
 	}
 

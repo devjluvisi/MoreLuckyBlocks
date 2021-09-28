@@ -54,35 +54,35 @@ public class MenuView implements Listener {
 	 * @return the player who is viewing the menu
 	 */
 	public Player getPlayer() {
-		return player;
+		return this.player;
 	}
 
 	/**
 	 * @return the current inventory view
 	 */
 	public InventoryView getInventoryView() {
-		return view;
+		return this.view;
 	}
 
 	/**
 	 * @return the menu of the MenuView
 	 */
 	public Menu getMenu() {
-		return menu;
+		return this.menu;
 	}
 
 	/**
 	 * @return the page that the player is currently viewing
 	 */
 	public Page getCurrentPage() {
-		return this.menu.getPage(currentPage);
+		return this.menu.getPage(this.currentPage);
 	}
 
 	/**
 	 * @return the index of the current page
 	 */
 	public int getCurrentPageIndex() {
-		return currentPage;
+		return this.currentPage;
 	}
 
 	/**
@@ -91,21 +91,21 @@ public class MenuView implements Listener {
 	 *                                  page is invalid
 	 */
 	public void setPage(int index) {
-		Validate.isTrue(index >= 0 && index < this.menu.getPageCount(), "Page index out of bounds");
+		Validate.isTrue((index >= 0) && (index < this.menu.getPageCount()), "Page index out of bounds");
 		this.currentPage = index;
 
-		Validate.notNull(this.menu.getPage(currentPage), "The page must not be null");
-		Validate.notNull(this.menu.getPage(currentPage).getPageType(), "The page type must not be null");
-		Validate.notNull(this.menu.getPage(currentPage).getContent(), "The content must not be null");
+		Validate.notNull(this.menu.getPage(this.currentPage), "The page must not be null");
+		Validate.notNull(this.menu.getPage(this.currentPage).getPageType(), "The page type must not be null");
+		Validate.notNull(this.menu.getPage(this.currentPage).getContent(), "The content must not be null");
 
-		ItemStack[] pageContent = this.menu.getPage(currentPage).getContent();
+		final ItemStack[] pageContent = this.menu.getPage(this.currentPage).getContent();
 
-		if (this.menu.getPage(currentPage).getPageType().getInventoryType() == InventoryType.CHEST) {
-			this.inventory = Bukkit.createInventory(null, this.menu.getPage(currentPage).getPageType().getSize(),
+		if (this.menu.getPage(this.currentPage).getPageType().getInventoryType() == InventoryType.CHEST) {
+			this.inventory = Bukkit.createInventory(null, this.menu.getPage(this.currentPage).getPageType().getSize(),
 					this.getCurrentPage().getName() != null ? this.getCurrentPage().getName() : this.menu.getName());
 		} else {
 			this.inventory = Bukkit.createInventory(null,
-					this.menu.getPage(currentPage).getPageType().getInventoryType(),
+					this.menu.getPage(this.currentPage).getPageType().getInventoryType(),
 					this.getCurrentPage().getName() != null ? this.getCurrentPage().getName() : this.menu.getName());
 		}
 
@@ -121,7 +121,7 @@ public class MenuView implements Listener {
 	 * Reopens the current page.
 	 */
 	public void reopen() {
-		setPage(getCurrentPageIndex());
+		this.setPage(this.getCurrentPageIndex());
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class MenuView implements Listener {
 	 * @return true if the page is effectively opened, otherwise false
 	 */
 	public boolean nextPage() {
-		if (this.currentPage + 1 < this.menu.getPageCount()) {
+		if ((this.currentPage + 1) < this.menu.getPageCount()) {
 			this.setPage(this.currentPage + 1);
 			return true;
 		} else {
@@ -144,7 +144,7 @@ public class MenuView implements Listener {
 	 * @return true if the page is effectively opened, otherwise false
 	 */
 	public boolean previousPage() {
-		if (this.currentPage - 1 >= 0) {
+		if ((this.currentPage - 1) >= 0) {
 			this.setPage(this.currentPage - 1);
 			return true;
 		} else {
@@ -156,7 +156,7 @@ public class MenuView implements Listener {
 	 * Close the menu.
 	 */
 	public void close() {
-		if (view != null) {
+		if (this.view != null) {
 			this.view.close();
 		}
 	}
@@ -165,8 +165,9 @@ public class MenuView implements Listener {
 	public void onClick(InventoryClickEvent event) {
 
 		if (event.getView() == this.getInventoryView()) {
-			if (event.getRawSlot() < 0)
+			if (event.getRawSlot() < 0) {
 				return;
+			}
 			GUI_API.getInstance().getServer().getScheduler().runTask(GUI_API.getInstance(),
 					() -> MenuView.this.getCurrentPage().onClick(MenuView.this, event.getClick(), event.getRawSlot(),
 							event.getCurrentItem()));

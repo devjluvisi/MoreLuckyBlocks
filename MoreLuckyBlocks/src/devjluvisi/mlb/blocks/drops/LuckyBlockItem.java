@@ -13,7 +13,7 @@ public class LuckyBlockItem implements LootProperty {
 	}
 
 	public ItemStack getItem() {
-		return item;
+		return this.item;
 	}
 
 	public void setItem(ItemStack item) {
@@ -21,12 +21,12 @@ public class LuckyBlockItem implements LootProperty {
 	}
 
 	public String enchantsConfigString() {
-		if (item.getEnchantments().size() == 0) {
+		if (this.item.getEnchantments().size() == 0) {
 			return "";
 		}
 		String str = "[";
-		for (Enchantment e : item.getEnchantments().keySet()) {
-			str += e.getKey().getKey().toString().toUpperCase() + ":" + item.getEnchantments().get(e) + ",";
+		for (final Enchantment e : this.item.getEnchantments().keySet()) {
+			str += e.getKey().getKey().toString().toUpperCase() + ":" + this.item.getEnchantments().get(e) + ",";
 		}
 		// Remove trailing comma.
 		str = str.substring(0, str.length() - 1);
@@ -36,24 +36,25 @@ public class LuckyBlockItem implements LootProperty {
 
 	@Override
 	public String toString() {
-		return "LuckyBlockItem [item=" + item + "]";
+		return "LuckyBlockItem [item=" + this.item + "]";
 	}
 
 	@Override
 	public ItemStack asItem() {
-		return item;
+		return this.item;
 	}
 
 	@Override
 	public boolean isValid() {
-		if ((item == null) || (item.getAmount() < 1) || (item.getType() == null))
+		if ((this.item == null) || (this.item.getAmount() < 1) || (this.item.getType() == null)) {
 			return false;
+		}
 		return true;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		return item.equals(((LuckyBlockItem) obj).item);
+		return this.item.equals(((LuckyBlockItem) obj).item);
 	}
 
 }

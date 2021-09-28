@@ -19,7 +19,7 @@ public class LuckyBlockCommand implements LootProperty {
 	}
 
 	public String getCommand() {
-		return command;
+		return this.command;
 	}
 
 	public void setCommand(String command) {
@@ -27,18 +27,18 @@ public class LuckyBlockCommand implements LootProperty {
 	}
 
 	public void runCommand() {
-		Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), command);
+		Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), this.command);
 	}
 
 	@Override
 	public String toString() {
-		return "LuckyBlockCommand [command=" + command + "]";
+		return "LuckyBlockCommand [command=" + this.command + "]";
 	}
 
 	@Override
 	public ItemStack asItem() {
-		ItemStack i = new ItemStack(Material.OAK_SIGN);
-		ItemMeta meta = i.getItemMeta();
+		final ItemStack i = new ItemStack(Material.OAK_SIGN);
+		final ItemMeta meta = i.getItemMeta();
 		meta.setDisplayName(ChatColor.RED + "Execute Command");
 		meta.setLore(Arrays.asList(ChatColor.GRAY + "The following command will", ChatColor.GRAY + "be executed:",
 				ChatColor.GOLD + this.command));
@@ -48,14 +48,15 @@ public class LuckyBlockCommand implements LootProperty {
 
 	@Override
 	public boolean isValid() {
-		if (!command.contains("/"))
+		if (!this.command.contains("/")) {
 			return false;
+		}
 		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		return command.toLowerCase().hashCode();
+		return this.command.toLowerCase().hashCode();
 	}
 
 	@Override

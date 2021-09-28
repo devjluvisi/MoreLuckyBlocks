@@ -11,12 +11,14 @@ import devjluvisi.mlb.blocks.LuckyBlockDrop;
 
 /**
  * Fix user errors related to inventory closing.
+ *
  * @author jacob
  *
  */
 public class InventoryCloseFix implements Listener {
 
-	private MoreLuckyBlocks plugin;
+	private final MoreLuckyBlocks plugin;
+
 	public InventoryCloseFix(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
 	}
@@ -24,19 +26,20 @@ public class InventoryCloseFix implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void fixAddDrop(InventoryCloseEvent e) {
 
-		// Only remove a drop from the luckyblock if the player has CLOSED ALL INVENTORIES.
-		// Removing this will cause index out of bounds exceptions when editing an added item.
-		if(!e.getPlayer().hasPermission("mlb.admin.edit") || !e.getView().getTitle().contains("Editing Drop")) {
+		// Only remove a drop from the luckyblock if the player has CLOSED ALL
+		// INVENTORIES.
+		// Removing this will cause index out of bounds exceptions when editing an added
+		// item.
+		if (!e.getPlayer().hasPermission("mlb.admin.edit") || !e.getView().getTitle().contains("Editing Drop")) {
 			return;
 		}
-            	for(LuckyBlock b: plugin.getLuckyBlocks()) {
-        			for(LuckyBlockDrop d: b.getDroppableItems()) {
-        				if(d.getLoot().size() == 0) {
-        					b.removeDrop(d);
-        				}
-        			}
-        		}
-
+		for (final LuckyBlock b : this.plugin.getLuckyBlocks()) {
+			for (final LuckyBlockDrop d : b.getDroppableItems()) {
+				if (d.getLoot().size() == 0) {
+					b.removeDrop(d);
+				}
+			}
+		}
 
 	}
 

@@ -27,7 +27,7 @@ public class Confirm extends BasePage {
 
 	@Override
 	public ItemStack[] getContent() {
-		ItemStack[][] content = getPageType().getBlank2DArray();
+		final ItemStack[][] content = this.getPageType().getBlank2DArray();
 
 		for (int i = 0; i < 3; i++) {
 			Arrays.fill(content[i], new ItemCreator(Material.GRAY_STAINED_GLASS_PANE).getItem());
@@ -49,44 +49,45 @@ public class Confirm extends BasePage {
 		i.setItemMeta(meta);
 		content[1][6] = i;
 
-		return getPageType().flatten(content);
+		return this.getPageType().flatten(content);
 	}
 
 	@Override
 	public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-		if (itemStack == null || itemStack.getType().equals(Material.GRAY_STAINED_GLASS_PANE) || isPlayerSlot(slot)) {
+		if ((itemStack == null) || itemStack.getType().equals(Material.GRAY_STAINED_GLASS_PANE)
+				|| this.isPlayerSlot(slot)) {
 			return;
 		}
-		if (getConfirmAction() == Action.DELETE_DROP) {
+		if (this.getConfirmAction() == Action.DELETE_DROP) {
 			if (itemStack.getType() == Material.GREEN_TERRACOTTA) {
-				plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().remove(getDropIndex());
+				this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().remove(this.getDropIndex());
 				view.getPlayer().sendMessage(ChatColor.GRAY + "Deleted the drop.");
-				traverse(view, View.LIST_DROPS);
+				this.traverse(view, View.LIST_DROPS);
 			} else {
-				traverse(view, View.LIST_LOOT);
+				this.traverse(view, View.LIST_LOOT);
 			}
 			return;
 		}
-		if (getConfirmAction() == Action.REMOVE_ALL_DROPS) {
+		if (this.getConfirmAction() == Action.REMOVE_ALL_DROPS) {
 			if (itemStack.getType() == Material.GREEN_TERRACOTTA) {
-				final LuckyBlockDrop firstIndex = plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems()
-						.get(0);
-				plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().clear();
-				plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().add(firstIndex);
+				final LuckyBlockDrop firstIndex = this.plugin.getLuckyBlocks().get(this.getBlockIndex())
+						.getDroppableItems().get(0);
+				this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().clear();
+				this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().add(firstIndex);
 				view.getPlayer().sendMessage(ChatColor.GRAY + "Deleted All Drops (left one drop as required).");
-				traverse(view, View.LIST_DROPS);
+				this.traverse(view, View.LIST_DROPS);
 			} else {
-				traverse(view, View.LIST_DROPS);
+				this.traverse(view, View.LIST_DROPS);
 			}
 			return;
 		}
-		if (getConfirmAction() == Action.REMOVE_LUCKY_BLOCK) {
+		if (this.getConfirmAction() == Action.REMOVE_LUCKY_BLOCK) {
 			if (itemStack.getType() == Material.GREEN_TERRACOTTA) {
-				plugin.getLuckyBlocks().remove(getBlockIndex());
+				this.plugin.getLuckyBlocks().remove(this.getBlockIndex());
 				view.getPlayer().sendMessage(ChatColor.GRAY + "Deleted the lucky block.");
 				view.close();
 			} else {
-				traverse(view, View.LIST_DROPS);
+				this.traverse(view, View.LIST_DROPS);
 			}
 			return;
 		}

@@ -23,13 +23,13 @@ import devjluvisi.mlb.menus.pages.LootPage;
  */
 public class LuckyMenu extends Menu {
 
-	private MoreLuckyBlocks plugin;
+	private final MoreLuckyBlocks plugin;
 
 	private int blockIndex;
 	private int dropIndex;
 	private Action confirmAction;
 
-	private LinkedList<BasePage> pages;
+	private final LinkedList<BasePage> pages;
 
 	/*
 	 * Various instance variables are here for this menu in order to track pages
@@ -44,24 +44,24 @@ public class LuckyMenu extends Menu {
 	}
 
 	private void addPages() {
-		pages.add(new ListPage(this));
-		pages.add(new DropsPage(this));
-		pages.add(new LootPage(this));
-		pages.add(new EditDrop(this));
-		pages.add(new Confirm(this));
-		pages.add(new ChangeRarity(this));
+		this.pages.add(new ListPage(this));
+		this.pages.add(new DropsPage(this));
+		this.pages.add(new LootPage(this));
+		this.pages.add(new EditDrop(this));
+		this.pages.add(new Confirm(this));
+		this.pages.add(new ChangeRarity(this));
 	}
 
 	public LuckyMenu(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
-		pages = new LinkedList<>();
+		this.pages = new LinkedList<>();
 		// Note: order does not matter
-		addPages();
+		this.addPages();
 	}
 
 	public void refresh() {
-		pages.clear();
-		addPages();
+		this.pages.clear();
+		this.addPages();
 	}
 
 	@Override
@@ -71,15 +71,15 @@ public class LuckyMenu extends Menu {
 
 	@Override
 	public int getPageCount() {
-		return pages.size();
+		return this.pages.size();
 	}
 
 	protected MoreLuckyBlocks getPlugin() {
-		return plugin;
+		return this.plugin;
 	}
 
 	public int getBlockIndex() {
-		return blockIndex;
+		return this.blockIndex;
 	}
 
 	public void setBlockIndex(int blockIndex) {
@@ -87,7 +87,7 @@ public class LuckyMenu extends Menu {
 	}
 
 	public int getDropIndex() {
-		return dropIndex;
+		return this.dropIndex;
 	}
 
 	public void setDropIndex(int dropIndex) {
@@ -95,7 +95,7 @@ public class LuckyMenu extends Menu {
 	}
 
 	public Action getConfirmAction() {
-		return confirmAction;
+		return this.confirmAction;
 	}
 
 	public void setConfirmAction(Action confirmAction) {
@@ -104,8 +104,8 @@ public class LuckyMenu extends Menu {
 
 	@Override
 	public Page[] getPages() {
-		Page[] pages = new Page[getPageCount()];
-		for (int i = 0; i < getPageCount(); i++) {
+		final Page[] pages = new Page[this.getPageCount()];
+		for (int i = 0; i < this.getPageCount(); i++) {
 			pages[i] = this.pages.get(i);
 		}
 		return pages;

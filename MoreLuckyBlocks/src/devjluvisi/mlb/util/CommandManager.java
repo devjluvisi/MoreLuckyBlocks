@@ -11,8 +11,10 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.cmds.admin.CreateCommand;
 import devjluvisi.mlb.cmds.admin.GiveCommand;
 import devjluvisi.mlb.cmds.admin.ItemCommand;
+import devjluvisi.mlb.cmds.admin.PlayerLuckCommand;
 import devjluvisi.mlb.cmds.admin.ReloadConfigCommand;
 import devjluvisi.mlb.cmds.admin.SaveConfigCommand;
+import devjluvisi.mlb.cmds.admin.TestCommand;
 import devjluvisi.mlb.cmds.general.HelpCommand;
 import devjluvisi.mlb.cmds.general.VersionCommand;
 import devjluvisi.mlb.cmds.lb.ListCommand;
@@ -32,22 +34,24 @@ import net.md_5.bungee.api.ChatColor;
 public class CommandManager implements CommandExecutor {
 
 	/** A list of all possible subcommands in the plugin arg[0]. */
-	private ArrayList<SubCommand> subcommands;
+	private final ArrayList<SubCommand> subcommands;
 
 	public CommandManager(MoreLuckyBlocks plugin) {
 		this.subcommands = new ArrayList<>();
 
-		subcommands.add(new VersionCommand(plugin));
-		subcommands.add(new CreateCommand(plugin));
-		subcommands.add(new ListCommand(plugin));
-		subcommands.add(new GiveCommand(plugin));
-		subcommands.add(new ReloadConfigCommand(plugin));
-		subcommands.add(new SaveConfigCommand(plugin));
-		subcommands.add(new ItemCommand());
-		
+		this.subcommands.add(new VersionCommand(plugin));
+		this.subcommands.add(new CreateCommand(plugin));
+		this.subcommands.add(new ListCommand(plugin));
+		this.subcommands.add(new GiveCommand(plugin));
+		this.subcommands.add(new ReloadConfigCommand(plugin));
+		this.subcommands.add(new SaveConfigCommand(plugin));
+		this.subcommands.add(new ItemCommand());
+		this.subcommands.add(new TestCommand(plugin));
+		this.subcommands.add(new PlayerLuckCommand(plugin));
+
 		// Make sure this help command stays at the bottom other wise other commands
 		// will not show up in /mlb help
-		subcommands.add(new HelpCommand(subcommands));
+		this.subcommands.add(new HelpCommand(this.subcommands));
 	}
 
 	@Override
@@ -59,7 +63,7 @@ public class CommandManager implements CommandExecutor {
 		}
 
 		// Go through all of the sub commands and check if the argument matches.
-		for (SubCommand sub : subcommands) {
+		for (final SubCommand sub : this.subcommands) {
 			if (args[0].equalsIgnoreCase(sub.getName())) {
 
 				if (!(sender instanceof Player) && !sub.isAllowConsole()) {
@@ -67,7 +71,7 @@ public class CommandManager implements CommandExecutor {
 					return true;
 				}
 
-				if (sub.getPermission() != null && !sender.hasPermission(sub.getPermission())) {
+				if ((sub.getPermission() != null) && !sender.hasPermission(sub.getPermission())) {
 					sender.sendMessage(ChatColor.RED + "You do not have permission to do this.");
 					return true;
 				}

@@ -25,7 +25,7 @@ public class LuckyBlockPotionEffect implements LootProperty {
 	}
 
 	public PotionEffectType getType() {
-		return type;
+		return this.type;
 	}
 
 	public void setType(PotionEffectType type) {
@@ -33,7 +33,7 @@ public class LuckyBlockPotionEffect implements LootProperty {
 	}
 
 	public int getDuration() {
-		return duration;
+		return this.duration;
 	}
 
 	public void setDuration(int duration2) {
@@ -41,7 +41,7 @@ public class LuckyBlockPotionEffect implements LootProperty {
 	}
 
 	public int getAmplifier() {
-		return amplifier;
+		return this.amplifier;
 	}
 
 	public void setAmplifier(int amplifier2) {
@@ -59,14 +59,14 @@ public class LuckyBlockPotionEffect implements LootProperty {
 	public static LuckyBlockPotionEffect parseFromFile(String raw) {
 		raw = raw.replace("[", "").replace("]", "");
 
-		String[] cut = raw.split(",");
-		PotionEffectType potionType = PotionEffectType.getByName(cut[0].toUpperCase().trim());
+		final String[] cut = raw.split(",");
+		final PotionEffectType potionType = PotionEffectType.getByName(cut[0].toUpperCase().trim());
 		byte amplifier;
 		short duration;
 		try {
 			amplifier = Byte.parseByte(cut[1].trim());
 			duration = Short.parseShort(cut[2].trim());
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			amplifier = -1;
 			duration = -1;
 		}
@@ -74,46 +74,48 @@ public class LuckyBlockPotionEffect implements LootProperty {
 	}
 
 	public String asConfigString() {
-		String s = "[";
-		s += type.getName();
-		s += ", ";
-		s += String.valueOf(amplifier);
-		s += ", ";
-		s += String.valueOf(duration);
-		s += "]";
-		return s;
+		final StringBuilder s = new StringBuilder("[");
+		s.append(this.type.getName());
+		s.append(", ");
+		s.append(this.amplifier);
+		s.append(", ");
+		s.append(this.duration);
+		s.append("]");
+		return s.toString();
 	}
 
 	@Override
 	public String toString() {
-		return "LuckyBlockPotionEffect [type=" + type + ", duration=" + duration + ", amplifier=" + amplifier + "]";
+		return "LuckyBlockPotionEffect [type=" + this.type + ", duration=" + this.duration + ", amplifier="
+				+ this.amplifier + "]";
 	}
 
 	@Override
 	public ItemStack asItem() {
-		ItemStack i = new ItemStack(Material.POTION);
-		ItemMeta meta = i.getItemMeta();
+		final ItemStack i = new ItemStack(Material.POTION);
+		final ItemMeta meta = i.getItemMeta();
 		i.addUnsafeEnchantment(Enchantment.CHANNELING, 1);
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
 		meta.setDisplayName(ChatColor.RED + "Add Effect");
 		meta.setLore(Arrays.asList(ChatColor.GRAY + "The following potion effect", ChatColor.GRAY + "will be applied:",
-				ChatColor.DARK_AQUA + type.getName() + ChatColor.DARK_GRAY + ", " + ChatColor.DARK_AQUA + amplifier
-						+ ChatColor.DARK_GRAY + ", " + ChatColor.DARK_AQUA + duration + "s"));
+				ChatColor.DARK_AQUA + this.type.getName() + ChatColor.DARK_GRAY + ", " + ChatColor.DARK_AQUA
+						+ this.amplifier + ChatColor.DARK_GRAY + ", " + ChatColor.DARK_AQUA + this.duration + "s"));
 		i.setItemMeta(meta);
 		return i;
 	}
 
 	@Override
 	public boolean isValid() {
-		if ((type == null) || (duration < 1) || (amplifier < 0))
+		if ((this.type == null) || (this.duration < 1) || (this.amplifier < 0)) {
 			return false;
+		}
 		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		return type.getName().hashCode() + duration + amplifier;
+		return this.type.getName().hashCode() + this.duration + this.amplifier;
 	}
 
 	@Override

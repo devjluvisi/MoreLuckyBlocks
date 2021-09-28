@@ -8,5 +8,5 @@ api-version: 1.17
 
 commands:
   mlb:
-   description: Main plugin command.
+   description: Main plugin command. Use /mlb help for more information.
    aliases: [moreluckyblocks, mluckyblocks, mlblocks, mlbplugin]

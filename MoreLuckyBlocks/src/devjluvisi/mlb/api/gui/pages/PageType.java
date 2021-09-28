@@ -29,21 +29,21 @@ public enum PageType {
 	 * @return the number of rows
 	 */
 	public int getRow() {
-		return row;
+		return this.row;
 	}
 
 	/**
 	 * @return the number of columns
 	 */
 	public int getColumn() {
-		return column;
+		return this.column;
 	}
 
 	/**
 	 * @return the number of slots
 	 */
 	public int getSize() {
-		return row * column;
+		return this.row * this.column;
 	}
 
 	/**
@@ -53,7 +53,7 @@ public enum PageType {
 	 * @return the coordinates of the item
 	 */
 	public Coords2D getCoords2DFromIndex(int index) {
-		return new Coords2D(index / getRow(), (index % getRow()));
+		return new Coords2D(index / this.getRow(), (index % this.getRow()));
 	}
 
 	/**
@@ -63,7 +63,7 @@ public enum PageType {
 	 * @return the index in the content of the item
 	 */
 	public int getIndexFrom2D(Coords2D coords2D) {
-		return getColumn() * coords2D.getY() + coords2D.getX();
+		return (this.getColumn() * coords2D.getY()) + coords2D.getX();
 	}
 
 	/**
@@ -75,14 +75,14 @@ public enum PageType {
 	 *                                  page
 	 */
 	public ItemStack[][] reshapeIn2D(ItemStack[] content) {
-		Validate.isTrue(content.length == getSize());
+		Validate.isTrue(content.length == this.getSize());
 
-		ItemStack[][] rtn = getBlank2DArray();
+		final ItemStack[][] rtn = this.getBlank2DArray();
 
 		int y = 0;
 		int x = 0;
 
-		for (ItemStack item : content) {
+		for (final ItemStack item : content) {
 			rtn[y][x] = item;
 			x++;
 			if (x == 9) {
@@ -102,22 +102,23 @@ public enum PageType {
 	 *         does not match the shape of the page
 	 */
 	public ItemStack[] flatten(ItemStack[][] content) {
-		Validate.isTrue(content.length == getRow(), "The number of rows does not match the shape of the page, "
-				+ content.length + " instead of " + getRow());
+		Validate.isTrue(content.length == this.getRow(), "The number of rows does not match the shape of the page, "
+				+ content.length + " instead of " + this.getRow());
 
-		ItemStack[] rtn = getBlankArray();
+		final ItemStack[] rtn = this.getBlankArray();
 
 		int y = 0;
 
-		for (ItemStack[] column : content) {
+		for (final ItemStack[] column : content) {
 
-			Validate.isTrue(column.length == getColumn(), "The number of columns does not match the shape of the page, "
-					+ column.length + " instead of " + getColumn());
+			Validate.isTrue(column.length == this.getColumn(),
+					"The number of columns does not match the shape of the page, " + column.length + " instead of "
+							+ this.getColumn());
 
 			int x = 0;
 
-			for (ItemStack item : column) {
-				rtn[y * getColumn() + x] = item;
+			for (final ItemStack item : column) {
+				rtn[(y * this.getColumn()) + x] = item;
 				x++;
 			}
 
@@ -133,7 +134,7 @@ public enum PageType {
 	 * @return an array
 	 */
 	public ItemStack[] getBlankArray() {
-		return new ItemStack[getSize()];
+		return new ItemStack[this.getSize()];
 	}
 
 	/**
@@ -143,13 +144,13 @@ public enum PageType {
 	 * @return an array
 	 */
 	public ItemStack[][] getBlank2DArray() {
-		return new ItemStack[getRow()][getColumn()];
+		return new ItemStack[this.getRow()][this.getColumn()];
 	}
 
 	/**
 	 * @return the inventory type of the page
 	 */
 	public InventoryType getInventoryType() {
-		return inventoryType;
+		return this.inventoryType;
 	}
 }

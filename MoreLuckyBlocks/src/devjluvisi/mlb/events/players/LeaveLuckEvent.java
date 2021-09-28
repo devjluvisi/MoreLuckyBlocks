@@ -1,25 +1,22 @@
-package devjluvisi.mlb.events.luck;
+package devjluvisi.mlb.events.players;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import devjluvisi.mlb.players.LuckyPlayer;
 
 public class LeaveLuckEvent implements Listener {
-	
-	private MoreLuckyBlocks plugin;
-	
+
+	private final MoreLuckyBlocks plugin;
+
 	public LeaveLuckEvent(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
 	}
-	
+
 	@EventHandler
 	public void leave(PlayerQuitEvent e) {
-		LuckyPlayer p = new LuckyPlayer(plugin).track(e.getPlayer().getUniqueId());
-		p.writeToConfig();
-		plugin.getPlayerLuckMap().remove(p.getPlayerUUID());
+		this.plugin.getPlayerLuckMap().remove(e.getPlayer().getUniqueId());
 	}
 
 }

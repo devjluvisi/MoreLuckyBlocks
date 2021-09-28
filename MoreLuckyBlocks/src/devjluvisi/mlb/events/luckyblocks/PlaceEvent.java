@@ -1,0 +1,47 @@
+package devjluvisi.mlb.events.luckyblocks;
+
+import org.apache.commons.lang.Validate;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.PluginConstants;
+import devjluvisi.mlb.api.items.CustomItemMeta;
+import devjluvisi.mlb.blocks.LuckyBlock;
+
+public class PlaceEvent implements Listener {
+
+	private final MoreLuckyBlocks plugin;
+
+	public PlaceEvent(MoreLuckyBlocks plugin) {
+		this.plugin = plugin;
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void placeLuckyBlock(BlockPlaceEvent e) {
+		final ItemStack item = e.getItemInHand();
+		final ItemMeta meta = item.getItemMeta();
+		final CustomItemMeta specialMeta = this.plugin.getMetaFactory().createCustomMeta(meta);
+		if (!specialMeta.containsKey(PluginConstants.LuckyIdentifier)) {
+			return;
+		}
+		LuckyBlock blockPlaced = null;
+		final String luckId = specialMeta.getString(PluginConstants.LuckyIdentifier);
+
+		for (final LuckyBlock lb : this.plugin.getLuckyBlocks()) {
+			if (lb.getInternalName().equals(luckId)) {
+				blockPlaced = lb;
+			}
+		}
+		Validate.notNull(blockPlaced);
+
+		blockPlaced.setBlockLuck(specialMeta.getFloat(PluginConstants.BlockLuckIdentifier));
+		this.plugin.getAudit().put(e.getBlock().getLocation(), blockPlaced);
+		e.getPlayer().sendMessage("You placed a lucky block (" + blockPlaced.getInternalName() + ").");
+	}
+
+}

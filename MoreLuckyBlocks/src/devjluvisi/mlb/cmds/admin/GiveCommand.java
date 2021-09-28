@@ -13,7 +13,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class GiveCommand implements SubCommand {
 
-	private MoreLuckyBlocks plugin;
+	private final MoreLuckyBlocks plugin;
 
 	public GiveCommand(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
@@ -52,18 +52,18 @@ public class GiveCommand implements SubCommand {
 	@Override
 	public ExecutionResult perform(CommandSender sender, String[] args) {
 
-		Player p = Bukkit.getPlayerExact(args[1]);
+		final Player p = Bukkit.getPlayerExact(args[1]);
 
 		if (p == null) {
 			return ExecutionResult.INVALID_PLAYER;
 		}
 
-		if (!LuckyBlockHelper.doesExist(plugin.getBlocksYaml(), args[2].toLowerCase())) {
+		if (!LuckyBlockHelper.doesExist(this.plugin.getBlocksYaml(), args[2].toLowerCase())) {
 			sender.sendMessage(ChatColor.RED + "Lucky block does not exist.");
 			return ExecutionResult.PASSED;
 		}
 
-		LuckyBlock block = LuckyBlockHelper.getLuckyBlock(plugin.getBlocksYaml(), args[2].toLowerCase());
+		final LuckyBlock block = LuckyBlockHelper.getLuckyBlock(this.plugin.getBlocksYaml(), args[2].toLowerCase());
 		float luck = block.getDefaultBlockLuck();
 		int amount = 1;
 
@@ -75,12 +75,12 @@ public class GiveCommand implements SubCommand {
 				amount = Integer.parseInt(args[3]);
 			}
 
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return ExecutionResult.BAD_ARGUMENT_TYPE;
 		}
 
 		block.setBlockLuck(luck);
-		p.getInventory().addItem(block.asItem(amount));
+		p.getInventory().addItem(block.asItem(this.plugin, luck, amount));
 		sender.sendMessage(ChatColor.GREEN + "Success!");
 		return ExecutionResult.PASSED;
 	}

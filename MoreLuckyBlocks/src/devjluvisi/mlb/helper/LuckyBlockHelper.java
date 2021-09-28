@@ -9,13 +9,14 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.blocks.drops.LootProperty;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.drops.LuckyBlockItem;
 import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
-import devjluvisi.mlb.util.ConfigManager;
+import devjluvisi.mlb.util.config.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -43,12 +44,12 @@ public final class LuckyBlockHelper {
 	 * @return The item stack made from the config path.
 	 */
 	public static ItemStack getItem(ConfigManager blocksYaml, String path) {
-		ItemStack itemObject = new ItemStack(Material.AIR);
+		final ItemStack itemObject = new ItemStack(Material.AIR);
 
 		final String accessor = path;
 
-		for (String itemKeyValues : blocksYaml.getConfig().getConfigurationSection(accessor).getKeys(false)) {
-			if(itemKeyValues.equalsIgnoreCase("type")) {
+		for (final String itemKeyValues : blocksYaml.getConfig().getConfigurationSection(accessor).getKeys(false)) {
+			if (itemKeyValues.equalsIgnoreCase("type")) {
 				itemObject.setType(Material.getMaterial(blocksYaml.getConfig().getString(accessor + "." + "type")));
 			}
 			if (itemKeyValues.equalsIgnoreCase("amount")) {
@@ -56,30 +57,29 @@ public final class LuckyBlockHelper {
 			}
 			if (itemKeyValues.equalsIgnoreCase("enchants")) {
 				String enchants = blocksYaml.getConfig().getString(accessor + ".enchants");
-				if (enchants != null && !enchants.isEmpty()) {
+				if ((enchants != null) && !enchants.isEmpty()) {
 					enchants = enchants.replace("[", "").replace("]", "");
 
-					String[] splitter = enchants.split(",");
-					for (String s : splitter) {
-						String[] enc = s.split(":");
+					final String[] splitter = enchants.split(",");
+					for (final String s : splitter) {
+						final String[] enc = s.split(":");
 						itemObject.addUnsafeEnchantment(org.bukkit.enchantments.Enchantment
 								.getByKey(NamespacedKey.minecraft(enc[0].toLowerCase())), Integer.parseInt(enc[1]));
 					}
 				}
 			}
 
-			if (itemKeyValues.equalsIgnoreCase("display-name")) {
-				if (blocksYaml.getConfig().getString(accessor + ".display-name") != null
-						&& !blocksYaml.getConfig().getString(accessor + ".display-name").isEmpty()) {
-					ItemMeta meta = itemObject.getItemMeta();
-					meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',
-							blocksYaml.getConfig().getString(accessor + ".display-name")));
-					itemObject.setItemMeta(meta);
-				}
+			if (itemKeyValues.equalsIgnoreCase("display-name")
+					&& ((blocksYaml.getConfig().getString(accessor + ".display-name") != null)
+							&& !blocksYaml.getConfig().getString(accessor + ".display-name").isEmpty())) {
+				final ItemMeta meta = itemObject.getItemMeta();
+				meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',
+						blocksYaml.getConfig().getString(accessor + ".display-name")));
+				itemObject.setItemMeta(meta);
 			}
 			if (itemKeyValues.equalsIgnoreCase("lore")) {
-				ItemMeta meta = itemObject.getItemMeta();
-				ArrayList<String> lore = new ArrayList<>();
+				final ItemMeta meta = itemObject.getItemMeta();
+				final ArrayList<String> lore = new ArrayList<>();
 				blocksYaml.getConfig().getStringList(accessor + "." + "lore")
 						.forEach(s -> lore.add(ChatColor.translateAlternateColorCodes('&', s)));
 				meta.setLore(lore);
@@ -98,7 +98,7 @@ public final class LuckyBlockHelper {
 	 * @return LuckyBlock if it exists.
 	 */
 	public static LuckyBlock getLuckyBlock(ConfigManager blocksYaml, String internalName) {
-		LuckyBlock block = new LuckyBlock();
+		final LuckyBlock block = new LuckyBlock();
 		block.setInternalName(internalName);
 		block.setName(ChatColor.translateAlternateColorCodes('&',
 				blocksYaml.getConfig().getString("lucky-blocks." + internalName + ".item-name")));
@@ -110,28 +110,28 @@ public final class LuckyBlockHelper {
 				(float) blocksYaml.getConfig().getDouble("lucky-blocks." + internalName + ".default-luck"));
 		block.setBlockLuck(block.getDefaultBlockLuck());
 		block.setLore(blocksYaml.getConfig().getStringList("lucky-blocks." + internalName + ".item-lore"));
-		ArrayList<LuckyBlockDrop> drops = new ArrayList<>();
+		final ArrayList<LuckyBlockDrop> drops = new ArrayList<>();
 
 		// Setup dropped items.
 
 		final String itemDropKey = "lucky-blocks." + internalName + ".drops";
-		if(blocksYaml.getConfig().getConfigurationSection(itemDropKey) == null) {
+		if (blocksYaml.getConfig().getConfigurationSection(itemDropKey) == null) {
 			return block;
 		}
-		for (String key : blocksYaml.getConfig().getConfigurationSection(itemDropKey).getKeys(false)) {
-			
+		for (final String key : blocksYaml.getConfig().getConfigurationSection(itemDropKey).getKeys(false)) {
 
-			LuckyBlockDrop drop = new LuckyBlockDrop();
+			final LuckyBlockDrop drop = new LuckyBlockDrop();
 			drop.setRarity((float) blocksYaml.getConfig()
 					.getDouble("lucky-blocks." + internalName + ".drops." + key + ".rarity"));
 
 			// First get all of the items, commands, and potion effects.
-			ArrayList<LuckyBlockItem> items = new ArrayList<>();
-			ArrayList<LuckyBlockCommand> commands = new ArrayList<>();
-			ArrayList<LuckyBlockPotionEffect> potionEffects = new ArrayList<>();
+			final ArrayList<LuckyBlockItem> items = new ArrayList<>();
+			final ArrayList<LuckyBlockCommand> commands = new ArrayList<>();
+			final ArrayList<LuckyBlockPotionEffect> potionEffects = new ArrayList<>();
 
 			int index = 0;
-			for (@SuppressWarnings("unused") String s : blocksYaml.getConfig()
+			for (@SuppressWarnings("unused")
+			final String s : blocksYaml.getConfig()
 					.getConfigurationSection("lucky-blocks." + internalName + ".drops." + key + ".items")
 					.getKeys(false)) {
 				items.add(new LuckyBlockItem(
@@ -139,11 +139,11 @@ public final class LuckyBlockHelper {
 				index++;
 			}
 
-			for (String s : blocksYaml.getConfig()
+			for (final String s : blocksYaml.getConfig()
 					.getStringList("lucky-blocks." + internalName + ".drops." + key + ".commands")) {
 				commands.add(new LuckyBlockCommand(s));
 			}
-			for (String s : blocksYaml.getConfig()
+			for (final String s : blocksYaml.getConfig()
 					.getStringList("lucky-blocks." + internalName + ".drops." + key + ".potions")) {
 				potionEffects.add(LuckyBlockPotionEffect.parseFromFile(s));
 
@@ -158,10 +158,10 @@ public final class LuckyBlockHelper {
 		block.setDroppableItems(new LinkedList<>(drops));
 		return block;
 	}
-	
+
 	public static boolean unique(ArrayList<LuckyBlock> arr, String internalName) {
-		for(LuckyBlock b : arr) {
-			if(b.getInternalName().equalsIgnoreCase(internalName)) {
+		for (final LuckyBlock b : arr) {
+			if (b.getInternalName().equalsIgnoreCase(internalName)) {
 				return false;
 			}
 		}
@@ -174,17 +174,18 @@ public final class LuckyBlockHelper {
 	 * @return If there are any errors in the blocks.yml file.
 	 */
 	public static boolean validateBlocksYaml(ArrayList<LuckyBlock> arr) {
-		for (LuckyBlock block : arr) {
+		for (final LuckyBlock block : arr) {
 
-			if (block.getInternalName().contains(" ") || block.getBlockMaterial() == null
-					|| !block.getBlockMaterial().isBlock())
+			if (block.getInternalName().contains(" ") || (block.getBlockMaterial() == null)
+					|| !block.getBlockMaterial().isBlock()) {
 				return false;
+			}
 
-			for (LuckyBlockDrop drop : block.getDroppableItems()) {
-				if (drop.getLoot().size() > LuckyBlockDrop.MAX_ALLOWED_LOOT || drop.getLoot().size() == 0) {
+			for (final LuckyBlockDrop drop : block.getDroppableItems()) {
+				if ((drop.getLoot().size() > PluginConstants.MAX_LOOT_AMOUNT) || (drop.getLoot().size() == 0)) {
 					return false;
 				}
-				for (LootProperty loot : drop.getLoot()) {
+				for (final LootProperty loot : drop.getLoot()) {
 					if (!loot.isValid()) {
 						return false;
 					}
@@ -198,8 +199,8 @@ public final class LuckyBlockHelper {
 	}
 
 	public static ArrayList<LuckyBlock> getLuckyBlocks(ConfigManager blocksYaml) {
-		ArrayList<LuckyBlock> luckyBlocks = new ArrayList<>();
-		for (String key : getLuckyBlockNames(blocksYaml)) {
+		final ArrayList<LuckyBlock> luckyBlocks = new ArrayList<>();
+		for (final String key : getLuckyBlockNames(blocksYaml)) {
 			luckyBlocks.add(getLuckyBlock(blocksYaml, key));
 		}
 		return luckyBlocks;

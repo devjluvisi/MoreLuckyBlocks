@@ -11,7 +11,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import devjluvisi.mlb.util.Range;
 import devjluvisi.mlb.util.SubCommand;
-import io.netty.util.internal.StringUtil;
 import net.md_5.bungee.api.ChatColor;
 
 public class ItemCommand implements SubCommand {
@@ -48,34 +47,34 @@ public class ItemCommand implements SubCommand {
 
 	@Override
 	public ExecutionResult perform(CommandSender sender, String[] args) {
-		Player p = (Player)sender;
-		if(p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType().isAir()) {
+		final Player p = (Player) sender;
+		if ((p.getInventory().getItemInMainHand() == null) || p.getInventory().getItemInMainHand().getType().isAir()) {
 			p.sendMessage(ChatColor.RED + "You must hold an item to set.");
 			return ExecutionResult.PASSED;
 		}
-		ItemStack i = p.getInventory().getItemInMainHand();
-		ItemMeta meta = i.getItemMeta();
-		
-		if(args[1].equalsIgnoreCase("name")) {
-			StringBuilder argStr = new StringBuilder();
-			for(int j = 2; j < args.length; j++) {
+		final ItemStack i = p.getInventory().getItemInMainHand();
+		final ItemMeta meta = i.getItemMeta();
+
+		if (args[1].equalsIgnoreCase("name")) {
+			final StringBuilder argStr = new StringBuilder();
+			for (int j = 2; j < args.length; j++) {
 				argStr.append(args[j] + " ");
 			}
 			meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', argStr.toString().trim()));
 			p.sendMessage(ChatColor.AQUA + "Name has been set.");
-		}else if(args[1].equalsIgnoreCase("lore")) {
-			List<String> lore = new LinkedList<String>();
-			StringBuilder argStr = new StringBuilder();
-			for(int j = 2; j < args.length; j++) {
+		} else if (args[1].equalsIgnoreCase("lore")) {
+			final List<String> lore = new LinkedList<>();
+			final StringBuilder argStr = new StringBuilder();
+			for (int j = 2; j < args.length; j++) {
 				argStr.append(args[j] + " ");
 			}
-			String[] splitString = StringUtils.split(argStr.toString(), ",");
-			for(int j = 0; j < splitString.length; j++) {
-				lore.add(ChatColor.translateAlternateColorCodes('&', splitString[j].trim()));
+			final String[] splitString = StringUtils.split(argStr.toString(), ",");
+			for (final String element : splitString) {
+				lore.add(ChatColor.translateAlternateColorCodes('&', element.trim()));
 			}
 			meta.setLore(lore);
 			p.sendMessage(ChatColor.AQUA + "Lore has been set.");
-		}else {
+		} else {
 			return ExecutionResult.BAD_ARGUMENT_TYPE;
 		}
 		i.setItemMeta(meta);

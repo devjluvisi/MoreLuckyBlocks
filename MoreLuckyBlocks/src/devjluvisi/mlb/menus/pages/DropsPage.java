@@ -24,36 +24,41 @@ public class DropsPage extends BasePage {
 
 	public DropsPage(LuckyMenu menu) {
 		super(menu);
-		setMenuName(ChatColor.DARK_PURPLE + "Viewing: "
-				+ plugin.getLuckyBlocks().get(menu.getBlockIndex()).getInternalName());
-		startingIndex = 0;
+		this.setMenuName(ChatColor.DARK_PURPLE + "Viewing: "
+				+ this.plugin.getLuckyBlocks().get(menu.getBlockIndex()).getInternalName());
+		this.startingIndex = 0;
 	}
 
 	@Override
 	public ItemStack[] getContent() {
-		ItemStack[][] content = getPageType().getBlank2DArray();
+		final ItemStack[][] content = this.getPageType().getBlank2DArray();
 		int rowCount = 0;
 		int colCount = 0;
-		for (int i = startingIndex; i < plugin.getLuckyBlocks().get(super.getBlockIndex()).getDroppableItems()
+		for (int i = this.startingIndex; i < this.plugin.getLuckyBlocks().get(super.getBlockIndex()).getDroppableItems()
 				.size(); i++) {
 			if (colCount == 9) {
 				colCount = 0;
 				rowCount++;
 			}
-			ItemStack dropSlot = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
-			ItemMeta meta = dropSlot.getItemMeta();
+			final ItemStack dropSlot = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+			final ItemMeta meta = dropSlot.getItemMeta();
 			meta.setDisplayName(ChatColor.GREEN + "Drop: " + (i));
-			int size = plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().get(i).getItems().size()
-					+ plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().get(i).getCommands().size()
-					+ plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().get(i).getPotionEffects().size();
+			final int size = this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().get(i)
+					.getItems().size()
+					+ this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().get(i).getCommands()
+							.size()
+					+ this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().get(i)
+							.getPotionEffects().size();
 			meta.setLore(Arrays.asList(ChatColor.AQUA + "You have a drop set for this item.",
 					ChatColor.GRAY.toString() + ChatColor.BOLD + "Total Drops: " + ChatColor.GREEN + size,
 					ChatColor.GRAY.toString() + ChatColor.BOLD.toString() + "Rarity: " + ChatColor.LIGHT_PURPLE
-							+ plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().get(i).getRarity(),
+							+ this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().get(i)
+									.getRarity(),
 					ChatColor.GRAY.toString() + ChatColor.ITALIC + "Click to configure/delete drop."));
 			dropSlot.setItemMeta(meta);
-			if (rowCount == 3)
+			if (rowCount == 3) {
 				continue;
+			}
 			content[rowCount][colCount] = dropSlot;
 			colCount++;
 		}
@@ -72,77 +77,80 @@ public class DropsPage extends BasePage {
 		content[2][3] = super.getSpecialItem(SpecialItem.ADD_NEW_DROP);
 		content[2][4] = super.getSpecialItem(SpecialItem.REMOVE_ALL_DROPS);
 		content[2][5] = super.getSpecialItem(SpecialItem.DELETE_LUCKY_BLOCK);
-		int maxPages = (plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().size() / CHEST_ROW_SIZE) + 1;
-		int currPage = (startingIndex / CHEST_ROW_SIZE) + 1;
+		final int maxPages = (this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().size()
+				/ CHEST_ROW_SIZE) + 1;
+		final int currPage = (this.startingIndex / CHEST_ROW_SIZE) + 1;
 		content[2][7] = super.getPlaceholderItem(Material.FEATHER,
 				ChatColor.YELLOW + "Previous Page " + ChatColor.GRAY + "(" + currPage + "/" + maxPages + ")",
 				Arrays.asList(ChatColor.GRAY + "Go back to the previous page."));
 		content[2][8] = super.getPlaceholderItem(Material.ARROW,
 				ChatColor.YELLOW + "Next Page " + ChatColor.GRAY + "(" + currPage + "/" + maxPages + ")",
 				Arrays.asList(ChatColor.GRAY + "Go to the next page."));
-		return getPageType().flatten(content);
+		return this.getPageType().flatten(content);
 	}
 
 	@Override
 	public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-		if (itemStack == null)
+		if (itemStack == null) {
 			return;
+		}
 		if (itemStack.getItemMeta().getDisplayName().contains("Drop:")) {
 
-			int dropIndex = Integer
+			final int dropIndex = Integer
 					.parseInt(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).split(": ")[1]);
 
-			setDropIndex(dropIndex);
-			traverse(view, View.LIST_LOOT);
+			this.setDropIndex(dropIndex);
+			this.traverse(view, View.LIST_LOOT);
 			return;
 		}
-		if (itemStack.equals(getSpecialItem(SpecialItem.ADD_NEW_DROP))) {
-			plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().add(new LuckyBlockDrop());
-			setDropIndex(plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().size()-1);
-			traverse(view, View.EDIT_DROP);
+		if (itemStack.equals(this.getSpecialItem(SpecialItem.ADD_NEW_DROP))) {
+			this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().add(new LuckyBlockDrop());
+			this.setDropIndex(this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().size() - 1);
+			this.traverse(view, View.EDIT_DROP);
 			return;
 		}
-		if (itemStack.equals(getSpecialItem(SpecialItem.REMOVE_ALL_DROPS))) {
-			if (plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().size() == 1) {
+		if (itemStack.equals(this.getSpecialItem(SpecialItem.REMOVE_ALL_DROPS))) {
+			if (this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().size() == 1) {
 				view.getPlayer().sendMessage(ChatColor.RED + "You must have more then one drop in this lucky block.");
 				return;
 			}
-			setConfirmAction(Action.REMOVE_ALL_DROPS);
-			traverse(view, View.CONFIRM_ACTION);
+			this.setConfirmAction(Action.REMOVE_ALL_DROPS);
+			this.traverse(view, View.CONFIRM_ACTION);
 			return;
 		}
-		if (itemStack.equals(getSpecialItem(SpecialItem.DELETE_LUCKY_BLOCK))) {
-			if (plugin.getLuckyBlocks().size() == 1) {
+		if (itemStack.equals(this.getSpecialItem(SpecialItem.DELETE_LUCKY_BLOCK))) {
+			if (this.plugin.getLuckyBlocks().size() == 1) {
 				view.getPlayer().sendMessage(ChatColor.RED + "You must have at least one lucky block.");
 				return;
 			}
-			setConfirmAction(Action.REMOVE_LUCKY_BLOCK);
-			traverse(view, View.CONFIRM_ACTION);
+			this.setConfirmAction(Action.REMOVE_LUCKY_BLOCK);
+			this.traverse(view, View.CONFIRM_ACTION);
 			return;
 
 		}
 		if (itemStack.getType().equals(Material.FEATHER)) {
-			if (startingIndex - CHEST_ROW_SIZE <= 0) {
-				startingIndex = 0;
+			if ((this.startingIndex - CHEST_ROW_SIZE) <= 0) {
+				this.startingIndex = 0;
 			} else {
-				startingIndex -= CHEST_ROW_SIZE;
+				this.startingIndex -= CHEST_ROW_SIZE;
 			}
 
 			view.reopen();
 			return;
 		}
 		if (itemStack.getType().equals(Material.ARROW)) {
-			int maxPages = (plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().size() / CHEST_ROW_SIZE)
-					+ 1;
-			int currPage = (startingIndex / CHEST_ROW_SIZE) + 1;
-			if (currPage == maxPages)
+			final int maxPages = (this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().size()
+					/ CHEST_ROW_SIZE) + 1;
+			final int currPage = (this.startingIndex / CHEST_ROW_SIZE) + 1;
+			if (currPage == maxPages) {
 				return;
-			startingIndex += CHEST_ROW_SIZE;
+			}
+			this.startingIndex += CHEST_ROW_SIZE;
 			view.reopen();
 			return;
 		}
-		if (itemStack.equals(getSpecialItem(SpecialItem.EXIT_BUTTON))) {
-			traverse(view, View.LIST_LUCKYBLOCKS);
+		if (itemStack.equals(this.getSpecialItem(SpecialItem.EXIT_BUTTON))) {
+			this.traverse(view, View.LIST_LUCKYBLOCKS);
 			return;
 		}
 	}

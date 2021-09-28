@@ -10,7 +10,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class SaveConfigCommand implements SubCommand {
 
-	private MoreLuckyBlocks plugin;
+	private final MoreLuckyBlocks plugin;
 
 	public SaveConfigCommand(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
@@ -50,8 +50,9 @@ public class SaveConfigCommand implements SubCommand {
 	@Override
 	public ExecutionResult perform(CommandSender sender, String[] args) {
 		sender.sendMessage(ChatColor.GREEN + "Configuration files have been updated according to unmodified changes.");
-		for (LuckyBlock element : plugin.getLuckyBlocks()) {
-			element.saveConfig(plugin.getBlocksYaml());
+		this.plugin.getBlocksYaml().setValue("lucky-blocks", null);
+		for (final LuckyBlock element : this.plugin.getLuckyBlocks()) {
+			element.saveConfig(this.plugin.getBlocksYaml());
 		}
 		return ExecutionResult.PASSED;
 	}

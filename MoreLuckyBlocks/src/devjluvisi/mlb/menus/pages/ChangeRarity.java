@@ -19,59 +19,63 @@ public class ChangeRarity extends BasePage {
 
 	public ChangeRarity(LuckyMenu menu) {
 		super(menu);
-		setMenuName("Change Rarity of Drop #" + getDropIndex());
-		if (plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().size() <= getDropIndex()) {
+		this.setMenuName("Change Rarity of Drop #" + this.getDropIndex());
+		if (this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().size() <= this.getDropIndex()) {
 			this.rarity = 50.0F; // default
 			return;
 		}
-		this.rarity = plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().get(getDropIndex()).getRarity();
+		this.rarity = this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems()
+				.get(this.getDropIndex()).getRarity();
 	}
 
 	@Override
 	public ItemStack[] getContent() {
-		ItemStack[][] content = getPageType().getBlank2DArray();
+		final ItemStack[][] content = this.getPageType().getBlank2DArray();
 		final ItemStack glassPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, 1);
 
 		for (int i = 0; i < 3; i++) {
 			Arrays.fill(content[i], glassPane);
 		}
-		content[1][1] = getSpecialItem(SpecialItem.INCREASE_RARITY);
-		content[1][7] = getSpecialItem(SpecialItem.DECREASE_RARITY);
-		content[1][4] = getPlaceholderItem(Material.EXPERIENCE_BOTTLE, ChatColor.YELLOW + "Save Rarity",
-				Arrays.asList(ChatColor.GRAY + "Update the rarity of this",
-						ChatColor.GRAY + "drop to " + ChatColor.GOLD + String.valueOf(rarity) + ChatColor.GRAY + "."));
+		content[1][1] = this.getSpecialItem(SpecialItem.INCREASE_RARITY);
+		content[1][7] = this.getSpecialItem(SpecialItem.DECREASE_RARITY);
+		content[1][4] = this.getPlaceholderItem(Material.EXPERIENCE_BOTTLE, ChatColor.YELLOW + "Save Rarity",
+				Arrays.asList(ChatColor.GRAY + "Update the rarity of this", ChatColor.GRAY + "drop to " + ChatColor.GOLD
+						+ String.valueOf(this.rarity) + ChatColor.GRAY + "."));
 
-		return getPageType().flatten(content);
+		return this.getPageType().flatten(content);
 	}
 
 	@Override
 	public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-		if (itemStack == null || itemStack.getType().isAir() || itemStack.getType() == Material.GRAY_STAINED_GLASS_PANE)
+		if ((itemStack == null) || itemStack.getType().isAir()
+				|| (itemStack.getType() == Material.GRAY_STAINED_GLASS_PANE)) {
 			return;
+		}
 
-		if (itemStack.equals(getSpecialItem(SpecialItem.INCREASE_RARITY))) {
-			if (rarity <= RARITY_STEP_INTERVAL) {
-				rarity = 0.1F;
+		if (itemStack.equals(this.getSpecialItem(SpecialItem.INCREASE_RARITY))) {
+			if (this.rarity <= RARITY_STEP_INTERVAL) {
+				this.rarity = 0.1F;
 			} else {
-				rarity -= RARITY_STEP_INTERVAL;
+				this.rarity -= RARITY_STEP_INTERVAL;
 			}
 
 			view.reopen();
 			return;
 		}
-		if (itemStack.equals(getSpecialItem(SpecialItem.DECREASE_RARITY))) {
-			if (rarity >= 95.0F) {
-				rarity = 100.0F;
+		if (itemStack.equals(this.getSpecialItem(SpecialItem.DECREASE_RARITY))) {
+			if (this.rarity >= 95.0F) {
+				this.rarity = 100.0F;
 			} else {
-				rarity += RARITY_STEP_INTERVAL;
+				this.rarity += RARITY_STEP_INTERVAL;
 			}
 
 			view.reopen();
 			return;
 		}
-		plugin.getLuckyBlocks().get(getBlockIndex()).getDroppableItems().get(getDropIndex()).setRarity(rarity);
+		this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().get(this.getDropIndex())
+				.setRarity(this.rarity);
 		// User clicked on the "save" option
-		traverse(view, View.LIST_LOOT);
+		this.traverse(view, View.LIST_LOOT);
 
 	}
 

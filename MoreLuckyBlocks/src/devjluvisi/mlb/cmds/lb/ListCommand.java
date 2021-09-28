@@ -10,7 +10,7 @@ import devjluvisi.mlb.util.SubCommand;
 
 public class ListCommand implements SubCommand {
 
-	private MoreLuckyBlocks plugin;
+	private final MoreLuckyBlocks plugin;
 
 	public ListCommand(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
@@ -48,7 +48,7 @@ public class ListCommand implements SubCommand {
 
 	@Override
 	public ExecutionResult perform(CommandSender sender, String[] args) {
-		new LuckyMenu(plugin).open((Player) sender, 0);
+		new LuckyMenu(this.plugin).open((Player) sender, 0);
 		return ExecutionResult.PASSED;
 	}
 
