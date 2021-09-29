@@ -1,6 +1,6 @@
 package devjluvisi.mlb.cmds.admin;
 
-import java.util.ArrayList;
+import java.util.Collections;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.CommandSender;
@@ -78,7 +78,7 @@ public class CreateCommand implements SubCommand {
 			luckyBlock.setName(item.getItemMeta().getDisplayName());
 			luckyBlock.setBlockMaterial(item.getType());
 			luckyBlock.setLore(
-					item.getItemMeta().getLore() != null ? item.getItemMeta().getLore() : new ArrayList<String>());
+					item.getItemMeta().getLore() != null ? item.getItemMeta().getLore() : Collections.emptyList());
 			luckyBlock.setDefaultBlockLuck(0.0F);
 		}
 		if (args.length >= 2) {
@@ -110,6 +110,10 @@ public class CreateCommand implements SubCommand {
 		// TODO: Add cool mob sound
 		p.sendMessage(ChatColor.LIGHT_PURPLE
 				+ "Type \"/mlb list\" in order to edit the drops and view information about your lucky block.\nAttributes can also be edited in config.");
+
+		p.getInventory().setItemInMainHand(this.plugin.getLuckyBlocks().get(this.plugin.getLuckyBlocks().size() - 1)
+				.asItem(this.plugin, p.getInventory().getItemInMainHand().getAmount()));
+
 		return ExecutionResult.PASSED;
 	}
 
