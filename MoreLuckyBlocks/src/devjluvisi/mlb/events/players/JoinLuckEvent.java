@@ -5,7 +5,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import devjluvisi.mlb.PluginConstants;
 
 public class JoinLuckEvent implements Listener {
 	private final MoreLuckyBlocks plugin;
@@ -29,12 +28,12 @@ public class JoinLuckEvent implements Listener {
 				}
 			}
 		}
-
-		if (this.plugin.getPlayerFromConfig(e.getPlayer().getName()) != null) {
-			this.plugin.getPlayerLuckMap().put(e.getPlayer().getUniqueId(),
-					this.plugin.getPlayerFromConfig(e.getPlayer().getName()).getValue());
+		if (this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()) != null) {
+			this.plugin.getPlayerManager().add(e.getPlayer(),
+					this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()).getLuck());
+		} else {
+			this.plugin.getPlayerManager().add(e.getPlayer());
 		}
-		this.plugin.getPlayerLuckMap().putIfAbsent(e.getPlayer().getUniqueId(), PluginConstants.DEFAULT_PLAYER_LUCK);
-		this.plugin.savePlayerLuckMap();
+		this.plugin.getPlayerManager().save();
 	}
 }

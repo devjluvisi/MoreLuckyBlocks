@@ -8,8 +8,8 @@ package devjluvisi.mlb.util;
  */
 public class Range {
 
-	private final int max;
-	private final int min;
+	private final double max;
+	private final double min;
 
 	/**
 	 * Defines a range between a set of two integers min and max.
@@ -17,16 +17,16 @@ public class Range {
 	 * @param min The minimum number in the range.
 	 * @param max The maximum number in the range.
 	 */
-	public Range(int min, int max) {
+	public Range(double min, double max) {
 		this.min = min;
 		this.max = max;
 	}
 
-	public int getMax() {
+	public double getMax() {
 		return this.max;
 	}
 
-	public int getMin() {
+	public double getMin() {
 		return this.min;
 	}
 
@@ -37,7 +37,7 @@ public class Range {
 	 * @param val The integer to check.
 	 * @return If the integer is in range of min and max.
 	 */
-	public boolean isInRange(int val) {
+	public boolean isInRange(double val) {
 		return (val >= this.min) && (val <= this.max);
 	}
 
@@ -49,7 +49,7 @@ public class Range {
 	 *            Exclusive = false)
 	 * @return If the value is in range for the specified parameters.
 	 */
-	public boolean isInRange(int val, boolean b) {
+	public boolean isInRange(double val, boolean b) {
 		return b ? (val >= this.min) && (val <= this.max) : (val > this.min) && (val < this.max);
 	}
 

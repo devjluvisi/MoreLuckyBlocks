@@ -1,11 +1,11 @@
 package devjluvisi.mlb.blocks;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +36,6 @@ public class LuckyBlock {
 	private LinkedList<LuckyBlockDrop> droppableItems;
 
 	// Per-Item Fields (For individual lucky blocks)
-	private Location blockLocation;
 	private float blockLuck;
 
 	public LuckyBlock() {
@@ -48,23 +47,32 @@ public class LuckyBlock {
 		this.lore = new ArrayList<>();
 		this.defaultBlockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
 		this.droppableItems = new LinkedList<>();
-		this.blockLocation = null;
+		this.blockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
+	}
+	
+	public LuckyBlock(String internalName) {
+		super();
+		this.internalName = internalName;
+		this.name = StringUtils.EMPTY;
+		this.breakPermission = StringUtils.EMPTY;
+		this.blockMaterial = Material.AIR;
+		this.lore = Collections.emptyList();
+		this.defaultBlockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
+		this.droppableItems = new LinkedList<>();
 		this.blockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
 	}
 
 	public LuckyBlock(String internalName, String name, String breakPermission, Material blockMaterial,
-			List<String> lore, float defaultBlockLuck, LinkedList<LuckyBlockDrop> droppableItems,
-			Location blockLocation) {
+			List<String> lore, float defaultBlockLuck, LinkedList<LuckyBlockDrop> droppableItems) {
 		super();
 		this.internalName = internalName;
 		this.name = name;
 		this.breakPermission = breakPermission;
 		this.blockMaterial = blockMaterial;
 		this.lore = lore;
-		this.defaultBlockLuck = defaultBlockLuck;
+		setDefaultBlockLuck(defaultBlockLuck);
 		this.droppableItems = droppableItems;
-		this.blockLocation = blockLocation;
-		this.blockLuck = defaultBlockLuck;
+		setBlockLuck(defaultBlockLuck);
 	}
 
 	public ItemStack asItem(MoreLuckyBlocks plugin, float luck, int amount) {
@@ -154,11 +162,11 @@ public class LuckyBlock {
 
 	public void setDefaultBlockLuck(float defaultBlockLuck) {
 		if (defaultBlockLuck > 100) {
-			this.defaultBlockLuck = 100;
+			this.defaultBlockLuck = 100.0F;
 			return;
 		}
 		if (defaultBlockLuck < -100) {
-			this.defaultBlockLuck = -100;
+			this.defaultBlockLuck = -100.0F;
 			return;
 		}
 		this.defaultBlockLuck = defaultBlockLuck;
@@ -172,13 +180,6 @@ public class LuckyBlock {
 		this.droppableItems = arrayList;
 	}
 
-	public Location getBlockLocation() {
-		return this.blockLocation;
-	}
-
-	public void setBlockLocation(Location blockLocation) {
-		this.blockLocation = blockLocation;
-	}
 
 	public float getBlockLuck() {
 		return this.blockLuck;
@@ -186,11 +187,11 @@ public class LuckyBlock {
 
 	public void setBlockLuck(float blockLuck) {
 		if (blockLuck > 100) {
-			this.blockLuck = 100;
+			this.blockLuck = 100.0F;
 			return;
 		}
 		if (blockLuck < -100) {
-			this.blockLuck = -100;
+			this.blockLuck = -100.0F;
 			return;
 		}
 		this.blockLuck = blockLuck;
@@ -248,7 +249,6 @@ public class LuckyBlock {
 	public int hashCode() {
 		// There will never be another lucky block with the same internal name.
 		return this.internalName.hashCode();
-		// return this.toString().hashCode();
 	}
 
 	@Override
@@ -268,8 +268,6 @@ public class LuckyBlock {
 		builder.append(this.defaultBlockLuck);
 		builder.append(", droppableItems=");
 		builder.append(this.droppableItems);
-		builder.append(", blockLocation=");
-		builder.append(this.blockLocation);
 		builder.append(", blockLuck=");
 		builder.append(this.blockLuck);
 		builder.append("]");

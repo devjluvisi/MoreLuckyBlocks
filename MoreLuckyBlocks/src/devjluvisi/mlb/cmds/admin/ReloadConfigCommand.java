@@ -3,9 +3,9 @@ package devjluvisi.mlb.cmds.admin;
 import org.bukkit.command.CommandSender;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.util.Range;
-import devjluvisi.mlb.util.SubCommand;
 import net.md_5.bungee.api.ChatColor;
 
 public class ReloadConfigCommand implements SubCommand {

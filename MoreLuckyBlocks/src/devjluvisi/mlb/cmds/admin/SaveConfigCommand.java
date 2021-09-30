@@ -3,9 +3,10 @@ package devjluvisi.mlb.cmds.admin;
 import org.bukkit.command.CommandSender;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
-import devjluvisi.mlb.util.SubCommand;
 import net.md_5.bungee.api.ChatColor;
 
 public class SaveConfigCommand implements SubCommand {
@@ -51,8 +52,14 @@ public class SaveConfigCommand implements SubCommand {
 	public ExecutionResult perform(CommandSender sender, String[] args) {
 		sender.sendMessage(ChatColor.GREEN + "Configuration files have been updated according to unmodified changes.");
 		this.plugin.getBlocksYaml().setValue("lucky-blocks", null);
+
+		int i = 0;
 		for (final LuckyBlock element : this.plugin.getLuckyBlocks()) {
+			if (i == PluginConstants.MAX_LUCKY_BLOCK_AMOUNT) {
+				break;
+			}
 			element.saveConfig(this.plugin.getBlocksYaml());
+			i++;
 		}
 		return ExecutionResult.PASSED;
 	}

@@ -7,39 +7,40 @@ import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
 
 /**
- * "/mlb drops" Will display all possible drops to the user (GUI) based on the
- * lucky block in their hand. If a argument is specified, "/mlb drops <internal
- * name>" then a GUI will open for that lucky block.
+ * Displays information related to the lucky block in chat. "/mlb info <internal
+ * name>
+ *
+ * Will display information depending on the permissions of the user.
  *
  * @author jacob
  *
  */
-public class DropsCommand implements SubCommand {
+public class InfoCommand implements SubCommand {
 
 	private final MoreLuckyBlocks plugin;
 
-	public DropsCommand(MoreLuckyBlocks plugin) {
+	public InfoCommand(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
 	}
 
 	@Override
 	public String getName() {
-		return "drops";
+		return "info";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Allows a user to see drops for a luckyblock.";
+		return "Get information about a specific lucky block.";
 	}
 
 	@Override
 	public String getSyntax() {
-		return "/mlb drops";
+		return "/mlb info <name>";
 	}
 
 	@Override
 	public String getPermission() {
-		return "mlb.drops";
+		return "mlb.info";
 	}
 
 	@Override
@@ -49,7 +50,7 @@ public class DropsCommand implements SubCommand {
 
 	@Override
 	public Range getArgumentRange() {
-		return new Range(1, 1);
+		return new Range(2, 2);
 	}
 
 	@Override

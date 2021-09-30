@@ -1,11 +1,11 @@
 package devjluvisi.mlb.cmds.general;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
+import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
-import devjluvisi.mlb.util.SubCommand;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -17,7 +17,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class HelpCommand implements SubCommand {
 
-	private final ArrayList<SubCommand> commands;
+	private final List<SubCommand> commands;
 
 	/**
 	 * The maximum amount of commands the help command is allowed to display between
@@ -25,8 +25,8 @@ public class HelpCommand implements SubCommand {
 	 */
 	private static final byte MAX_COMMANDS_PER_PAGE = 6;
 
-	public HelpCommand(ArrayList<SubCommand> list) {
-		this.commands = list;
+	public HelpCommand(List<SubCommand> subcommands) {
+		this.commands = subcommands;
 	}
 
 	@Override

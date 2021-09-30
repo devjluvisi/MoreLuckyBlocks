@@ -1,4 +1,4 @@
-package devjluvisi.mlb.util.config;
+package devjluvisi.mlb.util.config.files;
 
 /**
  * Manages all possible data which is accessed through the "messages.yml" file.

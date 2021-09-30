@@ -1,6 +1,7 @@
 package devjluvisi.mlb.events.luckyblocks;
 
-import org.apache.commons.lang.Validate;
+import java.util.Objects;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,12 +24,14 @@ public class BreakEvent implements Listener {
 			return;
 		}
 		final LuckyBlock lb = this.plugin.getAudit().find(e.getBlock().getLocation());
-		Validate.notNull(lb);
+		if (Objects.isNull(lb)) {
+			return;
+		}
 
 		e.getPlayer().sendMessage("You broke a lucky block -> " + lb.getInternalName());
 		e.getPlayer().sendMessage("Its Luck -> " + lb.getBlockLuck());
-		e.getPlayer()
-				.sendMessage("Your Player Luck -> " + this.plugin.getPlayerLuckMap().get(e.getPlayer().getUniqueId()));
+		e.getPlayer().sendMessage(
+				"Your Player Luck -> " + this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()).getLuck());
 		this.plugin.getAudit().remove(e.getBlock().getLocation());
 	}
 

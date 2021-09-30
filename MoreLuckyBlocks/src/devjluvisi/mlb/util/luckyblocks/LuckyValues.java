@@ -27,6 +27,13 @@ public class LuckyValues {
 		this.blockLuck = blockLuck;
 	}
 
+	public LuckyValues(int luckyBlockHash, float blockLuck) {
+		super();
+		this.luckyBlockHash = luckyBlockHash;
+		this.blockLuck = blockLuck;
+		this.blockMaterial = Material.AIR;
+	}
+
 	public final Material getBlockMaterial() {
 		return this.blockMaterial;
 	}

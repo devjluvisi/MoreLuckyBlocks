@@ -4,9 +4,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.menus.LuckyMenu;
 import devjluvisi.mlb.util.Range;
-import devjluvisi.mlb.util.SubCommand;
 
 public class ListCommand implements SubCommand {
 

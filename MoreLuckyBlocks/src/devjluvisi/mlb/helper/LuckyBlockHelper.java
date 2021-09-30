@@ -31,10 +31,6 @@ public final class LuckyBlockHelper {
 		return blocksYaml.getConfig().getConfigurationSection("lucky-blocks").getKeys(false);
 	}
 
-	public static boolean doesExist(ConfigManager blocksYaml, String internalName) {
-		return blocksYaml.getConfig().get("lucky-blocks." + internalName) != null;
-	}
-
 	/**
 	 * Converts an item from the config into an ItemStack.
 	 *
@@ -43,7 +39,7 @@ public final class LuckyBlockHelper {
 	 * @param item       The name of the item.
 	 * @return The item stack made from the config path.
 	 */
-	public static ItemStack getItem(ConfigManager blocksYaml, String path) {
+	private static ItemStack getItem(ConfigManager blocksYaml, String path) {
 		final ItemStack itemObject = new ItemStack(Material.AIR);
 
 		final String accessor = path;
@@ -102,7 +98,6 @@ public final class LuckyBlockHelper {
 		block.setInternalName(internalName);
 		block.setName(ChatColor.translateAlternateColorCodes('&',
 				blocksYaml.getConfig().getString("lucky-blocks." + internalName + ".item-name")));
-		block.setBlockLocation(null);
 		block.setBlockMaterial(
 				Material.getMaterial(blocksYaml.getConfig().getString("lucky-blocks." + internalName + ".block")));
 		block.setBreakPermission(blocksYaml.getConfig().getString("lucky-blocks." + internalName + ".permission"));
@@ -174,8 +169,8 @@ public final class LuckyBlockHelper {
 	 * @return If there are any errors in the blocks.yml file.
 	 */
 	public static boolean validateBlocksYaml(ArrayList<LuckyBlock> arr) {
+	
 		for (final LuckyBlock block : arr) {
-
 			if (block.getInternalName().contains(" ") || (block.getBlockMaterial() == null)
 					|| !block.getBlockMaterial().isBlock()) {
 				return false;

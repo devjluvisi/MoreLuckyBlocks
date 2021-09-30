@@ -1,6 +1,7 @@
 package devjluvisi.mlb.events.luckyblocks;
 
-import org.apache.commons.lang.Validate;
+import java.util.Objects;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -37,7 +38,9 @@ public class PlaceEvent implements Listener {
 				blockPlaced = lb;
 			}
 		}
-		Validate.notNull(blockPlaced);
+		if (Objects.isNull(blockPlaced)) {
+			return;
+		}
 
 		blockPlaced.setBlockLuck(specialMeta.getFloat(PluginConstants.BlockLuckIdentifier));
 		this.plugin.getAudit().put(e.getBlock().getLocation(), blockPlaced);

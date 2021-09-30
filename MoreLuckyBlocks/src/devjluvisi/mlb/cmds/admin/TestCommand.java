@@ -3,8 +3,8 @@ package devjluvisi.mlb.cmds.admin;
 import org.bukkit.command.CommandSender;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
-import devjluvisi.mlb.util.SubCommand;
 
 public class TestCommand implements SubCommand {
 
@@ -46,7 +46,6 @@ public class TestCommand implements SubCommand {
 
 	@Override
 	public ExecutionResult perform(CommandSender sender, String[] args) {
-		this.plugin.savePlayerLuckMap();
 		sender.sendMessage("Running Test. Check logger");
 		this.plugin.getAudit().dumpLogger();
 		return ExecutionResult.PASSED;

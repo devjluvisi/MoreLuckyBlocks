@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 
+import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.blocks.drops.LootProperty;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.drops.LuckyBlockItem;
@@ -62,7 +63,7 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		this.items = items;
 		this.commands = commands;
 		this.potionEffects = potionEffects;
-		this.rarity = rarity;
+		setRarity(rarity);
 	}
 
 	public ArrayList<LuckyBlockItem> getItems() {
@@ -94,6 +95,16 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	}
 
 	public void setRarity(float rarity) {
+		rarity = Math.abs(rarity);
+		
+		if(rarity >= 100.0F) {
+			this.rarity = 100.0F;
+			return;
+		}
+		if(rarity <= 0.1F) {
+			this.rarity = 0.1F;
+			return;
+		}
 		this.rarity = rarity;
 	}
 

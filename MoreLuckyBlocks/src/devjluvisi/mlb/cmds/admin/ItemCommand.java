@@ -9,8 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
-import devjluvisi.mlb.util.SubCommand;
 import net.md_5.bungee.api.ChatColor;
 
 public class ItemCommand implements SubCommand {

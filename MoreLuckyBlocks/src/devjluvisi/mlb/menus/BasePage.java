@@ -228,7 +228,6 @@ public abstract class BasePage implements Page {
 			if (((BasePage) this.baseMenu.getPage(i)).identity().equals(v)) {
 				this.baseMenu.refresh();
 				view.setPage(i);
-				Bukkit.getServer().getConsoleSender().sendMessage("moved to view: " + v.name());
 				return;
 			}
 		}

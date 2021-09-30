@@ -26,6 +26,7 @@ public class LootPage extends BasePage {
 
 	@Override
 	public ItemStack[] getContent() {
+
 		final ItemStack[][] content = this.getPageType().getBlank2DArray();
 
 		final ItemStack dropViewInfo = new ItemStack(Material.OAK_SIGN);

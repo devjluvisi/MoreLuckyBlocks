@@ -1,9 +1,9 @@
 package devjluvisi.mlb.cmds.admin;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -12,30 +12,39 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.api.items.CustomItemMeta;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.cmds.SubCommand;
+import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.Range;
-import devjluvisi.mlb.util.SubCommand;
+import net.md_5.bungee.api.ChatColor;
 
-public class PlayerLuckCommand implements SubCommand {
+/**
+ * "/mlb set luck [luck]" - Adjust the luck of a lucky block in hand. "/mlb set
+ * luck [player] [luck]" - Adjust the luck of a player. (online or offline).
+ *
+ * @author jacob
+ *
+ */
+public class LuckSetCommand implements SubCommand {
 
 	private final MoreLuckyBlocks plugin;
 
-	public PlayerLuckCommand(MoreLuckyBlocks plugin) {
+	public LuckSetCommand(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
 	}
 
 	@Override
 	public String getName() {
-		return "luck";
+		return "set";
 	}
 
 	@Override
 	public String getDescription() {
-		return "Set the luck values of lucky blocks or players.";
+		return "Set the luck of a lucky block or player.";
 	}
 
 	@Override
 	public String getSyntax() {
-		return "\n/mlb luck <player>\n/mlb luck <value>\n/mlb luck <player> <value>";
+		return "/mlb set luck <player> <value>\n/mlb set luck <value>";
 	}
 
 	@Override
@@ -50,24 +59,20 @@ public class PlayerLuckCommand implements SubCommand {
 
 	@Override
 	public Range getArgumentRange() {
-		return new Range(2, 3);
+		return new Range(3, 4);
 	}
 
 	@Override
 	public ExecutionResult perform(CommandSender sender, String[] args) {
-		if (args.length == 2) {
-			float luck;
-			try {
-				luck = Float.parseFloat(args[1]);
-			} catch (final NumberFormatException e) {
-				// TODO: Find player if the float is not parsed.
-				return ExecutionResult.BAD_ARGUMENT_TYPE;
-			}
-			if ((luck < -100) || (luck > 100)) {
-				sender.sendMessage(ChatColor.RED + "Luck values must be between -100 and 100.");
+		if (!args[1].equalsIgnoreCase("luck")) {
+			return ExecutionResult.BAD_ARGUMENT_TYPE;
+		}
+		if (Util.isNumber(args[2])) {
+			if (!Util.isNumber(args[2], new Range(PluginConstants.LUCK_MIN_VALUE, PluginConstants.LUCK_MAX_VALUE))) {
+				sender.sendMessage("Luck values must be between -100 and 100.");
 				return ExecutionResult.PASSED;
 			}
-
+			final float luck = NumberUtils.toFloat(args[2]);
 			final ItemStack item = ((Player) sender).getInventory().getItemInMainHand();
 			if ((item == null) || item.getType().isAir()) {
 				sender.sendMessage("You must hold a lucky block in your hand to do this!");
@@ -93,34 +98,33 @@ public class PlayerLuckCommand implements SubCommand {
 			sender.sendMessage("You are not holding a valid lucky block in your hand.");
 			return ExecutionResult.PASSED;
 		}
-
-		if (args.length == 3) {
-			float luck;
-			try {
-				luck = Float.parseFloat(args[2]);
-			} catch (final NumberFormatException e) {
-				return ExecutionResult.BAD_ARGUMENT_TYPE;
-			}
-			if ((luck < -100) || (luck > 100)) {
-				sender.sendMessage(ChatColor.RED + "Luck values must be between -100 and 100.");
-				return ExecutionResult.PASSED;
-			}
-			final Player target = this.plugin.getServer().getPlayerExact(args[1]);
-			if (target == null) {
-				if (this.plugin.getPlayerFromConfig(args[1]) == null) {
-					sender.sendMessage(ChatColor.RED + "Could not find player " + args[1]
-							+ " as they have never logged onto the server before.");
-					return ExecutionResult.PASSED;
-				}
-				final OfflinePlayer p = Bukkit.getOfflinePlayer(this.plugin.getPlayerFromConfig(args[1]).getKey());
-				this.plugin.updateOfflinePlayer(p.getUniqueId(), luck);
-				sender.sendMessage("Set Value Offline.");
-				return ExecutionResult.PASSED;
-			}
-			this.plugin.getPlayerLuckMap().put(target.getUniqueId(), luck);
-			this.plugin.savePlayerLuckMap();
-			sender.sendMessage("Set Value.");
+		// /mlb set luck <player> <value> now
+		if ((args.length != 4) || !Util.isNumber(args[3])) {
+			return ExecutionResult.BAD_ARGUMENT_TYPE;
 		}
+		if (!Util.isNumber(args[3], new Range(PluginConstants.LUCK_MIN_VALUE, PluginConstants.LUCK_MAX_VALUE))) {
+			sender.sendMessage("Luck values must be between -100 and 100.");
+			return ExecutionResult.PASSED;
+		}
+		final float luck = NumberUtils.toFloat(args[3]);
+
+		final Player target = this.plugin.getServer().getPlayerExact(args[2]);
+		if (target == null) {
+			if (this.plugin.getPlayerManager().getPlayer(args[2]).isNull()) {
+				sender.sendMessage(ChatColor.RED + "Could not find player " + args[2]
+						+ " as they have never logged onto the server before.");
+				return ExecutionResult.PASSED;
+			}
+			final OfflinePlayer p = Bukkit
+					.getOfflinePlayer(this.plugin.getPlayerManager().getPlayer(args[2]).getUUID());
+			this.plugin.getPlayerManager().updateOffline(p.getUniqueId(), luck);
+			sender.sendMessage("Set Value Offline.");
+			return ExecutionResult.PASSED;
+		}
+
+		this.plugin.getPlayerManager().update(target.getUniqueId(), luck);
+
+		sender.sendMessage("Set Value.");
 
 		return ExecutionResult.PASSED;
 	}

@@ -1,4 +1,4 @@
-package devjluvisi.mlb.util.config;
+package devjluvisi.mlb.util.config.files;
 
 /**
  * Manages permissions as specified from the "config.yml" file. Permissions are

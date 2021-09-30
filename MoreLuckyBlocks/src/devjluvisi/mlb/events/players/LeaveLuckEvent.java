@@ -16,7 +16,7 @@ public class LeaveLuckEvent implements Listener {
 
 	@EventHandler
 	public void leave(PlayerQuitEvent e) {
-		this.plugin.getPlayerLuckMap().remove(e.getPlayer().getUniqueId());
+		this.plugin.getPlayerManager().remove(e.getPlayer());
 	}
 
 }

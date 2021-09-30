@@ -8,6 +8,6 @@ package devjluvisi.mlb.api;
  * @author jacob
  *
  */
-public class LuckyAPI {
+public final class LuckyAPI {
 
 }

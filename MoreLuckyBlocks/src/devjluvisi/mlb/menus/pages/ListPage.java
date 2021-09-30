@@ -12,6 +12,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.api.gui.pages.PageType;
 import devjluvisi.mlb.api.gui.utils.ItemCreator;
+import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.menus.BasePage;
 import devjluvisi.mlb.menus.LuckyMenu;
 import devjluvisi.mlb.menus.LuckyMenu.View;
@@ -114,14 +116,11 @@ public class ListPage extends BasePage {
 		if (item == null) {
 			return;
 		}
-		for (int i = 0; i < this.plugin.getLuckyBlocks().size(); i++) {
-			if (ChatColor.stripColor(item.getItemMeta().getDisplayName())
-					.equalsIgnoreCase(ChatColor.stripColor(this.plugin.getLuckyBlocks().get(i).getInternalName()))) {
-
-				this.setBlockIndex(i);
-				this.traverse(view, View.LIST_DROPS);
-			}
-		}
+	
+		int index = plugin.getLuckyBlocks().indexOf(new LuckyBlock(Util.makeInternal(item.getItemMeta().getDisplayName())));
+		if(index==-1) return;
+		this.setBlockIndex(index);
+		this.traverse(view, View.LIST_DROPS);
 	}
 
 	@Override

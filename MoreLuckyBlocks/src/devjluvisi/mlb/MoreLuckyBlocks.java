@@ -2,16 +2,15 @@ package devjluvisi.mlb;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.api.items.CustomMetaFactory;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.cmds.CommandManager;
+import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.events.EditDropInChatEvent;
 import devjluvisi.mlb.events.handles.InventoryCloseFix;
 import devjluvisi.mlb.events.luckyblocks.BreakEvent;
@@ -19,10 +18,9 @@ import devjluvisi.mlb.events.luckyblocks.PlaceEvent;
 import devjluvisi.mlb.events.players.JoinLuckEvent;
 import devjluvisi.mlb.events.players.LeaveLuckEvent;
 import devjluvisi.mlb.helper.LuckyBlockHelper;
-import devjluvisi.mlb.util.CommandManager;
-import devjluvisi.mlb.util.SubCommand;
 import devjluvisi.mlb.util.config.ConfigManager;
 import devjluvisi.mlb.util.luckyblocks.LuckyAudit;
+import devjluvisi.mlb.util.players.PlayerManager;
 
 /**
  * FortuneBlocks - 1.17 -> LuckyBlocks plugin for Minecraft Spigot 1.17 <br />
@@ -33,15 +31,19 @@ import devjluvisi.mlb.util.luckyblocks.LuckyAudit;
  *
  */
 public final class MoreLuckyBlocks extends JavaPlugin {
-
+	//TODO: Potentially, ditch data structures and read directly from the config files ratheer then using maps, etc.
 	/*
 	 * TODO: - Use StringUtils and StringBuilder - Cache variables - Add particle
 	 * effects for lucky block break. - Add option to make lucky block break instant
 	 * - Make an option to break certain lucky blocks with only a certain tool
 	 * (config.yml) - Make classes, instance variables, and methods final where
-	 * possible - Documentation and additional comments.
+	 * possible - Documentation and additional comments. - Use Optionals for methods
+	 * which can return null - Validate.<...> should be used liberally. - Replace
+	 * String "null" with just an empty string "". Then only check isBlank() on the
+	 * strings. - Any class which is not inherited from should be "final" - Return
+	 * empty collections instead of null
+	 * - Implement Config AutoSave for LuckyBlock (worldData.yml)
 	 */
-
 	private ConfigManager configYaml;
 	private ConfigManager messagesYaml;
 	private ConfigManager blocksYaml;
@@ -51,11 +53,12 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
 	private ArrayList<LuckyBlock> serverLuckyBlocks;
 
-	private HashMap<UUID, Float> playerLuckMap;
 	private HashMap<UUID, MenuView> playersEditingDrop;
 
-	private CustomMetaFactory metaFactory;
+	private PlayerManager playerManager;
 	private LuckyAudit audit;
+	private CustomMetaFactory metaFactory;
+	
 
 	@Override
 	public void onEnable() {
@@ -73,10 +76,10 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 		this.registerEvents();
 
 		this.serverLuckyBlocks = LuckyBlockHelper.getLuckyBlocks(this.blocksYaml);
-		this.playerLuckMap = new HashMap<>();
 		this.playersEditingDrop = new HashMap<>();
 		this.metaFactory = new CustomMetaFactory(this);
 		this.audit = new LuckyAudit(this);
+		this.playerManager = new PlayerManager(this);
 
 		// Check if the config is valid and has no errors.
 		if (!LuckyBlockHelper.validateBlocksYaml(this.serverLuckyBlocks)) {
@@ -84,13 +87,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 			this.getServer().getLogger().severe("Please ensure that the plugin config file follows proper formatting.");
 			this.getServer().getPluginManager().disablePlugin(this);
 			return;
-		}
-
-		// For Reloads, we ensure player luck remains
-		for (final Player p : this.getServer().getOnlinePlayers()) {
-			if (this.getPlayerFromConfig(p.getName()) != null) {
-				this.getPlayerLuckMap().put(p.getUniqueId(), this.getPlayerFromConfig(p.getName()).getValue());
-			}
 		}
 
 		super.onEnable();
@@ -111,6 +107,10 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 		return this.audit;
 	}
 
+	public PlayerManager getPlayerManager() {
+		return this.playerManager;
+	}
+
 	/**
 	 * @return All of the players attempting to "edit" a drop in a luckyblock.
 	 */
@@ -120,66 +120,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
 	public final CustomMetaFactory getMetaFactory() {
 		return this.metaFactory;
-	}
-
-	public HashMap<UUID, Float> getPlayerLuckMap() {
-		return this.playerLuckMap;
-	}
-
-	public void savePlayerLuckMap() {
-
-		for (final Map.Entry<UUID, Float> entry : this.playerLuckMap.entrySet()) {
-			String name;
-			if (Bukkit.getPlayer(entry.getKey()) == null) {
-				name = Bukkit.getOfflinePlayer(entry.getKey()).getName();
-			} else {
-				this.getServer().getConsoleSender().sendMessage("Saving player online.");
-				name = Bukkit.getPlayer(entry.getKey()).getName();
-			}
-			final String uuid = entry.getKey().toString();
-			this.playersYaml.getConfig().set("players." + uuid + ".name", name);
-			this.playersYaml.getConfig().set("players." + uuid + ".luck", entry.getValue().toString());
-		}
-		this.playersYaml.save();
-		this.playersYaml.reload();
-	}
-
-	public Map.Entry<UUID, Float> getPlayerFromConfig(String name) {
-		if (this.playersYaml.getConfig().getConfigurationSection("players") == null) {
-			return null;
-		}
-		for (final String playerUUIDs : this.playersYaml.getConfig().getConfigurationSection("players")
-				.getKeys(false)) {
-			if ((this.playersYaml.getConfig().get("players." + playerUUIDs + ".name") != null)
-					&& ((String) this.playersYaml.getConfig().get("players." + playerUUIDs + ".name"))
-							.equalsIgnoreCase(name)) {
-				return new Map.Entry<>() {
-					@Override
-					public UUID getKey() {
-						return UUID.fromString(playerUUIDs);
-					}
-
-					@Override
-					public Float getValue() {
-						return Float.parseFloat((String) MoreLuckyBlocks.this.playersYaml.getConfig()
-								.get("players." + playerUUIDs + ".luck"));
-					}
-
-					@Override
-					public Float setValue(Float value) {
-						MoreLuckyBlocks.this.updateOfflinePlayer(this.getKey(), value);
-						return value;
-					}
-				};
-			}
-		}
-		return null;
-	}
-
-	public void updateOfflinePlayer(UUID uuid, float luck) {
-		this.playersYaml.getConfig().set("players." + uuid.toString() + ".luck", String.valueOf(luck));
-		this.playersYaml.save();
-		this.playersYaml.reload();
 	}
 
 	/**
@@ -257,7 +197,8 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		this.savePlayerLuckMap();
+		this.audit.writeAll();
+		this.playerManager.save();
 		this.getLogger().info("*-----------------------------------------*");
 		this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has been disabled!");
 		this.getLogger().info("Server Version -> "

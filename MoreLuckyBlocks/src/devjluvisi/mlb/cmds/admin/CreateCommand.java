@@ -8,13 +8,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.Range;
-import devjluvisi.mlb.util.SubCommand;
 import net.md_5.bungee.api.ChatColor;
 
+/**
+ * "/mlb create" - Create a lucky block with the item in hand, no break perm or
+ * default luck. "/mlb create [permission]" - Create a lucky block and require a
+ * permission to break it. "/mlb create [permission] [luck]" - Create a lucky
+ * block with a permission and default luck.
+ *
+ * @author jacob
+ *
+ */
 public class CreateCommand implements SubCommand {
 
 	private final MoreLuckyBlocks plugin;
@@ -71,6 +81,11 @@ public class CreateCommand implements SubCommand {
 		if (!LuckyBlockHelper.unique(this.plugin.getLuckyBlocks(), item.getItemMeta().getDisplayName())) {
 			p.sendMessage(ChatColor.RED
 					+ "There is already a lucky block with this name.\nPlease change the name of your lucky block.");
+			return ExecutionResult.PASSED;
+		}
+		if (this.plugin.getLuckyBlocks().size() > PluginConstants.MAX_LUCKY_BLOCK_AMOUNT) {
+			p.sendMessage(ChatColor.RED + "You cannot add more than " + PluginConstants.MAX_LUCKY_BLOCK_AMOUNT
+					+ " lucky blocks.");
 			return ExecutionResult.PASSED;
 		}
 		if (args.length >= 1) {

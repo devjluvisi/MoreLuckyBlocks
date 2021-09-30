@@ -3,8 +3,8 @@ package devjluvisi.mlb.cmds.general;
 import org.bukkit.command.CommandSender;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
-import devjluvisi.mlb.util.SubCommand;
 import net.md_5.bungee.api.ChatColor;
 
 public class VersionCommand implements SubCommand {

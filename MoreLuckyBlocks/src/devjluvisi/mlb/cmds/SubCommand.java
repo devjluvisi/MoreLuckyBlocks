@@ -1,6 +1,8 @@
-package devjluvisi.mlb.util;
+package devjluvisi.mlb.cmds;
 
 import org.bukkit.command.CommandSender;
+
+import devjluvisi.mlb.util.Range;
 
 /**
  * Represents the individual methods that each sub command has. These methods
@@ -17,7 +19,7 @@ public interface SubCommand {
 	 * {@link CommandManager} so this enum represents specific (but still common)
 	 * errors a command can return.
 	 */
-	enum ExecutionResult {
+	static enum ExecutionResult {
 		PASSED, INVALID_PLAYER, BAD_ARGUMENT_TYPE;
 	}
 
