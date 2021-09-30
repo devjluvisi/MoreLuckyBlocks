@@ -16,7 +16,6 @@ import devjluvisi.mlb.events.handles.InventoryCloseFix;
 import devjluvisi.mlb.events.luckyblocks.BreakEvent;
 import devjluvisi.mlb.events.luckyblocks.PlaceEvent;
 import devjluvisi.mlb.events.players.JoinLuckEvent;
-import devjluvisi.mlb.events.players.LeaveLuckEvent;
 import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.util.config.ConfigManager;
 import devjluvisi.mlb.util.luckyblocks.LuckyAudit;
@@ -190,7 +189,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 		this.getServer().getPluginManager().registerEvents(new EditDropInChatEvent(this), this);
 		this.getServer().getPluginManager().registerEvents(new InventoryCloseFix(this), this);
 		this.getServer().getPluginManager().registerEvents(new JoinLuckEvent(this), this);
-		this.getServer().getPluginManager().registerEvents(new LeaveLuckEvent(this), this);
 		this.getServer().getPluginManager().registerEvents(new BreakEvent(this), this);
 		this.getServer().getPluginManager().registerEvents(new PlaceEvent(this), this);
 	}

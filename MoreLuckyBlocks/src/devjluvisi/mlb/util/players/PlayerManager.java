@@ -1,6 +1,5 @@
 package devjluvisi.mlb.util.players;
 
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -11,65 +10,33 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 public class PlayerManager {
 
 	private final MoreLuckyBlocks plugin;
-	private final HashSet<PlayerData> playerLuckMap;
 
 	public PlayerManager(MoreLuckyBlocks plugin) {
 		this.plugin = plugin;
-		this.playerLuckMap = new HashSet<>();
-		this.init();
-	}
-
-	private void init() {
-		for (final Player p : this.plugin.getServer().getOnlinePlayers()) {
-			if (!this.getPlayer(p.getName()).isNull()) {
-				this.playerLuckMap.add(this.getPlayer(p.getName()));
-			}
-		}
-	}
-
-	public void add(Player p, float luck) {
-		this.playerLuckMap.add(new PlayerData(p).withLuck(luck));
-		this.save();
-	}
-
-	public void add(Player p) {
-		this.playerLuckMap.add(new PlayerData(p));
-		this.save();
-	}
-
-	public void remove(Player p) {
-		// You dont need luck as it does not matter when comparing players.
-		this.playerLuckMap.remove(new PlayerData(p));
-		this.save();
 	}
 
 	public void update(UUID uuid, float newLuck) {
-		this.playerLuckMap.remove(new PlayerData(uuid));
-		this.add(this.plugin.getServer().getPlayer(uuid), newLuck);
+		updateOffline(uuid, newLuck);
 		this.save();
 	}
 
 	public void save() {
-		for (final PlayerData pData : this.playerLuckMap) {
-			pData.save(this.plugin.getPlayersYaml());
-		}
+		plugin.getPlayersYaml().save();
+		plugin.getPlayersYaml().reload();
 	}
 
 	public void updateOffline(UUID uuid, float luck) {
 		this.plugin.getPlayersYaml().getConfig().set("players." + uuid.toString() + ".luck", String.valueOf(luck));
-		this.plugin.getPlayersYaml().save();
-		this.plugin.getPlayersYaml().reload();
+		save();
 	}
 
 	public PlayerData getPlayer(String name) {
-		if (!(Objects.isNull(this.plugin.getServer().getPlayer(name)))) {
-			for (final PlayerData p : this.playerLuckMap) {
-				if (p.getUUID().equals(this.plugin.getServer().getPlayer(name).getUniqueId())) {
-					return p;
-				}
-			}
+		Player p = plugin.getServer().getPlayerExact(name);
+		// Try to get the player directly for faster access if they are online.
+		if(!(Objects.isNull(p))) {
+			return new PlayerData(p.getUniqueId()).withLuck((float)plugin.getPlayersYaml().getConfig().get("players." + p.getUniqueId() + ".luck"));
 		}
-
+		
 		if (this.plugin.getPlayersYaml().getConfig().getConfigurationSection("players") == null) {
 			return new PlayerData();
 		}
@@ -84,20 +51,5 @@ public class PlayerManager {
 		}
 		return new PlayerData();
 	}
-
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("[ ");
-		for (final PlayerData p : this.playerLuckMap) {
-			builder.append("{");
-			builder.append(p.getUUID());
-			builder.append(", ");
-			builder.append(p.getLuck());
-			builder.append("} ");
-		}
-		builder.append("]");
-		return builder.toString();
-	}
-
+	
 }
