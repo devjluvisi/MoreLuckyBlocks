@@ -93,6 +93,7 @@ public class EditDrop extends BasePage {
 				if (!(((slot >= 2) && (slot <= 8)) || ((slot >= 11) && (slot <= 17)))
 						|| (this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems()
 								.get(this.getDropIndex()).getLoot().size() == 1)) {
+					view.getPlayer().sendMessage(ChatColor.RED + "You cannot delete the last item in this drop. Either delete this drop or add an additional item.");
 					return;
 				}
 				this.plugin.getLuckyBlocks().get(this.getBlockIndex()).getDroppableItems().get(this.getDropIndex())
@@ -112,7 +113,7 @@ public class EditDrop extends BasePage {
 						+ PluginConstants.MAX_LOOT_AMOUNT + " items per drop.");
 				return;
 			}
-			view.close();
+			
 			view.getPlayer().sendMessage("");
 			view.getPlayer().sendMessage(ChatColor.GRAY + "You are attempting to add a command to drop: "
 					+ ChatColor.BLUE + String.valueOf(this.getDropIndex()));
@@ -121,6 +122,7 @@ public class EditDrop extends BasePage {
 			view.getPlayer().sendMessage("");
 
 			this.plugin.getPlayersEditingDrop().put(view.getPlayer().getUniqueId(), view);
+			view.close();
 			return;
 		}
 		if (itemStack.equals(this.getSpecialItem(SpecialItem.ADD_POTION_EFFECT))) {
@@ -129,7 +131,6 @@ public class EditDrop extends BasePage {
 						+ PluginConstants.MAX_LOOT_AMOUNT + " items per drop.");
 				return;
 			}
-			view.close();
 			view.getPlayer().sendMessage("");
 			view.getPlayer().sendMessage(ChatColor.GRAY + "You are attempting to add a potion effect to drop: "
 					+ ChatColor.BLUE + String.valueOf(this.getDropIndex()));
@@ -141,6 +142,7 @@ public class EditDrop extends BasePage {
 
 			this.setAddPotionEffectStage(1);
 			this.plugin.getPlayersEditingDrop().put(view.getPlayer().getUniqueId(), view);
+			view.close();
 
 			return;
 		}

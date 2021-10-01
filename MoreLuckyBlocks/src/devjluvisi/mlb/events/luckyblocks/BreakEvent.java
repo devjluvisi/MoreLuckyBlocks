@@ -9,6 +9,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import net.md_5.bungee.api.ChatColor;
 
 public class BreakEvent implements Listener {
 
@@ -27,11 +28,14 @@ public class BreakEvent implements Listener {
 		if (Objects.isNull(lb)) {
 			return;
 		}
-
-		e.getPlayer().sendMessage("You broke a lucky block -> " + lb.getInternalName());
-		e.getPlayer().sendMessage("Its Luck -> " + lb.getBlockLuck());
-		e.getPlayer().sendMessage(
-				"Your Player Luck -> " + this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()).getLuck());
+		if(lb.getDroppableItems().size()==0) {
+			e.getPlayer().sendMessage(ChatColor.RED + "This was a lucky block but it did not drop anything because no drops were available.");
+			e.setCancelled(true);
+			return;
+		}
+		e.getPlayer().sendMessage(ChatColor.YELLOW + "You broke a lucky block!");
+		lb.generateDrop(this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()).getLuck()).applyTo(e.getBlock().getLocation(), e.getPlayer());
+		
 		this.plugin.getAudit().remove(e.getBlock().getLocation());
 	}
 

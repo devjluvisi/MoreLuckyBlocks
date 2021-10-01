@@ -3,6 +3,7 @@ package devjluvisi.mlb.util.players;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
@@ -16,6 +17,7 @@ public class PlayerManager {
 	}
 
 	public void update(UUID uuid, float newLuck) {
+		this.plugin.getPlayersYaml().getConfig().set("players." + uuid.toString() + ".name", String.valueOf(Bukkit.getServer().getPlayer(uuid).getName()));
 		updateOffline(uuid, newLuck);
 		this.save();
 	}
@@ -31,11 +33,6 @@ public class PlayerManager {
 	}
 
 	public PlayerData getPlayer(String name) {
-		Player p = plugin.getServer().getPlayerExact(name);
-		// Try to get the player directly for faster access if they are online.
-		if(!(Objects.isNull(p))) {
-			return new PlayerData(p.getUniqueId()).withLuck((float)plugin.getPlayersYaml().getConfig().get("players." + p.getUniqueId() + ".luck"));
-		}
 		
 		if (this.plugin.getPlayersYaml().getConfig().getConfigurationSection("players") == null) {
 			return new PlayerData();
@@ -46,7 +43,7 @@ public class PlayerManager {
 					&& ((String) this.plugin.getPlayersYaml().getConfig().get("players." + playerUUIDs + ".name"))
 							.equalsIgnoreCase(name)) {
 				return new PlayerData(UUID.fromString(playerUUIDs)).withLuck(Float.parseFloat(
-						(String) this.plugin.getPlayersYaml().getConfig().get("players." + playerUUIDs + ".luck")));
+						String.valueOf(this.plugin.getPlayersYaml().getConfig().get("players." + playerUUIDs + ".luck"))));
 			}
 		}
 		return new PlayerData();

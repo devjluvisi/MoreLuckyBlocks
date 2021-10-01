@@ -1,11 +1,19 @@
 package devjluvisi.mlb.blocks;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.TreeSet;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -15,6 +23,7 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.api.items.CustomItemMeta;
 import devjluvisi.mlb.helper.Util;
+import devjluvisi.mlb.util.Range;
 import devjluvisi.mlb.util.config.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 
@@ -25,6 +34,8 @@ import net.md_5.bungee.api.ChatColor;
  *
  */
 public class LuckyBlock {
+	
+	private static Random rand;
 
 	// Public Fields (Represent ALL blocks of this type)
 	private String internalName;
@@ -236,6 +247,32 @@ public class LuckyBlock {
 		}
 		return -1;
 	}
+	
+	public LuckyBlockDrop generateDrop(float playerLuck) {
+		rand = new SecureRandom();
+		// Sorted drops by rarity.
+		TreeSet<LuckyBlockDrop> sortedDrops = new TreeSet<LuckyBlockDrop>(this.droppableItems);
+		
+		final float max = 100.0F;
+		final float min = 0.0F;
+		
+		float chance = min + rand.nextFloat() * (max - min);
+		
+		float offset = (playerLuck + blockLuck) / 16;
+		
+		final float offsetChance = (chance - offset);
+		
+		for(LuckyBlockDrop d : sortedDrops) {
+			Bukkit.getLogger().info("Checking " + (offsetChance) + " (" + chance + ") " + " against " + d.getRarity());
+			
+			if(offsetChance <= d.getRarity()) {
+				return d;
+			}
+		}
+		
+		return sortedDrops.last();
+	}
+	
 
 	@Override
 	public boolean equals(Object obj) {

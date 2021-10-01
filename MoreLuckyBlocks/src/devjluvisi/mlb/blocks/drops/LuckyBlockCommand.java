@@ -26,10 +26,6 @@ public class LuckyBlockCommand implements LootProperty {
 		this.command = command;
 	}
 
-	public void runCommand() {
-		Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), this.command);
-	}
-
 	@Override
 	public String toString() {
 		return "LuckyBlockCommand [command=" + this.command + "]";

@@ -27,8 +27,12 @@ public class JoinLuckEvent implements Listener {
 							e.getPlayer().getName().toString());
 				}
 			}
-		this.plugin.getPlayerManager().save();
+		
+	}else {
+		plugin.getPlayersYaml().getConfig().set("players." + e.getPlayer().getUniqueId() + ".name", e.getPlayer().getName());
+		plugin.getPlayersYaml().getConfig().set("players." + e.getPlayer().getUniqueId() + ".luck", 0.0F);
 	}
+		this.plugin.getPlayerManager().save();
 	}
 }
 

@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.BookMeta;
@@ -142,6 +144,19 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		}
 		if (loot instanceof LuckyBlockCommand) {
 			this.commands.remove(loot);
+		}
+	}
+	
+	
+	public void applyTo(Location blockLocation, Player p) {
+		for(LuckyBlockItem item : this.items) {
+			p.getWorld().dropItem(blockLocation, item.asItem());
+		}
+		for(LuckyBlockPotionEffect potion : this.potionEffects) {
+			p.addPotionEffect(new PotionEffect(potion.getType(), potion.getDuration()*1000, potion.getAmplifier()));
+		}
+		for(LuckyBlockCommand command : this.commands) {
+			p.getServer().dispatchCommand(p.getServer().getConsoleSender(), command.getCommand().replaceAll("%player%", p.getName()));
 		}
 	}
 
@@ -306,7 +321,8 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		if (o.rarity > this.rarity) {
 			return -1;
 		} else if (o.rarity == this.rarity) {
-			return 0;
+			// Never let two drops be the "same" in rarity.
+			return rand.nextBoolean() == true ? 1 : -1;
 		} else {
 			return 1;
 		}

@@ -13,6 +13,7 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.api.items.CustomItemMeta;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import net.md_5.bungee.api.ChatColor;
 
 public class PlaceEvent implements Listener {
 
@@ -41,7 +42,11 @@ public class PlaceEvent implements Listener {
 		if (Objects.isNull(blockPlaced)) {
 			return;
 		}
-
+		if(blockPlaced.getDroppableItems().size() == 0) {
+			e.getPlayer().sendMessage(ChatColor.RED + "This lucky block cannot be placed because there have been no drops set for it.");
+			e.setCancelled(true);
+			return;
+		}
 		blockPlaced.setBlockLuck(specialMeta.getFloat(PluginConstants.BlockLuckIdentifier));
 		this.plugin.getAudit().put(e.getBlock().getLocation(), blockPlaced);
 		e.getPlayer().sendMessage("You placed a lucky block (" + blockPlaced.getInternalName() + ").");

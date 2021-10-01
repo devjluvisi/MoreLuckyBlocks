@@ -33,6 +33,9 @@ public class InventoryCloseFix implements Listener {
 		if (!e.getPlayer().hasPermission("mlb.admin.edit") || !e.getView().getTitle().contains("Editing Drop")) {
 			return;
 		}
+		if(plugin.getPlayersEditingDrop().containsKey(e.getPlayer().getUniqueId())) {
+			return;
+		}
 		for (final LuckyBlock b : this.plugin.getLuckyBlocks()) {
 			for (final LuckyBlockDrop d : b.getDroppableItems()) {
 				if (d.getLoot().size() == 0) {

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import devjluvisi.mlb.api.gui.MenuView;
@@ -42,6 +44,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 	 * strings. - Any class which is not inherited from should be "final" - Return
 	 * empty collections instead of null
 	 * - Implement Config AutoSave for LuckyBlock (worldData.yml)
+	 * - Add hotbar notification for when a player breaks a lucky block (Tells them the luck)
 	 */
 	private ConfigManager configYaml;
 	private ConfigManager messagesYaml;
@@ -79,6 +82,10 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 		this.metaFactory = new CustomMetaFactory(this);
 		this.audit = new LuckyAudit(this);
 		this.playerManager = new PlayerManager(this);
+		
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			playerManager.update(p.getUniqueId(), playerManager.getPlayer(p.getName()).getLuck());
+		}
 
 		// Check if the config is valid and has no errors.
 		if (!LuckyBlockHelper.validateBlocksYaml(this.serverLuckyBlocks)) {
