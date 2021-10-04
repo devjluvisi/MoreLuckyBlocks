@@ -7,7 +7,6 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
-import devjluvisi.mlb.blocks.LuckyBlockDrop;
 
 /**
  * Fix user errors related to inventory closing.
@@ -30,18 +29,12 @@ public class InventoryCloseFix implements Listener {
 		// INVENTORIES.
 		// Removing this will cause index out of bounds exceptions when editing an added
 		// item.
-		if (!e.getPlayer().hasPermission("mlb.admin.edit") || !e.getView().getTitle().contains("Editing Drop")) {
-			return;
-		}
-		if(plugin.getPlayersEditingDrop().containsKey(e.getPlayer().getUniqueId())) {
+		if (!e.getPlayer().hasPermission("mlb.admin.edit") || !e.getView().getTitle().contains("Editing Drop")
+				|| this.plugin.getPlayersEditingDrop().containsKey(e.getPlayer().getUniqueId())) {
 			return;
 		}
 		for (final LuckyBlock b : this.plugin.getLuckyBlocks()) {
-			for (final LuckyBlockDrop d : b.getDroppableItems()) {
-				if (d.getLoot().size() == 0) {
-					b.removeDrop(d);
-				}
-			}
+			b.clean();
 		}
 
 	}

@@ -5,15 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.TreeSet;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +18,6 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.api.items.CustomItemMeta;
 import devjluvisi.mlb.helper.Util;
-import devjluvisi.mlb.util.Range;
 import devjluvisi.mlb.util.config.ConfigManager;
 import net.md_5.bungee.api.ChatColor;
 
@@ -34,7 +28,7 @@ import net.md_5.bungee.api.ChatColor;
  *
  */
 public class LuckyBlock {
-	
+
 	private static Random rand;
 
 	// Public Fields (Represent ALL blocks of this type)
@@ -60,7 +54,7 @@ public class LuckyBlock {
 		this.droppableItems = new LinkedList<>();
 		this.blockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
 	}
-	
+
 	public LuckyBlock(String internalName) {
 		super();
 		this.internalName = internalName;
@@ -81,9 +75,9 @@ public class LuckyBlock {
 		this.breakPermission = breakPermission;
 		this.blockMaterial = blockMaterial;
 		this.lore = lore;
-		setDefaultBlockLuck(defaultBlockLuck);
+		this.setDefaultBlockLuck(defaultBlockLuck);
 		this.droppableItems = droppableItems;
-		setBlockLuck(defaultBlockLuck);
+		this.setBlockLuck(defaultBlockLuck);
 	}
 
 	public ItemStack asItem(MoreLuckyBlocks plugin, float luck, int amount) {
@@ -191,7 +185,6 @@ public class LuckyBlock {
 		this.droppableItems = arrayList;
 	}
 
-
 	public float getBlockLuck() {
 		return this.blockLuck;
 	}
@@ -213,7 +206,8 @@ public class LuckyBlock {
 	 *
 	 * @param blocksYaml The config file to save at.
 	 */
-	public void saveConfig(ConfigManager blocksYaml) {
+	public void saveConfig(MoreLuckyBlocks plugin) {
+		final ConfigManager blocksYaml = plugin.getBlocksYaml();
 		final String path = "lucky-blocks." + this.internalName;
 		blocksYaml.getConfig().set(path, null);
 		blocksYaml.getConfig().set(path + ".item-name", Util.asNormalColoredString(this.name));
@@ -224,7 +218,7 @@ public class LuckyBlock {
 
 		int index = 0;
 		for (final LuckyBlockDrop drop : this.droppableItems) {
-			drop.saveConfig(blocksYaml, this.internalName, String.valueOf(index));
+			drop.saveConfig(plugin, this.internalName, String.valueOf(index));
 			index++;
 		}
 		blocksYaml.save();
@@ -247,32 +241,44 @@ public class LuckyBlock {
 		}
 		return -1;
 	}
-	
+
 	public LuckyBlockDrop generateDrop(float playerLuck) {
 		rand = new SecureRandom();
 		// Sorted drops by rarity.
-		TreeSet<LuckyBlockDrop> sortedDrops = new TreeSet<LuckyBlockDrop>(this.droppableItems);
-		
+		final TreeSet<LuckyBlockDrop> sortedDrops = new TreeSet<>(this.droppableItems);
+
 		final float max = 100.0F;
 		final float min = 0.0F;
-		
-		float chance = min + rand.nextFloat() * (max - min);
-		
-		float offset = (playerLuck + blockLuck) / 16;
-		
+
+		final float chance = min + (rand.nextFloat() * (max - min));
+
+		final float offset = (playerLuck + this.blockLuck) / 16;
+
 		final float offsetChance = (chance - offset);
-		
-		for(LuckyBlockDrop d : sortedDrops) {
-			Bukkit.getLogger().info("Checking " + (offsetChance) + " (" + chance + ") " + " against " + d.getRarity());
-			
-			if(offsetChance <= d.getRarity()) {
+
+		for (final LuckyBlockDrop d : sortedDrops) {
+			// Bukkit.getLogger().info("Checking " + (offsetChance) + " (" + chance + ") " +
+			// " against " + d.getRarity());
+
+			if (offsetChance <= d.getRarity()) {
 				return d;
 			}
 		}
-		
+
 		return sortedDrops.last();
 	}
-	
+
+	public boolean isEmpty() {
+		return this.droppableItems.size() == 0;
+	}
+
+	public void clean() {
+		for (final LuckyBlockDrop d : this.droppableItems) {
+			if (d.getLoot().size() == 0) {
+				this.removeDrop(d);
+			}
+		}
+	}
 
 	@Override
 	public boolean equals(Object obj) {

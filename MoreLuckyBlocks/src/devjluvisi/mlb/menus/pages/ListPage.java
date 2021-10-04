@@ -116,9 +116,12 @@ public class ListPage extends BasePage {
 		if (item == null) {
 			return;
 		}
-	
-		int index = plugin.getLuckyBlocks().indexOf(new LuckyBlock(Util.makeInternal(item.getItemMeta().getDisplayName())));
-		if(index==-1) return;
+
+		final int index = this.plugin.getLuckyBlocks()
+				.indexOf(new LuckyBlock(Util.makeInternal(item.getItemMeta().getDisplayName())));
+		if (index == -1) {
+			return;
+		}
 		this.setBlockIndex(index);
 		this.traverse(view, View.LIST_DROPS);
 	}

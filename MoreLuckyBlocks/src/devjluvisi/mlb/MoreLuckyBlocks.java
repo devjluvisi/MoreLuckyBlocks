@@ -1,6 +1,5 @@
 package devjluvisi.mlb;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -10,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.api.items.CustomMetaFactory;
-import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.blocks.LuckyBlockManager;
 import devjluvisi.mlb.cmds.CommandManager;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.events.EditDropInChatEvent;
@@ -18,7 +17,6 @@ import devjluvisi.mlb.events.handles.InventoryCloseFix;
 import devjluvisi.mlb.events.luckyblocks.BreakEvent;
 import devjluvisi.mlb.events.luckyblocks.PlaceEvent;
 import devjluvisi.mlb.events.players.JoinLuckEvent;
-import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.util.config.ConfigManager;
 import devjluvisi.mlb.util.luckyblocks.LuckyAudit;
 import devjluvisi.mlb.util.players.PlayerManager;
@@ -32,7 +30,8 @@ import devjluvisi.mlb.util.players.PlayerManager;
  *
  */
 public final class MoreLuckyBlocks extends JavaPlugin {
-	//TODO: Potentially, ditch data structures and read directly from the config files ratheer then using maps, etc.
+	// TODO: Potentially, ditch data structures and read directly from the config
+	// files ratheer then using maps, etc.
 	/*
 	 * TODO: - Use StringUtils and StringBuilder - Cache variables - Add particle
 	 * effects for lucky block break. - Add option to make lucky block break instant
@@ -42,9 +41,11 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 	 * which can return null - Validate.<...> should be used liberally. - Replace
 	 * String "null" with just an empty string "". Then only check isBlank() on the
 	 * strings. - Any class which is not inherited from should be "final" - Return
-	 * empty collections instead of null
-	 * - Implement Config AutoSave for LuckyBlock (worldData.yml)
-	 * - Add hotbar notification for when a player breaks a lucky block (Tells them the luck)
+	 * empty collections instead of null - Implement Config AutoSave for LuckyBlock
+	 * (worldData.yml) - Add hotbar notification for when a player breaks a lucky
+	 * block (Tells them the luck) - Add "event" commands like /mlb event spawnblock
+	 * <block>, /mlb event spawnmob to allow lucky blocks to do more things then
+	 * just drop items.
 	 */
 	private ConfigManager configYaml;
 	private ConfigManager messagesYaml;
@@ -53,14 +54,12 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 	private ConfigManager playersYaml;
 	private ConfigManager exchangesYaml;
 
-	private ArrayList<LuckyBlock> serverLuckyBlocks;
-
+	private LuckyBlockManager lbManager;
 	private HashMap<UUID, MenuView> playersEditingDrop;
 
 	private PlayerManager playerManager;
 	private LuckyAudit audit;
 	private CustomMetaFactory metaFactory;
-	
 
 	@Override
 	public void onEnable() {
@@ -77,36 +76,22 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 		this.registerCommands();
 		this.registerEvents();
 
-		this.serverLuckyBlocks = LuckyBlockHelper.getLuckyBlocks(this.blocksYaml);
-		this.playersEditingDrop = new HashMap<>();
 		this.metaFactory = new CustomMetaFactory(this);
+		this.lbManager = new LuckyBlockManager(this);
+		this.playersEditingDrop = new HashMap<>();
+
 		this.audit = new LuckyAudit(this);
 		this.playerManager = new PlayerManager(this);
-		
-		for(Player p : Bukkit.getOnlinePlayers()) {
-			playerManager.update(p.getUniqueId(), playerManager.getPlayer(p.getName()).getLuck());
-		}
 
-		// Check if the config is valid and has no errors.
-		if (!LuckyBlockHelper.validateBlocksYaml(this.serverLuckyBlocks)) {
-			this.getServer().getLogger().severe("Could not start server due to invalid blocks.yml file.");
-			this.getServer().getLogger().severe("Please ensure that the plugin config file follows proper formatting.");
-			this.getServer().getPluginManager().disablePlugin(this);
-			return;
+		for (final Player p : Bukkit.getOnlinePlayers()) {
+			this.playerManager.update(p.getUniqueId(), this.playerManager.getPlayer(p.getName()).getLuck());
 		}
 
 		super.onEnable();
 	}
 
-	/**
-	 * @return Get a list of all lucky blocks on the server.
-	 */
-	public ArrayList<LuckyBlock> getLuckyBlocks() {
-		return this.serverLuckyBlocks;
-	}
-
-	public void setServerLuckyBlocks(ArrayList<LuckyBlock> serverLuckyBlocks) {
-		this.serverLuckyBlocks = serverLuckyBlocks;
+	public LuckyBlockManager getLuckyBlocks() {
+		return this.lbManager;
 	}
 
 	public LuckyAudit getAudit() {

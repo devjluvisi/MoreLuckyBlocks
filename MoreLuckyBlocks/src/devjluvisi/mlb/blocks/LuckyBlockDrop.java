@@ -1,30 +1,19 @@
 package devjluvisi.mlb.blocks;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.ShulkerBox;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BlockStateMeta;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 
-import devjluvisi.mlb.PluginConstants;
+import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.drops.LootProperty;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.drops.LuckyBlockItem;
 import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
-import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.config.ConfigManager;
 
 /**
@@ -57,15 +46,15 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		this.potionEffects = new ArrayList<>();
 	}
 
-	public LuckyBlockDrop(ArrayList<LuckyBlockItem> items, ArrayList<LuckyBlockCommand> commands,
-			ArrayList<LuckyBlockPotionEffect> potionEffects, float rarity) {
+	public LuckyBlockDrop(List<LuckyBlockItem> items, List<LuckyBlockCommand> commands,
+			List<LuckyBlockPotionEffect> potionEffects, float rarity) {
 		super();
 		this.rand = new Random();
 		this.uniqueId = this.rand.nextLong();
-		this.items = items;
-		this.commands = commands;
-		this.potionEffects = potionEffects;
-		setRarity(rarity);
+		this.items = new ArrayList<>(items);
+		this.commands = new ArrayList<>(commands);
+		this.potionEffects = new ArrayList<>(potionEffects);
+		this.setRarity(rarity);
 	}
 
 	public ArrayList<LuckyBlockItem> getItems() {
@@ -98,12 +87,12 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 
 	public void setRarity(float rarity) {
 		rarity = Math.abs(rarity);
-		
-		if(rarity >= 100.0F) {
+
+		if (rarity >= 100.0F) {
 			this.rarity = 100.0F;
 			return;
 		}
-		if(rarity <= 0.1F) {
+		if (rarity <= 0.1F) {
 			this.rarity = 0.1F;
 			return;
 		}
@@ -146,17 +135,17 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 			this.commands.remove(loot);
 		}
 	}
-	
-	
+
 	public void applyTo(Location blockLocation, Player p) {
-		for(LuckyBlockItem item : this.items) {
+		for (final LuckyBlockItem item : this.items) {
 			p.getWorld().dropItem(blockLocation, item.asItem());
 		}
-		for(LuckyBlockPotionEffect potion : this.potionEffects) {
-			p.addPotionEffect(new PotionEffect(potion.getType(), potion.getDuration()*1000, potion.getAmplifier()));
+		for (final LuckyBlockPotionEffect potion : this.potionEffects) {
+			p.addPotionEffect(new PotionEffect(potion.getType(), potion.getDuration() * 1000, potion.getAmplifier()));
 		}
-		for(LuckyBlockCommand command : this.commands) {
-			p.getServer().dispatchCommand(p.getServer().getConsoleSender(), command.getCommand().replaceAll("%player%", p.getName()));
+		for (final LuckyBlockCommand command : this.commands) {
+			p.getServer().dispatchCommand(p.getServer().getConsoleSender(),
+					command.getCommand().replaceAll("%player%", p.getName()));
 		}
 	}
 
@@ -168,126 +157,16 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	 * @param dropLabel    The label that specifies the specific drop, ex (0) or
 	 *                     (1).
 	 */
-	public void saveConfig(ConfigManager blocksYaml, String internalName, String dropLabel) {
+	public void saveConfig(MoreLuckyBlocks plugin, String internalName, String dropLabel) {
 		final String path = "lucky-blocks." + internalName + ".drops." + dropLabel;
+		final ConfigManager blocksYaml = plugin.getBlocksYaml();
+
 		blocksYaml.getConfig().set(path + ".rarity", this.rarity);
 
-		// TODO: Written Books/Books and Quill, Enchanting Books, Attributes,
 		// SAVING ITEMS
 		int index = 0;
 		for (final LuckyBlockItem item : this.getItems()) {
-			blocksYaml.getConfig().set(path + ".items." + index + ".type", item.getItem().getType().name());
-
-			if (item.getItem().getItemMeta().getDisplayName().isEmpty()
-					|| (item.getItem().getItemMeta().getDisplayName() == null)) {
-				blocksYaml.getConfig().set(path + ".items." + index + ".display-name", "");
-
-			} else {
-				blocksYaml.getConfig().set(path + ".items." + index + ".display-name",
-						Util.asNormalColoredString(item.getItem().getItemMeta().getDisplayName()));
-			}
-
-			// Save Amount
-			blocksYaml.getConfig().set(path + ".items." + index + ".amount", item.getItem().getAmount());
-			// Save Enchants
-			blocksYaml.getConfig().set(path + ".items." + index + ".enchants", item.enchantsConfigString());
-
-			// Save leather armor
-			if ((item.getItem().getItemMeta() instanceof LeatherArmorMeta)
-					&& !(((LeatherArmorMeta) item.getItem().getItemMeta()).getColor() == Bukkit.getServer()
-							.getItemFactory().getDefaultLeatherColor())) {
-				blocksYaml.getConfig().set(path + ".items." + index + ".color", String.valueOf(
-						Integer.toHexString(((LeatherArmorMeta) item.getItem().getItemMeta()).getColor().asRGB())));
-			}
-
-			// Save Shulker Boxes (uses default minecraft serialization)
-			if (item.getItem().getItemMeta() instanceof BlockStateMeta) {
-				final BlockStateMeta im = (BlockStateMeta) item.getItem().getItemMeta();
-				if (im.getBlockState() instanceof ShulkerBox) {
-					final ShulkerBox shulker = (ShulkerBox) im.getBlockState();
-					int subIndex = 0;
-					for (final ItemStack i : shulker.getInventory().getContents()) {
-						if ((i == null) || i.getType().isAir()) {
-							continue;
-						}
-						blocksYaml.getConfig().set(path + ".items." + index + ".inventory." + subIndex, i.serialize());
-						subIndex++;
-					}
-				}
-			}
-
-			if (item.getItem().getItemMeta() instanceof BookMeta) {
-				final BookMeta m = (BookMeta) item.getItem().getItemMeta();
-				final String title = m.getTitle();
-				final String author = m.getAuthor();
-				final List<String> pages = m.getPages();
-				blocksYaml.getConfig().set(path + ".items." + index + ".book." + "title",
-						Util.asNormalColoredString(String.valueOf(title)));
-				blocksYaml.getConfig().set(path + ".items." + index + ".book." + "author",
-						Util.asNormalColoredString(String.valueOf(author)));
-				blocksYaml.getConfig().set(path + ".items." + index + ".book." + "pages",
-						Util.asNormalColoredString(pages));
-			}
-
-			if (item.getItem().getItemMeta() instanceof EnchantmentStorageMeta) {
-				Bukkit.getServer().broadcastMessage("TRUE");
-				final EnchantmentStorageMeta bookMeta = (EnchantmentStorageMeta) item.getItem().getItemMeta();
-				final List<String> enchants = new LinkedList<>();
-				for (final Enchantment e : bookMeta.getStoredEnchants().keySet()) {
-					enchants.add(String.valueOf(
-							"[" + e.getKey().getKey().toUpperCase() + ":" + bookMeta.getStoredEnchantLevel(e) + "]"));
-				}
-				blocksYaml.getConfig().set(path + ".items." + index + ".stored-enchants", enchants);
-
-			}
-
-			// Save Minecraft Potions
-			if (item.getItem().getItemMeta() instanceof PotionMeta) {
-				final PotionMeta potionMeta = (PotionMeta) item.getItem().getItemMeta();
-				if (!potionMeta.hasCustomEffects()) {
-					blocksYaml.getConfig().set(path + ".items." + index + ".meta", potionMeta.serialize());
-				} else {
-					final List<String> potionItemType = new ArrayList<>();
-					final List<String> types = new ArrayList<>();
-					final List<String> amplifiers = new ArrayList<>();
-					final List<String> durations = new ArrayList<>();
-
-					for (final PotionEffect e : potionMeta.getCustomEffects()) {
-						potionItemType.add(item.getItem().getType().name().toLowerCase().contains("splash") ? "SPLASH"
-								: item.getItem().getType().name().toLowerCase().contains("lingering") ? "LINGERING"
-										: "REGULAR");
-						types.add(e.getType().getName().toUpperCase());
-						amplifiers.add(String.valueOf(e.getAmplifier()));
-						durations.add(String.valueOf(e.getDuration()));
-					}
-					for (byte i = 0; i < types.size(); i++) {
-						blocksYaml.getConfig().set(path + ".items." + index + "type", types.get(i));
-						blocksYaml.getConfig().set(path + ".items." + index + "." + types.get(i) + ".splash",
-								potionItemType.get(i));
-						blocksYaml.getConfig().set(path + ".items." + index + "." + types.get(i) + ".amplifier",
-								amplifiers.get(i));
-						blocksYaml.getConfig().set(path + ".items." + index + "." + types.get(i) + ".duration",
-								durations.get(i));
-					}
-				}
-			}
-
-			// Save Damageable items like tools and armor.
-			if ((item.getItem().getItemMeta() instanceof Damageable)
-					&& (((Damageable) item.getItem().getItemMeta()).getDamage() != 0)) {
-				blocksYaml.getConfig().set(path + ".items." + index + ".damage",
-						((Damageable) item.getItem().getItemMeta()).getDamage());
-				blocksYaml.getConfig().set(path + ".items." + index + ".unbreakable",
-						(item.getItem().getItemMeta().isUnbreakable()));
-			}
-
-			// Save lore.
-			if (item.getItem().getItemMeta().getLore() != null) {
-				blocksYaml.getConfig().set(path + ".items." + index + ".lore",
-						Util.asNormalColoredString(item.getItem().getItemMeta().getLore()));
-
-			}
-
+			blocksYaml.getConfig().set(path + ".items." + index, item.getItem());
 			index++;
 		}
 
@@ -322,7 +201,7 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 			return -1;
 		} else if (o.rarity == this.rarity) {
 			// Never let two drops be the "same" in rarity.
-			return rand.nextBoolean() == true ? 1 : -1;
+			return this.rand.nextBoolean() ? 1 : -1;
 		} else {
 			return 1;
 		}

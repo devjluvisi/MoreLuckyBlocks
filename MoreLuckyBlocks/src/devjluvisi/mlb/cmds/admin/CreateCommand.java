@@ -11,7 +11,6 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.cmds.SubCommand;
-import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.Range;
 import net.md_5.bungee.api.ChatColor;
@@ -78,11 +77,7 @@ public class CreateCommand implements SubCommand {
 		}
 		float luck;
 		final LuckyBlock luckyBlock = new LuckyBlock();
-		if (!LuckyBlockHelper.unique(this.plugin.getLuckyBlocks(), item.getItemMeta().getDisplayName())) {
-			p.sendMessage(ChatColor.RED
-					+ "There is already a lucky block with this name.\nPlease change the name of your lucky block.");
-			return ExecutionResult.PASSED;
-		}
+
 		if (this.plugin.getLuckyBlocks().size() > PluginConstants.MAX_LUCKY_BLOCK_AMOUNT) {
 			p.sendMessage(ChatColor.RED + "You cannot add more than " + PluginConstants.MAX_LUCKY_BLOCK_AMOUNT
 					+ " lucky blocks.");
@@ -108,7 +103,11 @@ public class CreateCommand implements SubCommand {
 			}
 			luckyBlock.setDefaultBlockLuck(luck);
 		}
-		this.plugin.getLuckyBlocks().add(luckyBlock);
+		if (!this.plugin.getLuckyBlocks().add(luckyBlock)) {
+			p.sendMessage(ChatColor.RED
+					+ "There is already a lucky block with this name.\nPlease change the name of your lucky block.");
+			return ExecutionResult.PASSED;
+		}
 		p.sendMessage(ChatColor.DARK_GREEN + "You have added a new lucky block.");
 		p.sendMessage(ChatColor.GRAY + "Internal Name" + ChatColor.DARK_GRAY + " -> " + ChatColor.RED
 				+ luckyBlock.getInternalName());

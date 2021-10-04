@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.potion.PotionEffectType;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
@@ -43,6 +44,10 @@ public class EditDropInChatEvent implements Listener {
 			e.setCancelled(true);
 
 			if (command.equalsIgnoreCase("/exit")) {
+
+				for (final LuckyBlock lb : this.plugin.getLuckyBlocks()) {
+					lb.clean();
+				}
 
 				b.traverse(this.plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
 
@@ -91,6 +96,10 @@ public class EditDropInChatEvent implements Listener {
 				luckyBlockDrop.getPotionEffects().remove(luckyBlockDrop.getPotionEffects().size() - 1);
 			}
 			p.sendMessage(ChatColor.GRAY + "You have stopped adding a potion effect.");
+
+			for (final LuckyBlock lb : this.plugin.getLuckyBlocks()) {
+				lb.clean();
+			}
 
 			Bukkit.getScheduler().runTask(this.plugin, () -> {
 				b.traverse(this.plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);

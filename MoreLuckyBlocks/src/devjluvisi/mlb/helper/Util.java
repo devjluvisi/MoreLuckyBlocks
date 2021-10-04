@@ -40,6 +40,18 @@ public class Util {
 		return loreCopy;
 	}
 
+	public static List<String> listToColor(List<String> lore) {
+
+		final List<String> loreCopy = new LinkedList<>();
+		for (final String s : lore) {
+			if ((s == null) || s.isEmpty()) {
+				continue;
+			}
+			loreCopy.add(ChatColor.translateAlternateColorCodes('&', s));
+		}
+		return loreCopy;
+	}
+
 	public static String makeInternal(String unformatted) {
 		unformatted = ChatColor.translateAlternateColorCodes('&', unformatted);
 		unformatted = ChatColor.stripColor(unformatted);
@@ -76,6 +88,5 @@ public class Util {
 		}
 		return NumberUtils.toDouble(str);
 	}
-	
 
 }

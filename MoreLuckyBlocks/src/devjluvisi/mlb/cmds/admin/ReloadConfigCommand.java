@@ -4,7 +4,6 @@ import org.bukkit.command.CommandSender;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.cmds.SubCommand;
-import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.util.Range;
 import net.md_5.bungee.api.ChatColor;
 
@@ -62,7 +61,7 @@ public class ReloadConfigCommand implements SubCommand {
 		this.plugin.getMessagesYaml().save();
 		this.plugin.getMessagesYaml().reload();
 
-		this.plugin.setServerLuckyBlocks(LuckyBlockHelper.getLuckyBlocks(this.plugin.getBlocksYaml()));
+		this.plugin.getLuckyBlocks().upload();
 		return ExecutionResult.PASSED;
 	}
 

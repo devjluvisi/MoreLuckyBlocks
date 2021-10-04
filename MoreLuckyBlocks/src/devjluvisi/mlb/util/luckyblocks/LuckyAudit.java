@@ -80,13 +80,13 @@ public final class LuckyAudit {
 		Validate.notNull(lb);
 		this.luckyBlockMap.put(new MapLocation3D(l),
 				new LuckyValues(lb.getBlockMaterial(), lb.hashCode(), lb.getBlockLuck()));
-		//this.writeAll();
+		// this.writeAll();
 	}
 
 	public void remove(Location l) {
 		Validate.notNull(l);
 		this.luckyBlockMap.remove(new MapLocation3D(l));
-		//this.writeAll();
+		// this.writeAll();
 	}
 
 //	public void removeAll(LuckyBlock block) {

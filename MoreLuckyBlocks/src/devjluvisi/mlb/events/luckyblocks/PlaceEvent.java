@@ -42,8 +42,9 @@ public class PlaceEvent implements Listener {
 		if (Objects.isNull(blockPlaced)) {
 			return;
 		}
-		if(blockPlaced.getDroppableItems().size() == 0) {
-			e.getPlayer().sendMessage(ChatColor.RED + "This lucky block cannot be placed because there have been no drops set for it.");
+		if (blockPlaced.getDroppableItems().size() == 0) {
+			e.getPlayer().sendMessage(
+					ChatColor.RED + "This lucky block cannot be placed because there have been no drops set for it.");
 			e.setCancelled(true);
 			return;
 		}

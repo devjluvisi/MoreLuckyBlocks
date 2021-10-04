@@ -48,6 +48,7 @@ public class TestCommand implements SubCommand {
 	public ExecutionResult perform(CommandSender sender, String[] args) {
 		sender.sendMessage("Running Test. Check logger");
 		this.plugin.getAudit().dumpLogger();
+		this.plugin.getLuckyBlocks().dumpLogger();
 		return ExecutionResult.PASSED;
 	}
 

@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.cmds.SubCommand;
-import devjluvisi.mlb.helper.LuckyBlockHelper;
 import devjluvisi.mlb.util.Range;
 import net.md_5.bungee.api.ChatColor;
 
@@ -64,14 +63,14 @@ public class GiveCommand implements SubCommand {
 		if (p == null) {
 			return ExecutionResult.INVALID_PLAYER;
 		}
-		
-		int index = plugin.getLuckyBlocks().indexOf(new LuckyBlock(args[2].toLowerCase()));
-		if(index==-1) {
+
+		final int index = this.plugin.getLuckyBlocks().indexOf(new LuckyBlock(args[2].toLowerCase()));
+		if (index == -1) {
 			sender.sendMessage(ChatColor.RED + "Lucky block does not exist.");
 			return ExecutionResult.PASSED;
 		}
-		LuckyBlock block = plugin.getLuckyBlocks().get(index);
-		
+		final LuckyBlock block = this.plugin.getLuckyBlocks().get(index);
+
 		float luck = block.getDefaultBlockLuck();
 		int amount = 1;
 

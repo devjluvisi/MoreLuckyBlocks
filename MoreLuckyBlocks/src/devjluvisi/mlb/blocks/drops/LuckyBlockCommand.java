@@ -2,7 +2,6 @@ package devjluvisi.mlb.blocks.drops;
 
 import java.util.Arrays;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;

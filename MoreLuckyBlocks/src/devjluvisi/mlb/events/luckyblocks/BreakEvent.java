@@ -28,14 +28,16 @@ public class BreakEvent implements Listener {
 		if (Objects.isNull(lb)) {
 			return;
 		}
-		if(lb.getDroppableItems().size()==0) {
-			e.getPlayer().sendMessage(ChatColor.RED + "This was a lucky block but it did not drop anything because no drops were available.");
+		if (lb.getDroppableItems().size() == 0) {
+			e.getPlayer().sendMessage(ChatColor.RED
+					+ "This was a lucky block but it did not drop anything because no drops were available.");
 			e.setCancelled(true);
 			return;
 		}
 		e.getPlayer().sendMessage(ChatColor.YELLOW + "You broke a lucky block!");
-		lb.generateDrop(this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()).getLuck()).applyTo(e.getBlock().getLocation(), e.getPlayer());
-		
+		lb.generateDrop(this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()).getLuck())
+				.applyTo(e.getBlock().getLocation(), e.getPlayer());
+
 		this.plugin.getAudit().remove(e.getBlock().getLocation());
 	}
 
