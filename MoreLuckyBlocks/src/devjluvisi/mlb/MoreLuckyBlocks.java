@@ -1,5 +1,6 @@
 package devjluvisi.mlb;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ import devjluvisi.mlb.events.players.JoinLuckEvent;
 import devjluvisi.mlb.util.config.ConfigManager;
 import devjluvisi.mlb.util.luckyblocks.LuckyAudit;
 import devjluvisi.mlb.util.players.PlayerManager;
+import devjluvisi.mlb.util.structs.DropStructure;
 
 /**
  * FortuneBlocks - 1.17 -> LuckyBlocks plugin for Minecraft Spigot 1.17 <br />
@@ -53,9 +55,12 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 	private ConfigManager worldDataYaml;
 	private ConfigManager playersYaml;
 	private ConfigManager exchangesYaml;
+	private ConfigManager structuresYaml;
 
 	private LuckyBlockManager lbManager;
 	private HashMap<UUID, MenuView> playersEditingDrop;
+	
+	private DropStructure lbStructure;
 
 	private PlayerManager playerManager;
 	private LuckyAudit audit;
@@ -79,7 +84,10 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 		this.metaFactory = new CustomMetaFactory(this);
 		this.lbManager = new LuckyBlockManager(this);
 		this.playersEditingDrop = new HashMap<>();
-
+		
+		this.lbStructure = new DropStructure(this);
+		this.getServer().getPluginManager().registerEvents(lbStructure, this);
+		
 		this.audit = new LuckyAudit(this);
 		this.playerManager = new PlayerManager(this);
 
@@ -88,6 +96,10 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 		}
 
 		super.onEnable();
+	}
+	
+	public DropStructure getServerDropStructure() {
+		return this.lbStructure;
 	}
 
 	public LuckyBlockManager getLuckyBlocks() {
@@ -101,6 +113,8 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 	public PlayerManager getPlayerManager() {
 		return this.playerManager;
 	}
+
+
 
 	/**
 	 * @return All of the players attempting to "edit" a drop in a luckyblock.
@@ -120,9 +134,10 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 		this.configYaml = new ConfigManager(this, "config.yml");
 		this.messagesYaml = new ConfigManager(this, "messages.yml");
 		this.blocksYaml = new ConfigManager(this, "blocks.yml");
-		this.playersYaml = new ConfigManager(this, "players.yml");
-		this.worldDataYaml = new ConfigManager(this, "world-data.yml");
+		this.playersYaml = new ConfigManager(this, "data/players.yml");
+		this.worldDataYaml = new ConfigManager(this, "data/world-data.yml");
 		this.exchangesYaml = new ConfigManager(this, "exchanges.yml");
+		this.structuresYaml = new ConfigManager(this, "data/structures.yml");
 	}
 
 	/**
@@ -162,6 +177,10 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
 	public ConfigManager getExchangesYaml() {
 		return this.exchangesYaml;
+	}
+	
+	public ConfigManager getStructuresYaml() {
+		return this.structuresYaml;
 	}
 
 	/**

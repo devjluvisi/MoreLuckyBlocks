@@ -1,7 +1,10 @@
 package devjluvisi.mlb.events.luckyblocks;
 
+import java.util.LinkedList;
 import java.util.Objects;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -9,6 +12,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.blocks.LuckyBlockDrop;
+import devjluvisi.mlb.util.structs.RelativeBlock;
 import net.md_5.bungee.api.ChatColor;
 
 public class BreakEvent implements Listener {
@@ -35,9 +40,18 @@ public class BreakEvent implements Listener {
 			return;
 		}
 		e.getPlayer().sendMessage(ChatColor.YELLOW + "You broke a lucky block!");
-		lb.generateDrop(this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()).getLuck())
-				.applyTo(e.getBlock().getLocation(), e.getPlayer());
-
+		LuckyBlockDrop drop = lb.generateDrop(this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()).getLuck());
+		drop.applyTo(e.getBlock().getLocation(), e.getPlayer());
+		
+		if(drop.hasStructure()) {
+			for(String s : plugin.getStructuresYaml().getConfig().getStringList("structures." + drop.getStructure().toString())) {
+				RelativeBlock r = new RelativeBlock().deserialize(s);
+				Location loc = e.getBlock().getLocation();
+				//todo; get direction of player and adjust.
+				r.setOffset(loc);
+				r.place(e.getBlock().getLocation().getWorld());
+			}
+		}
 		this.plugin.getAudit().remove(e.getBlock().getLocation());
 	}
 

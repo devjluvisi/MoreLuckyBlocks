@@ -2,7 +2,9 @@ package devjluvisi.mlb.blocks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -34,6 +36,7 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 	private ArrayList<LuckyBlockPotionEffect> potionEffects; // Potion effects applied.
 
 	private float rarity; // Rarity of this drop.
+	private UUID structure;
 
 	public LuckyBlockDrop() {
 		super();
@@ -44,6 +47,7 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		this.items = new ArrayList<>();
 		this.commands = new ArrayList<>();
 		this.potionEffects = new ArrayList<>();
+		this.structure = null;
 	}
 
 	public LuckyBlockDrop(List<LuckyBlockItem> items, List<LuckyBlockCommand> commands,
@@ -55,6 +59,7 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		this.commands = new ArrayList<>(commands);
 		this.potionEffects = new ArrayList<>(potionEffects);
 		this.setRarity(rarity);
+		this.structure = null;
 	}
 
 	public ArrayList<LuckyBlockItem> getItems() {
@@ -97,6 +102,20 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 			return;
 		}
 		this.rarity = rarity;
+	}
+	
+	
+
+	public final UUID getStructure() {
+		return structure;
+	}
+
+	public final void setStructure(UUID structure) {
+		this.structure = structure;
+	}
+	
+	public boolean hasStructure() {
+		return !Objects.isNull(structure);
 	}
 
 	/**
@@ -162,7 +181,11 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
 		final ConfigManager blocksYaml = plugin.getBlocksYaml();
 
 		blocksYaml.getConfig().set(path + ".rarity", this.rarity);
-
+		
+		if(structure != null) {
+			blocksYaml.getConfig().set(path + ".structure", this.structure.toString());	
+		}
+		
 		// SAVING ITEMS
 		int index = 0;
 		for (final LuckyBlockItem item : this.getItems()) {

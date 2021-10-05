@@ -38,7 +38,7 @@ public class LuckyBlock {
 	private Material blockMaterial;
 	private List<String> lore;
 	private float defaultBlockLuck;
-	private LinkedList<LuckyBlockDrop> droppableItems;
+	private List<LuckyBlockDrop> droppableItems;
 
 	// Per-Item Fields (For individual lucky blocks)
 	private float blockLuck;
@@ -63,7 +63,7 @@ public class LuckyBlock {
 		this.blockMaterial = Material.AIR;
 		this.lore = Collections.emptyList();
 		this.defaultBlockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
-		this.droppableItems = new LinkedList<>();
+		this.droppableItems = Collections.emptyList();
 		this.blockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
 	}
 
@@ -177,7 +177,7 @@ public class LuckyBlock {
 		this.defaultBlockLuck = defaultBlockLuck;
 	}
 
-	public LinkedList<LuckyBlockDrop> getDroppableItems() {
+	public List<LuckyBlockDrop> getDroppableItems() {
 		return this.droppableItems;
 	}
 

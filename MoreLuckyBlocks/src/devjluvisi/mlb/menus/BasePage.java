@@ -60,7 +60,7 @@ public abstract class BasePage implements Page {
 	public enum SpecialItem {
 		EXIT_BUTTON, ADD_NEW_DROP, REMOVE_ALL_DROPS, EDIT_DROP, DELETE_DROP, COPY_DROP, CHANGE_RARITY,
 		ADD_POTION_EFFECT, ADD_COMMAND, SAVE_BUTTON, CANCEL_BUTTON, CONFIRM_BUTTON, INCREASE_RARITY, DECREASE_RARITY,
-		DELETE_LUCKY_BLOCK;
+		DELETE_LUCKY_BLOCK, ADD_STRUCTURE;
 	}
 
 	public boolean isPlayerSlot(int rawSlot) {
@@ -172,6 +172,12 @@ public abstract class BasePage implements Page {
 			meta.setDisplayName(ChatColor.DARK_RED.toString() + ChatColor.BOLD.toString() + "Delete Lucky Block");
 			meta.setLore(Arrays.asList(ChatColor.GRAY + "Delete this lucky block and",
 					ChatColor.GRAY + "all of its contents.", ChatColor.DARK_GRAY + "(Cannot be undone)"));
+			break;
+		case ADD_STRUCTURE:
+			i = new ItemStack(Material.STONE_BRICKS);
+			meta = i.getItemMeta();
+			meta.setDisplayName(ChatColor.YELLOW + "Add/Edit Structure");
+			meta.setLore(Arrays.asList(ChatColor.GRAY + "Add or edit a structure to this", ChatColor.GRAY + "lucky block. Structures are physical", ChatColor.GRAY + "modifications to the world that", ChatColor.GRAY + "happen when a user breaks a", ChatColor.GRAY + "luckyblock.", ChatColor.GRAY + "Do " + ChatColor.DARK_AQUA.toString() + ChatColor.BOLD.toString() + "/mlb struct" + ChatColor.GRAY + " for more info."));
 			break;
 		default:
 			Bukkit.getLogger().severe("Could not read specific value of getSpecialItem method.");

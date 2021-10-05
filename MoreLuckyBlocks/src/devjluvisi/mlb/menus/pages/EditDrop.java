@@ -52,7 +52,8 @@ public class EditDrop extends BasePage {
 		for (int i = 0; i < 5; i++) {
 			content[2][i] = new ItemStack(Material.RED_STAINED_GLASS_PANE);
 		}
-		content[2][5] = super.getSpecialItem(SpecialItem.SAVE_BUTTON);
+		content[2][4] = super.getSpecialItem(SpecialItem.SAVE_BUTTON);
+		content[2][5] = super.getSpecialItem(SpecialItem.ADD_STRUCTURE);
 		content[2][6] = super.getSpecialItem(SpecialItem.ADD_COMMAND);
 		content[2][7] = super.getSpecialItem(SpecialItem.ADD_POTION_EFFECT);
 		content[2][8] = super.getSpecialItem(SpecialItem.EXIT_BUTTON);

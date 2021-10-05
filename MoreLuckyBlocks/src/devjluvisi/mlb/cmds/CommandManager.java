@@ -21,6 +21,7 @@ import devjluvisi.mlb.cmds.admin.ReloadConfigCommand;
 import devjluvisi.mlb.cmds.admin.ResetCommand;
 import devjluvisi.mlb.cmds.admin.SaveConfigCommand;
 import devjluvisi.mlb.cmds.admin.SettingsCommand;
+import devjluvisi.mlb.cmds.admin.StructureCommand;
 import devjluvisi.mlb.cmds.admin.TestCommand;
 import devjluvisi.mlb.cmds.general.BriefCommand;
 import devjluvisi.mlb.cmds.general.HelpCommand;
@@ -62,6 +63,7 @@ public class CommandManager implements CommandExecutor {
 		this.subcommands.add(new BriefCommand());
 		this.subcommands.add(new ConfigCommand(plugin));
 		this.subcommands.add(new CreateCommand(plugin));
+		this.subcommands.add(new StructureCommand(plugin));
 		this.subcommands.add(new DisableCommand(plugin));
 		this.subcommands.add(new EditCommand(plugin));
 		this.subcommands.add(new GiveCommand(plugin));

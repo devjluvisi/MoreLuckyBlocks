@@ -3,6 +3,7 @@ package devjluvisi.mlb.blocks;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.UUID;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.bukkit.ChatColor;
@@ -41,10 +42,6 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
 		this.upload();
 	}
 
-	public LinkedList<LuckyBlockDrop> getDrops(int index) {
-		return this.get(index).getDroppableItems();
-	}
-
 	/**
 	 * Loads the example blocks.
 	 */
@@ -72,7 +69,12 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
 
 		final ConfigManager blocksYaml = this.plugin.getBlocksYaml();
 		String internalName;
-
+		if(this.plugin.getBlocksYaml().getConfig().getConfigurationSection("lucky-blocks") == null) {
+			this.loadExampleBlocks();
+			this.save();
+			this.upload();
+			return;
+		}
 		// Go through all lucky blocks and add them.
 		for (final String key : this.plugin.getBlocksYaml().getConfig().getConfigurationSection("lucky-blocks")
 				.getKeys(false)) {
@@ -102,7 +104,12 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
 				final LuckyBlockDrop drop = new LuckyBlockDrop();
 				drop.setRarity((float) blocksYaml.getConfig()
 						.getDouble("lucky-blocks." + internalName + ".drops." + dropIndex + ".rarity"));
-
+				if(blocksYaml.getConfig()
+						.get("lucky-blocks." + internalName + ".drops." + dropIndex + ".structure") != null) {
+					drop.setStructure(UUID.fromString((String)blocksYaml.getConfig()
+							.get("lucky-blocks." + internalName + ".drops." + dropIndex + ".structure")));
+				}
+				
 				// First get all of the items, commands, and potion effects.
 				final ArrayList<LuckyBlockItem> items = new ArrayList<>();
 				final ArrayList<LuckyBlockCommand> commands = new ArrayList<>();
@@ -207,6 +214,14 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
 		}
 		// Run the base method.
 		return super.add(lb);
+	}
+	
+	public boolean contains(String internalName) {
+		return super.contains(new LuckyBlock(internalName));
+	}
+	
+	public LuckyBlock get(String internalName) {
+		return super.get(super.indexOf(new LuckyBlock(internalName)));
 	}
 
 	@Override
