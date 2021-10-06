@@ -1,0 +1,48 @@
+package devjluvisi.mlb.cmds.lb;
+
+import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.cmds.SubCommand;
+import devjluvisi.mlb.menus.LuckyMenu;
+import devjluvisi.mlb.util.Range;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+public record ListCommand(MoreLuckyBlocks plugin) implements SubCommand {
+
+    @Override
+    public String getName() {
+        return "list";
+    }
+
+    @Override
+    public String getDescription() {
+        return "A GUI list of all of the current lucky blocks on the server.";
+    }
+
+    @Override
+    public String getSyntax() {
+        return "/mlb list";
+    }
+
+    @Override
+    public String getPermission() {
+        return "mlb.list";
+    }
+
+    @Override
+    public boolean isAllowConsole() {
+        return false;
+    }
+
+    @Override
+    public Range getArgumentRange() {
+        return new Range(1, 1);
+    }
+
+    @Override
+    public ExecutionResult perform(CommandSender sender, String[] args) {
+        new LuckyMenu(this.plugin).open((Player) sender, 0);
+        return ExecutionResult.PASSED;
+    }
+
+}

@@ -1,60 +1,113 @@
-.metadata
-bin/
-tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
-local.properties
-.settings/
-.loadpath
-.recommenders
+# User-specific stuff
+.idea/
 
-# External tool builders
-.externalToolBuilders/
+*.iml
+*.ipr
+*.iws
 
-# Locally stored "Eclipse launch configurations"
-*.launch
+# IntelliJ
+out/
 
-# PyDev specific (Python IDE for Eclipse)
-*.pydevproject
+# Compiled class file
+*.class
 
-# CDT-specific (C/C++ Development Tooling)
-.cproject
+# Log file
+*.log
 
-# CDT- autotools
-.autotools
+# BlueJ files
+*.ctxt
 
-# Java annotation processor (APT)
-.factorypath
+# Package Files #
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
 
-# PDT-specific (PHP Development Tools)
-.buildpath
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
 
-# sbteclipse plugin
-.target
+*~
 
-# Tern plugin
-.tern-project
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
 
-# TeXlipse plugin
-.texlipse
+# KDE directory preferences
+.directory
 
-# STS (Spring Tool Suite)
-.springBeans
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
 
-# Code Recommenders
-.recommenders/
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
 
-# Annotation Processing
-.apt_generated/
-.apt_generated_test/
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
 
-# Scala IDE specific (Scala & Java development for Eclipse)
-.cache-main
-.scala_dependencies
-.worksheet
+# Icon must end with two \r
+Icon
 
-# Uncomment this line if you wish to ignore the project description file.
-# Typically, this file would be tracked if it contains build/dependency configurations:
-#.project
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Dump file
+*.stackdump
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+target/
+
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+.flattened-pom.xml
+
+# Common working directory
+run/

@@ -1,0 +1,13 @@
+name: MoreLuckyBlocks
+version: '${project.version}'
+main: devjluvisi.mlb.MoreLuckyBlocks
+api-version: 1.17
+authors: [ devjluvisi ]
+description: A fully customizable lucky blocks plugin designed without the need for modifying config files.
+website: https://github.com/devjluvisi/MoreLuckyBlocks
+
+commands:
+  mlb:
+    usage: /mlb help <page>
+    description: Main plugin command. Use /mlb help for more information.
+    aliases: [ moreluckyblocks, mluckyblocks, mlblocks, mlbplugin ]
