@@ -9,6 +9,7 @@ import devjluvisi.mlb.events.EditDropInChatEvent;
 import devjluvisi.mlb.events.luckyblocks.BreakEvent;
 import devjluvisi.mlb.events.luckyblocks.PlaceEvent;
 import devjluvisi.mlb.events.players.JoinLuckEvent;
+import devjluvisi.mlb.menus.admin.EditDropMenu;
 import devjluvisi.mlb.util.config.ConfigManager;
 import devjluvisi.mlb.util.luckyblocks.LuckyAudit;
 import devjluvisi.mlb.util.players.PlayerManager;
@@ -91,7 +92,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
     private ConfigManager structuresYaml;
 
     private LuckyBlockManager lbManager; // Manage all types of lucky blocks and drops.
-    private HashMap<UUID, MenuView> playersEditingDrop; // Players editing a drop.
+    private HashMap<UUID, EditDropMenu> playersEditingDrop; // Players editing a drop.
 
     private DropStructure lbStructure; // An object to manage structure editing for lucky blocks.
 
@@ -168,7 +169,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
     /**
      * @return All of the players attempting to "edit" a drop in a luckyblock.
      */
-    public HashMap<UUID, MenuView> getPlayersEditingDrop() {
+    public HashMap<UUID, EditDropMenu> getPlayersEditingDrop() {
         return this.playersEditingDrop;
     }
 

@@ -5,8 +5,9 @@ import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.blocks.drops.LuckyBlockCommand;
 import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
-import devjluvisi.mlb.menus.LuckyMenu.View;
-import devjluvisi.mlb.menus.pages.EditDrop;
+import devjluvisi.mlb.menus.MenuManager;
+import devjluvisi.mlb.menus.MenuType;
+import devjluvisi.mlb.menus.admin.EditDropMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
 
+
     // TODO: Test to ensure that it works.
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -28,8 +30,8 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
             return;
         }
 
-        final EditDrop b = (EditDrop) this.plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId())
-                .getCurrentPage();
+        final MenuManager manager = new MenuManager(plugin);
+        final EditDropMenu b =plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId());
 
         final Player p = e.getPlayer();
         final String command = ChatColor.stripColor(e.getMessage());
@@ -42,8 +44,8 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
                 for (final LuckyBlock lb : this.plugin.getLuckyBlocks()) {
                     lb.clean();
                 }
-
-                b.traverse(this.plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
+                manager.setMenuData(b.getResource());
+                manager.open(p, MenuType.EDIT_LOOT);
 
                 this.plugin.getPlayersEditingDrop().remove(p.getUniqueId());
                 e.getPlayer().sendMessage(ChatColor.GREEN + "You have cancelled your command action.");
@@ -58,8 +60,8 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
                     + " to the lucky block you selected.");
             this.plugin.getLuckyBlocks().get(b.getBlockIndex()).getDroppableItems().get(b.getDropIndex()).getCommands()
                     .add(new LuckyBlockCommand(command));
-
-            b.traverse(this.plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
+            manager.setMenuData(b.getResource());
+            manager.open(p, MenuType.EDIT_LOOT);
             this.plugin.getPlayersEditingDrop().remove(p.getUniqueId());
             return;
         }
@@ -72,14 +74,13 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
             return;
         }
 
-        final EditDrop b = (EditDrop) this.plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId())
-                .getCurrentPage();
+        final EditDropMenu b = this.plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId());
+        final MenuManager manager = new MenuManager(plugin);
         final Player p = e.getPlayer();
         final String message = ChatColor.stripColor(e.getMessage());
         final LuckyBlockDrop luckyBlockDrop = this.plugin.getLuckyBlocks().get(b.getBlockIndex()).getDroppableItems()
                 .get(b.getDropIndex());
 
-        Bukkit.getConsoleSender().sendMessage(b.getAddPotionEffectStage() + "");
         if (b.getAddPotionEffectStage() == 0) {
             return;
         }
@@ -96,7 +97,8 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
             }
 
             Bukkit.getScheduler().runTask(this.plugin, () -> {
-                b.traverse(this.plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
+                manager.setMenuData(b.getResource());
+                manager.open(p, MenuType.EDIT_LOOT);
                 this.plugin.getPlayersEditingDrop().remove(p.getUniqueId());
 
             });
@@ -163,15 +165,17 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
 
             p.sendMessage(ChatColor.GRAY + "Potion Effect Type: " + ChatColor.YELLOW + luckyBlockDrop.getPotionEffects()
                     .get(luckyBlockDrop.getPotionEffects().size() - 1).getType().getName());
-            p.sendMessage(ChatColor.GRAY + "Amplifier" + ChatColor.YELLOW + luckyBlockDrop.getPotionEffects()
+            p.sendMessage(ChatColor.GRAY + "Amplifier: " + ChatColor.YELLOW + luckyBlockDrop.getPotionEffects()
                     .get(luckyBlockDrop.getPotionEffects().size() - 1).getAmplifier());
             p.sendMessage(ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + duration);
 
             p.sendMessage("");
             p.sendMessage(ChatColor.GREEN + "You successfully added a potion effect to this drop!");
             Bukkit.getScheduler().runTask(this.plugin, () -> {
-
-                b.traverse(this.plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId()), View.EDIT_DROP);
+                manager.setMenuData(
+                        b.getResource()
+                );
+                manager.open(p, MenuType.EDIT_LOOT);
                 this.plugin.getPlayersEditingDrop().remove(p.getUniqueId());
 
             });
@@ -179,5 +183,8 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
             p.sendMessage("");
         }
     }
+
+
+
 
 }

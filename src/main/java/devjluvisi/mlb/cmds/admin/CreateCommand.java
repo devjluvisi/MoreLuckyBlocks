@@ -58,7 +58,7 @@ public record CreateCommand(MoreLuckyBlocks plugin) implements SubCommand {
     public ExecutionResult perform(CommandSender sender, String[] args) {
         final Player p = (Player) sender;
         final ItemStack item = p.getInventory().getItemInMainHand();
-        if ((item == null) || !item.getType().isBlock()) {
+        if (!item.getType().isBlock()) {
             p.sendMessage(ChatColor.RED + "You must hold a block in your hand to make a lucky block.");
             return ExecutionResult.PASSED;
         }

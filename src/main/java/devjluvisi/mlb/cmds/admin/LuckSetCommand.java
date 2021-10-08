@@ -57,7 +57,7 @@ public record LuckSetCommand(MoreLuckyBlocks plugin) implements SubCommand {
     @Override
     public ExecutionResult perform(CommandSender sender, String[] args) {
         if (!args[1].equalsIgnoreCase("luck")) {
-            return ExecutionResult.BAD_ARGUMENT_TYPE;
+            return ExecutionResult.BAD_USAGE;
         }
         if (Util.isNumber(args[2])) {
             if (!Util.isNumber(args[2], new Range(PluginConstants.LUCK_MIN_VALUE, PluginConstants.LUCK_MAX_VALUE))) {
