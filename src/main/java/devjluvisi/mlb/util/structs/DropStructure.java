@@ -155,6 +155,12 @@ public class DropStructure implements Listener {
         this.drop = editingDrop;
         this.editingPlayerUUID = p.getUniqueId();
 
+        // Remove all entities in the world.
+        for (LivingEntity e : structWorld.getLivingEntities()) {
+            e.setHealth(0.0F);
+            e.remove();
+        }
+
 
         // Reset the world to defaults.
         for (int x = -(WORLD_BORDER_SIZE / 2); x < (WORLD_BORDER_SIZE / 2); x++) {
@@ -164,14 +170,6 @@ public class DropStructure implements Listener {
                     this.structWorld.getBlockAt(x, y, z).setType(((y < BUILD_LIMIT / 2) ? Material.STONE : Material.AIR));
                 }
             }
-        }
-
-
-
-        // Remove all entities in the world.
-        for (LivingEntity e : structWorld.getLivingEntities()) {
-            e.setHealth(0.0F);
-            e.remove();
         }
 
         // Build a structure if the lucky block already has a previous struture.

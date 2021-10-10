@@ -118,9 +118,7 @@ public class TransformCommand implements SubCommand {
             sender.sendMessage(ChatColor.RED + "[WARNING] Blocks requested to search exceeds 50,000. It may take time to replace the blocks requested.");
         }
 
-
         final long time = System.currentTimeMillis();
-        final long startTicks = Objects.requireNonNull(orgin.getWorld()).getTime();
 
         int finalFromY = fromY;
         int finalToY = toY;
@@ -128,28 +126,26 @@ public class TransformCommand implements SubCommand {
         LuckyBlock finalLb = lb;
         final int[] blocksReplaced = {0};
 
-
-        int finalRadius = radius;
         new BukkitRunnable() {
             long bCounter =0;
             boolean hasShown = false;
             final long thresholdMessage = searchBlocks/16;
-            final int thresholdTimeCheck = finalRadius/8 == 0 ? 1 : finalRadius/8;
+            final MapLocation3D l = new MapLocation3D();
+
             @Override
             public void run() {
                 for(int x = fromX; x < toX; x++) {
                     for(int y = finalFromY; y < finalToY; y++) {
                         for(int z = fromZ; z < toZ; z++) {
                             bCounter++;
-                            if(bCounter - searchBlocks/thresholdTimeCheck > 0 && !hasShown) {
+                            if(bCounter - 5000D > 0 && !hasShown) {
                                     // Calculate estimated time based on the time it took to place "X" blocks.
-                                    long seconds = (((System.currentTimeMillis()-time)/1000)*thresholdTimeCheck);
+                                    int seconds = (int)(((double)(System.currentTimeMillis()-time)/1000D)*((double)searchBlocks/5000D));
                                     sender.sendMessage(ChatColor.BLUE + "Transform: " + ChatColor.AQUA + "Estimated to take " + seconds + " seconds.");
                                     hasShown = true;
                             }
 
-                            MapLocation3D l = new MapLocation3D();
-                            l.setWorld(finalOrgin.getWorld().getUID());
+                            l.setWorld(Objects.requireNonNull(finalOrgin.getWorld()).getUID());
                             l.setX(x);
                             l.setY(y);
                             l.setZ(z);
@@ -157,7 +153,7 @@ public class TransformCommand implements SubCommand {
                                 plugin.getAudit().put(l, finalLb);
                                 blocksReplaced[0]++;
                             }
-                            if(bCounter != 0 && bCounter % thresholdMessage == 0 && hasShown) {
+                            if(hasShown && bCounter % thresholdMessage == 0 && bCounter != 0) {
                                 sender.sendMessage(ChatColor.GREEN + "Searched over " + ChatColor.GOLD + bCounter + ChatColor.GREEN + " blocks. (" + ChatColor.GOLD + blocksReplaced[0] + ChatColor.GREEN + " replaced)");
                             }
                         }
@@ -165,8 +161,10 @@ public class TransformCommand implements SubCommand {
                 }
                 sender.sendMessage("");
                 sender.sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.UNDERLINE + ChatColor.BOLD + "Completed.");
+                sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "Task completed in: " + (System.currentTimeMillis()-time)/1000 + " seconds.");
                 sender.sendMessage("");
                 sender.sendMessage(ChatColor.GREEN + "Edited " + ChatColor.YELLOW + blocksReplaced[0] + ChatColor.GREEN + " blocks and turned them into lucky blocks!");
+                this.cancel();
             }
         }.runTaskAsynchronously(plugin);
 
