@@ -38,7 +38,7 @@ public record DropsCommand(MoreLuckyBlocks plugin) implements SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/mlb drops\n/mlb drops <name>";
+        return "/mlb drops\n/mlb drops <name>\n/mlb drops <name> <drop index>";
     }
 
     @Override
@@ -53,7 +53,7 @@ public record DropsCommand(MoreLuckyBlocks plugin) implements SubCommand {
 
     @Override
     public Range getArgumentRange() {
-        return new Range(1, 2);
+        return new Range(1, 3);
     }
 
     @Override
@@ -82,6 +82,21 @@ public record DropsCommand(MoreLuckyBlocks plugin) implements SubCommand {
             lb = plugin.getLuckyBlocks().get(Util.makeInternal(args[1]));
             manager.setMenuData(new MenuResource().with(lb));
             manager.open(p, MenuType.LIST_DROPS);
+        }else if(args.length == 3) {
+            if(!plugin.getLuckyBlocks().contains(Util.makeInternal(args[1]))) {
+                p.sendMessage(ChatColor.RED + "Could not find lucky block: " + args[1]);
+                return ExecutionResult.PASSED;
+            }
+            if(!Util.isNumber(args[2])) {
+                return ExecutionResult.BAD_ARGUMENT_TYPE;
+            }
+            if(!new Range(0, plugin.getLuckyBlocks().get(args[1]).getDroppableItems().size()-1).isInRange(Util.toNumber(args[2]))) {
+                sender.sendMessage(ChatColor.RED + "Lucky block " + args[1] + " only has " + (plugin.getLuckyBlocks().get(args[1]).getDroppableItems().size()) + " drops (including drop zero).");
+                return ExecutionResult.PASSED;
+            }
+            lb = plugin.getLuckyBlocks().get(Util.makeInternal(args[1]));
+            manager.setMenuData(new MenuResource().with(lb).with(lb.getDroppableItems().get(Integer.parseInt(args[2]))));
+            manager.open(p, MenuType.LIST_LOOT);
         }
 
 

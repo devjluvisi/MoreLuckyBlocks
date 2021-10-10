@@ -54,7 +54,7 @@ public class DropsMenu extends MenuBuilder  {
                     .addLine("\n")
                     .addLine("&7&oClick to configure drop contents.").asItem();
 
-            if(row==2) continue;
+            if(row==2) break;
 
             col++;
         }
@@ -89,10 +89,12 @@ public class DropsMenu extends MenuBuilder  {
             return;
         }
         if(new MenuItem().of(MenuItem.SpecialItem.REMOVE_ALL_DROPS).equals(itemStack)) {
+            manager.setMenuData(manager.getMenuData().with(lb));
             manager.open(manager.getPlayer(), new ConfirmMenu(manager).request(ConfirmMenu.ConfirmAction.REMOVE_ALL_DROPS).returnTo(type()));
             return;
         }
         if(new MenuItem().of(MenuItem.SpecialItem.DELETE_LUCKY_BLOCK).equals(itemStack)) {
+            manager.setMenuData(manager.getMenuData().with(lb));
             manager.open(manager.getPlayer(), new ConfirmMenu(manager).request(ConfirmMenu.ConfirmAction.REMOVE_LUCKY_BLOCK).returnTo(type()));
             return;
         }

@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -27,14 +28,14 @@ public final class LuckyAudit {
      * A complete key-value set of the location of every lucky block on the entire
      * server.
      */
-    private final HashMap<MapLocation3D, LuckyValues> luckyBlockMap;
+    private final ConcurrentHashMap<MapLocation3D, LuckyValues> luckyBlockMap;
     private final ConfigManager worldDataYaml;
     private final MoreLuckyBlocks plugin;
 
     public LuckyAudit(MoreLuckyBlocks plugin) {
         this.plugin = plugin;
         this.worldDataYaml = plugin.getWorldDataYaml();
-        this.luckyBlockMap = new HashMap<>();
+        this.luckyBlockMap = new ConcurrentHashMap<>();
         plugin.getServer().getConsoleSender()
                 .sendMessage("MoreLuckyBlocks -> Attempting to fetch all saved lucky blocks...");
         this.pullFromConfig();
@@ -49,6 +50,8 @@ public final class LuckyAudit {
         return this.luckyBlockMap.containsKey(new MapLocation3D(checkingLocation)) && (checkingLocation.getBlock()
                 .getType() == this.luckyBlockMap.get(new MapLocation3D(checkingLocation)).getBlockMaterial());
     }
+
+
 
     /**
      * Finds a lucky block at a given location.
@@ -87,7 +90,7 @@ public final class LuckyAudit {
         return this.luckyBlockMap.get(new MapLocation3D(loc)).getBlockLuck();
     }
 
-    public HashMap<MapLocation3D, LuckyValues> getMap() {
+    public ConcurrentHashMap<MapLocation3D, LuckyValues> getMap() {
         return this.luckyBlockMap;
     }
 
@@ -99,10 +102,29 @@ public final class LuckyAudit {
         // this.writeAll();
     }
 
+    public void put(MapLocation3D l, LuckyBlock lb) {
+        Validate.notNull(l);
+        Validate.notNull(lb);
+        this.luckyBlockMap.put(l,
+                new LuckyValues(lb.getBlockMaterial(), lb.hashCode(), lb.getBlockLuck()));
+    }
+
     public void remove(Location l) {
         Validate.notNull(l);
         this.luckyBlockMap.remove(new MapLocation3D(l));
         // this.writeAll();
+    }
+
+    public void removeAll(LuckyBlock block) {
+        for(Map.Entry<MapLocation3D, LuckyValues> entry : luckyBlockMap.entrySet()) {
+            if(entry.getValue().getLuckyBlockHash() == block.hashCode()) {
+                luckyBlockMap.remove(entry.getKey());
+            }
+        }
+    }
+
+    public void removeAll() {
+        this.luckyBlockMap.clear();
     }
 
 //	public void removeAll(LuckyBlock block) {

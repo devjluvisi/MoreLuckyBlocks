@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -153,20 +154,19 @@ public class DropStructure implements Listener {
         this.lb = lb;
         this.drop = editingDrop;
         this.editingPlayerUUID = p.getUniqueId();
+
+
         // Reset the world to defaults.
         for (int x = -(WORLD_BORDER_SIZE / 2); x < (WORLD_BORDER_SIZE / 2); x++) {
             for (int z = -(WORLD_BORDER_SIZE / 2); z < (WORLD_BORDER_SIZE / 2); z++) {
                 for (int y = 0; y < BUILD_LIMIT; y++) {
-                    // Set bottom half to stone.
-                    if (y < (BUILD_LIMIT / 2)) {
-                        this.structWorld.getBlockAt(x, y, z).setType(Material.STONE);
-                        continue;
-                    }
-                    // Top half to air.
-                    this.structWorld.getBlockAt(x, y, z).setType(Material.AIR);
+                    // Set the bottom half to stone and the top half to air.
+                    this.structWorld.getBlockAt(x, y, z).setType(((y < BUILD_LIMIT / 2) ? Material.STONE : Material.AIR));
                 }
             }
         }
+
+
 
         // Remove all entities in the world.
         for (LivingEntity e : structWorld.getLivingEntities()) {
@@ -309,10 +309,10 @@ public class DropStructure implements Listener {
     public void interact(PlayerInteractEvent e) {
         // Manage spawn egg placing.
 
-        if (!(e.getPlayer().getLocation().getWorld().getUID().equals(this.structWorld.getUID()))) {
+        if (!(Objects.requireNonNull(e.getPlayer().getLocation().getWorld()).getUID().equals(this.structWorld.getUID()))) {
             return;
         }
-        if (e.getClickedBlock() == null || e.getClickedBlock().getType().isAir() || !e.getItem().getType().name().contains("_SPAWN_EGG")) {
+        if (e.getClickedBlock() == null || e.getClickedBlock().getType().isAir() || !Objects.requireNonNull(e.getItem()).getType().name().contains("_SPAWN_EGG")) {
             return;
         }
         EntityType entityType = EntityType.valueOf(e.getItem().getType().name().split("_SPAWN_EGG")[0]);
@@ -445,6 +445,7 @@ public class DropStructure implements Listener {
         for (int x = -(WORLD_BORDER_SIZE / 2); x < (WORLD_BORDER_SIZE / 2); x++) {
             for (int z = -(WORLD_BORDER_SIZE / 2); z < (WORLD_BORDER_SIZE / 2); z++) {
                 for (int y = 0; y < BUILD_LIMIT; y++) {
+                    // Ignore Lucky Block
                     if ((x == 0) && (z == 0) && (y == (BUILD_LIMIT / 2))) {
                         continue;
                     }

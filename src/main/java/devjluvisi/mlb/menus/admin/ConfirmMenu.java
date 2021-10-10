@@ -25,7 +25,8 @@ public class ConfirmMenu extends MenuBuilder  {
     private LuckyBlockDrop lbDrop;
 
     public enum ConfirmAction {
-        REMOVE_LUCKY_BLOCK, REMOVE_ALL_DROPS, DELETE_DROP
+        REMOVE_LUCKY_BLOCK, REMOVE_ALL_DROPS, DELETE_DROP, DELETE_BLOCK_DATA_ALL, DELETE_BLOCK_DATA_SPECIFIC,
+        DISABLE_PLUGIN
     }
 
     public ConfirmMenu(MenuManager manager) {
@@ -62,12 +63,29 @@ public class ConfirmMenu extends MenuBuilder  {
         Arrays.fill(content[1], MenuItem.blackPlaceholder().asItem());
         Arrays.fill(content[2], MenuItem.blackPlaceholder().asItem());
 
-        content[1][2] = new MenuItem().with(Material.GREEN_TERRACOTTA).with("&2&lConfirm")
+        MenuItem confirm = new MenuItem().with(Material.GREEN_TERRACOTTA).with("&2&lConfirm")
                 .addLine("&7Press to confirm this action.")
-                .addLine("&8" + action.name()).asItem();
-        content[1][6] = new MenuItem().with(Material.RED_TERRACOTTA).with("&c&lCancel")
+                .addLine("&d&o" + action.name());
+
+        MenuItem cancel = new MenuItem().with(Material.RED_TERRACOTTA).with("&c&lCancel")
                 .addLine("&7Press to cancel this action.")
-                .addLine("&8" + action.name()).asItem();
+                .addLine("&d&o" + action.name());
+
+        if(lb != null) {
+            confirm.addLine("\n");
+            cancel.addLine("\n");
+
+            confirm.addLine("&rLucky Block &8→ &e" + lb.getInternalName());
+            cancel.addLine("&rLucky Block &8→ &e" + lb.getInternalName());
+        }
+        if(lbDrop != null) {
+            assert lb != null;
+            confirm.addLine("&rDrop &8→ &7#&e" + lb.getDroppableItems().indexOf(lbDrop));
+            cancel.addLine("&rDrop &8→ &7#&e" + lb.getDroppableItems().indexOf(lbDrop));
+        }
+
+        content[1][2] = confirm.asItem();
+        content[1][6] = cancel.asItem();
 
         return content;
     }
@@ -82,8 +100,8 @@ public class ConfirmMenu extends MenuBuilder  {
 
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-        if ((itemStack == null) || itemStack.getType().equals(Material.GRAY_STAINED_GLASS_PANE)
-                || this.isPlayerSlot(slot)) {
+        if ((itemStack == null) || itemStack.equals(MenuItem.blackPlaceholder().asItem()) || itemStack.equals(MenuItem.redPlaceholder().asItem()) ||
+                 this.isPlayerSlot(slot)) {
             return;
         }
         if(itemStack.getType() == Material.RED_TERRACOTTA) {
@@ -107,6 +125,21 @@ public class ConfirmMenu extends MenuBuilder  {
                 return;
             }
             manager.open(manager.getPlayer(), MenuType.LIST_DROPS);
+        }
+        if(action == ConfirmAction.DELETE_BLOCK_DATA_SPECIFIC) {
+            manager.getPlugin().getAudit().removeAll(lb);
+            manager.getPlayer().sendMessage(ChatColor.DARK_RED + "Deleted all player data for lucky blocks of type " + lb.getInternalName());
+            view.close();
+        }
+        if(action == ConfirmAction.DELETE_BLOCK_DATA_ALL) {
+            manager.getPlugin().getAudit().removeAll();
+            manager.getPlayer().sendMessage(ChatColor.DARK_RED + "Deleted all player data for lucky blocks of type all.");
+            view.close();
+        }
+        if(action == ConfirmAction.DISABLE_PLUGIN) {
+            manager.getPlayer().sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "MoreLuckyBlocks will disable in 5 seconds. All data will be saved.");
+            manager.getPlugin().getServer().getScheduler().runTaskLater(manager.getPlugin(), () -> manager.getPlugin().getServer().getPluginManager().disablePlugin(manager.getPlugin()), 20L * 5L);
+            view.close();
         }
         if(action == ConfirmAction.REMOVE_LUCKY_BLOCK) {
             manager.getPlugin().getLuckyBlocks().remove(lb);

@@ -1,5 +1,6 @@
 package devjluvisi.mlb.cmds.general;
 
+import devjluvisi.mlb.cmds.CommandManager;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.Range;
@@ -10,6 +11,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.command.CommandSender;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,10 +27,10 @@ public class HelpCommand implements SubCommand {
      * each page.
      */
     private static final byte MAX_COMMANDS_PER_PAGE = 6;
-    private final List<SubCommand> commands;
+    private List<SubCommand> commands;
 
-    public HelpCommand(List<SubCommand> subcommands) {
-        this.commands = subcommands;
+    public HelpCommand(CommandManager cmdManager) {
+        this.commands = cmdManager.getSubcommands();
     }
 
     @Override
@@ -48,7 +50,7 @@ public class HelpCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "mlb.help";
+        return "";
     }
 
     @Override
@@ -102,6 +104,8 @@ public class HelpCommand implements SubCommand {
     @Override
     public ExecutionResult perform(CommandSender sender, String[] args) {
         // "/mlb help <page>
+        commands = commands.stream().filter(e -> e.getPermission().isBlank() || sender.hasPermission(e.getPermission())).toList();
+
         int page = 1;
 
         if (args.length != 1) {

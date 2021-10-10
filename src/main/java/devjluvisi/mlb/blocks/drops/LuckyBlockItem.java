@@ -24,14 +24,14 @@ public class LuckyBlockItem implements LootProperty {
         if (this.item.getEnchantments().size() == 0) {
             return "";
         }
-        String str = "[";
+        StringBuilder str = new StringBuilder("[");
         for (final Enchantment e : this.item.getEnchantments().keySet()) {
-            str += e.getKey().getKey().toUpperCase() + ":" + this.item.getEnchantments().get(e) + ",";
+            str.append(e.getKey().getKey().toUpperCase()).append(":").append(this.item.getEnchantments().get(e)).append(",");
         }
         // Remove trailing comma.
-        str = str.substring(0, str.length() - 1);
-        str += "]";
-        return str;
+        str = new StringBuilder(str.substring(0, str.length() - 1));
+        str.append("]");
+        return str.toString();
     }
 
     @Override

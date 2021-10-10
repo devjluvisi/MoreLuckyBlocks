@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * "/mlb create" - Create a lucky block with the item in hand, no break perm or
@@ -62,7 +63,7 @@ public record CreateCommand(MoreLuckyBlocks plugin) implements SubCommand {
             p.sendMessage(ChatColor.RED + "You must hold a block in your hand to make a lucky block.");
             return ExecutionResult.PASSED;
         }
-        if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) {
+        if (!item.hasItemMeta() || !Objects.requireNonNull(item.getItemMeta()).hasDisplayName()) {
             p.sendMessage(ChatColor.RED
                     + "Please name your item in order to make it a lucky block.\nYou can use /mlb item commands to change values like name and lore.");
             return ExecutionResult.PASSED;

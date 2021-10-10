@@ -7,6 +7,7 @@ import devjluvisi.mlb.blocks.drops.LuckyBlockItem;
 import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
 import devjluvisi.mlb.util.config.ConfigManager;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -124,19 +125,14 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
         return drops;
     }
 
-    public int indexOf(ItemStack lootAsItem) {
-        final ArrayList<LootProperty> lootList = this.getLoot();
-        for (int i = 0; i < lootList.size(); i++) {
-            if (lootAsItem.equals(lootList.get(i).asItem())) {
-                return i;
-            }
-        }
-        return -1;
+    public LootProperty getDrop(ItemStack lootAsItem) {
+        return getLoot().stream().filter(e -> e.asItem().equals(lootAsItem)).findFirst().orElse(null);
     }
 
     public void removeLoot(ItemStack lootAsItem) {
-        final ArrayList<LootProperty> lootList = this.getLoot();
-        final LootProperty loot = lootList.get(this.indexOf(lootAsItem));
+        Validate.notNull(lootAsItem, "Attempted to remove \"null\" from a loot list (removeLoot)");
+        final LootProperty loot = getDrop(lootAsItem);
+
         if (loot instanceof LuckyBlockItem) {
             this.items.remove(loot);
         }
@@ -149,16 +145,10 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
     }
 
     public void applyTo(Location blockLocation, Player p) {
-        for (final LuckyBlockItem item : this.items) {
-            p.getWorld().dropItem(blockLocation, item.asItem());
-        }
-        for (final LuckyBlockPotionEffect potion : this.potionEffects) {
-            p.addPotionEffect(new PotionEffect(potion.getType(), potion.getDuration() * 1000, potion.getAmplifier()));
-        }
-        for (final LuckyBlockCommand command : this.commands) {
-            p.getServer().dispatchCommand(p.getServer().getConsoleSender(),
-                    command.getCommand().replaceAll("%player%", p.getName()).replaceFirst("/", StringUtils.EMPTY));
-        }
+        items.forEach(e -> p.getWorld().dropItem(blockLocation, e.asItem()));
+        potionEffects.forEach(e -> new PotionEffect(e.getType(), e.getDuration() * 1000, e.getAmplifier()));
+        commands.forEach(e -> p.getServer().dispatchCommand(p.getServer().getConsoleSender(),
+                e.getCommand().replaceAll("%player%", p.getName()).replaceFirst("/", StringUtils.EMPTY)));
     }
 
     /**

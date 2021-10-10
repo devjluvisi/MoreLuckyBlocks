@@ -13,7 +13,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.security.SecureRandom;
+import java.sql.Array;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Represents a single lucky block with any range of values.
@@ -44,7 +47,7 @@ public class LuckyBlock {
         this.blockMaterial = Material.AIR;
         this.lore = new ArrayList<>();
         this.defaultBlockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
-        this.droppableItems = new LinkedList<>();
+        this.droppableItems = new ArrayList<>();
         this.blockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
     }
 
@@ -95,7 +98,7 @@ public class LuckyBlock {
         specialMeta.updateMeta(PluginConstants.LuckyIdentifier);
 
         assert meta != null;
-        meta.setDisplayName(this.name);
+        meta.setDisplayName(Util.toColor(name));
         meta.setLore(this.getRefreshedLore());
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -246,7 +249,6 @@ public class LuckyBlock {
         rand = new SecureRandom();
         // Sorted drops by rarity.
         final TreeSet<LuckyBlockDrop> sortedDrops = new TreeSet<>(this.droppableItems);
-
         final float max = 100.0F;
         final float min = 0.0F;
 

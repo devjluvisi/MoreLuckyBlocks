@@ -29,7 +29,7 @@ public class BriefCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "mlb.brief";
+        return "";
     }
 
     @Override

@@ -36,11 +36,11 @@ public class LuckyBlockPotionEffect implements LootProperty {
 
         final String[] cut = raw.split(",");
         final PotionEffectType potionType = PotionEffectType.getByName(cut[0].toUpperCase().trim());
-        byte amplifier;
-        short duration;
+        int amplifier;
+        int duration;
         try {
-            amplifier = Byte.parseByte(cut[1].trim());
-            duration = Short.parseShort(cut[2].trim());
+            amplifier = Integer.parseInt(cut[1].trim());
+            duration = Integer.parseInt(cut[2].trim());
         } catch (final NumberFormatException e) {
             amplifier = -1;
             duration = -1;

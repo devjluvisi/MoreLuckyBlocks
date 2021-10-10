@@ -2,8 +2,14 @@ package devjluvisi.mlb.cmds.admin;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.cmds.SubCommand;
+import devjluvisi.mlb.menus.MenuManager;
+import devjluvisi.mlb.menus.MenuType;
+import devjluvisi.mlb.menus.admin.ConfirmMenu;
 import devjluvisi.mlb.util.Range;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  * - "/mlb disable" - Disables the plugin for the current server instance (until
@@ -45,6 +51,14 @@ public record DisableCommand(MoreLuckyBlocks plugin) implements SubCommand {
 
     @Override
     public ExecutionResult perform(CommandSender sender, String[] args) {
+        if(!(sender instanceof Player)) {
+            sender.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "MoreLuckyBlocks will disable in 5 seconds. All data will be saved.");
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> plugin.getServer().getPluginManager().disablePlugin(plugin), 20L * 5L);
+            return ExecutionResult.PASSED;
+        }
+        MenuManager manager = new MenuManager(plugin);
+        ConfirmMenu confirmMenu = new ConfirmMenu(manager).request(ConfirmMenu.ConfirmAction.DISABLE_PLUGIN).returnTo(MenuType.EMPTY);
+        manager.open((Player)sender, confirmMenu);
         return ExecutionResult.PASSED;
     }
 

@@ -4,9 +4,9 @@ import devjluvisi.mlb.util.Range;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Class which contains static utility methods.
@@ -83,8 +83,18 @@ public final class Util {
         unformatted = ChatColor.translateAlternateColorCodes('&', unformatted);
         unformatted = ChatColor.stripColor(unformatted);
         unformatted = StringUtils.trim(unformatted);
+        unformatted = StringUtils.lowerCase(unformatted);
+
+        String allowedChars = "abcdefghijklmnopqrstuvwxyz0123456789_";
+
         unformatted = StringUtils.replace(unformatted, " ", "_");
-        return StringUtils.lowerCase(unformatted);
+
+        for(char c: unformatted.toCharArray()) {
+            if(!allowedChars.contains(String.valueOf(c))) {
+                unformatted = StringUtils.replace(unformatted, String.valueOf(c), StringUtils.EMPTY);
+            }
+        }
+        return unformatted;
     }
 
     /**
@@ -97,6 +107,7 @@ public final class Util {
     public static boolean isNumber(String str) {
         return NumberUtils.isNumber(str);
     }
+
 
     /**
      * Returns if the string passed is a valid number and is within a range.

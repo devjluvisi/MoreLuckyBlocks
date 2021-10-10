@@ -1,7 +1,9 @@
 package devjluvisi.mlb.cmds.general;
 
+import devjluvisi.mlb.cmds.CommandManager;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -13,6 +15,11 @@ import org.bukkit.command.CommandSender;
  * @author jacob
  */
 public class UsageCommand implements SubCommand {
+
+    private final CommandManager cmdManager;
+    public UsageCommand(CommandManager cmdManager) {
+        this.cmdManager = cmdManager;
+    }
 
     @Override
     public String getName() {
@@ -46,6 +53,15 @@ public class UsageCommand implements SubCommand {
 
     @Override
     public ExecutionResult perform(CommandSender sender, String[] args) {
+        for(SubCommand cmd : cmdManager.getSubcommands()) {
+            if(cmd.getName().equalsIgnoreCase(args[1])) {
+                sender.sendMessage(ChatColor.GRAY + "Usage of /mlb " + cmd.getName());
+                sender.sendMessage(ChatColor.GREEN.toString() + cmd.getSyntax());
+                sender.sendMessage(ChatColor.RESET.toString() + ChatColor.ITALIC.toString() + cmd.getDescription());
+                return ExecutionResult.PASSED;
+            }
+        }
+        sender.sendMessage(ChatColor.RED + "Could not find plugin command /mlb " + args[1]);
         return ExecutionResult.PASSED;
     }
 

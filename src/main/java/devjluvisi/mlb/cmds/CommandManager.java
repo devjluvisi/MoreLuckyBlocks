@@ -35,14 +35,13 @@ public class CommandManager implements CommandExecutor {
 
     public CommandManager(MoreLuckyBlocks plugin) {
         this.subcommands = new LinkedList<>();
-
         this.subcommands.add(new VersionCommand(plugin));
         this.subcommands.add(new InfoCommand(plugin));
         this.subcommands.add(new ListCommand(plugin));
         this.subcommands.add(new RedeemCommand(plugin));
         this.subcommands.add(new DropsCommand(plugin));
-        this.subcommands.add(new UsageCommand());
-        this.subcommands.add(new PermissionsCommand());
+        this.subcommands.add(new UsageCommand(this));
+        this.subcommands.add(new PermissionsCommand(this));
         this.subcommands.add(new LuckCommand(plugin));
         this.subcommands.add(new BriefCommand());
         this.subcommands.add(new ConfigCommand(plugin));
@@ -51,6 +50,7 @@ public class CommandManager implements CommandExecutor {
         this.subcommands.add(new DisableCommand(plugin));
         this.subcommands.add(new EditCommand(plugin));
         this.subcommands.add(new GiveCommand(plugin));
+        this.subcommands.add(new TransformCommand(plugin));
         this.subcommands.add(new ItemCommand());
         this.subcommands.add(new LuckSetCommand(plugin));
         this.subcommands.add(new PurgeCommand(plugin));
@@ -59,7 +59,7 @@ public class CommandManager implements CommandExecutor {
         this.subcommands.add(new ResetCommand(plugin));
         this.subcommands.add(new SettingsCommand(plugin));
         this.subcommands.add(new TestCommand(plugin));
-        this.subcommands.add(new HelpCommand(this.subcommands));
+        this.subcommands.add(new HelpCommand(this));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class CommandManager implements CommandExecutor {
                     return true;
                 }
 
-                if ((sub.getPermission() != null) && !sender.hasPermission(sub.getPermission())) {
+                if ((!sub.getPermission().isBlank()) && !sender.hasPermission(sub.getPermission())) {
                     sender.sendMessage(ChatColor.RED + "You do not have permission to do this.");
                     return true;
                 }
@@ -116,6 +116,10 @@ public class CommandManager implements CommandExecutor {
         // subcommand does not exist.
         sender.sendMessage(ChatColor.RED + "Unknown Command.\nmlb help for a list of commands.");
         return true;
+    }
+
+    public LinkedList<SubCommand> getSubcommands() {
+        return this.subcommands;
     }
 
 }
