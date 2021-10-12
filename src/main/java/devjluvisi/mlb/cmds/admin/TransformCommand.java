@@ -133,6 +133,7 @@ public class TransformCommand implements SubCommand {
 
             @Override
             public void run() {
+
                 for (int x = fromX; x < toX; x++) {
                     for (int y = finalFromY; y < finalToY; y++) {
                         for (int z = fromZ; z < toZ; z++) {

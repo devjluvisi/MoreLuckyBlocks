@@ -1,54 +1,51 @@
 package devjluvisi.mlb.menus;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import devjluvisi.mlb.menus.admin.*;
-import devjluvisi.mlb.menus.user.*;
 import org.bukkit.entity.Player;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.EnumSet;
+import java.util.Objects;
 
 // One menu for different parts of every GUI
 public class MenuManager {
 
     private final MoreLuckyBlocks plugin;
-    private Set<MenuBuilder> menus;
+    private final EnumSet<MenuType> menus;
     private MenuResource menuResource;
     private Player p;
-
 
     public MenuManager(MoreLuckyBlocks plugin) {
         this.plugin = plugin;
         this.menuResource = new MenuResource();
-        this.menus = new HashSet<>();
-        menus = Set.of(new ListMenu(this), new DropsMenu(this), new LootMenu(this), new EditDropMenu(this), new ConfirmMenu(this), new ChangeRarityMenu(this), new ExchangesMenu(this),
-                new UserListMenu(this), new UserListDrops(this), new UserListLoot(this), new UserRedeemList(this), new UserRedeemMenu(this));
-
+        menus = EnumSet.allOf(MenuType.class);
     }
 
     public MenuManager withData(MenuResource src) {
         this.menuResource = src;
-        //menus = Set.of(new ListMenu(this), new DropsMenu(this), new LootMenu(this), new EditDropMenu(this), new ConfirmMenu(this), new ChangeRarityMenu(this));
-
         return this;
     }
 
     public MenuBuilder get(MenuType type) {
-
-        for (MenuBuilder menu : menus) {
-            if (menu.type() == type) return menu;
+        if(type == MenuType.EMPTY) {
+            return null;
         }
-        return get(MenuType.EMPTY);
+        try {
+            return Objects.requireNonNull(menus.stream()
+                            .filter(e -> e.equals(type))
+                            .findFirst()
+                            .orElse(null))
+                    .getMenuClass()
+                    .getConstructor(MenuManager.class).newInstance(this);
+
+        } catch (Exception e) {
+            plugin.getServer().getLogger().severe("[CRITICAL] Could not parse menu requested via reflection. [type=" + type.name() + "]");
+        }
+        return null;
     }
 
     public void open(Player p, MenuType type) {
         this.p = p;
-        for (MenuBuilder menu : menus) {
-            if (menu.type().equals(type)) {
-                menu.open(p);
-                return;
-            }
-        }
+        get(type).open(p);
     }
 
     public void open(Player p, MenuBuilder menu) {

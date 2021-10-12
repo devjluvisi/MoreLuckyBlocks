@@ -115,7 +115,7 @@ public record CreateCommand(MoreLuckyBlocks plugin) implements SubCommand {
         p.sendMessage(ChatColor.GRAY + "Default Luck" + ChatColor.DARK_GRAY + " -> " + ChatColor.RED
                 + luckyBlock.getDefaultBlockLuck());
         p.sendMessage(ChatColor.GRAY + "Break Permission" + ChatColor.DARK_GRAY + " -> " + ChatColor.RED
-                + (luckyBlock.getBreakPermission() == "" ? "None" : luckyBlock.getBreakPermission()));
+                + (Objects.equals(luckyBlock.getBreakPermission(), "") ? "None" : luckyBlock.getBreakPermission()));
         // TODO: Add cool mob sound
         p.sendMessage(ChatColor.LIGHT_PURPLE
                 + "Type \"/mlb list\" in order to edit the drops and view information about your lucky block.\nAttributes can also be edited in config.");

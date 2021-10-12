@@ -42,30 +42,32 @@ public final class MoreLuckyBlocks extends JavaPlugin {
     /*
      * TODO:
      *
-     *  - Use StringUtils and StringBuilder
-     * - Cache variables
-     * - Add particle effects for lucky block break.
-     * - Add option to make lucky block break instant
+     * - Use StringUtils and StringBuilder
+     * - Cache temporary variables
+     * - Add particle effects for lucky block break. (config.yml)
+     * - Add option to make lucky block break instant (config.yml)
      * - Make an option to break certain lucky blocks with only a certain tool
      * (config.yml)
      * - Make classes, instance variables, and methods final where
      * possible
-     * - Documentation and additional comments. - Use Optionals for methods
-     * which can return null
+     * - Documentation and additional comments.
+     * - Use Optionals for methods which can return null
      * - Validate.<...> should be used liberally.
-     * - Replace String "null" with just an empty string "". Then only check isBlank() on the
+     * - Replace String "null" with just an empty string StringUtils.EMPTY. Then only check isBlank() on the
      * strings.
      * - Any class which is not inherited from should be "final"
      * - Return empty collections instead of null
-     * - Implement Config AutoSave for LuckyBlock (worldData.yml)
+     * - Implement Config AutoSave for LuckyBlock (worldData.yml) (configurable in config.yml)
      * - Add hotbar notification for when a player breaks a lucky
      * block (Tells them the luck)
-     * - Add "event" commands like /mlb event spawnblock
-     * <block>, /mlb event spawnmob to allow lucky blocks to do more things then
-     * just drop items.
+     * /mlb event spawnmob to allow lucky blocks to do more things then
+     * - Add event commands to make lucky blocks more interesting (/explode, /tprandom, /boost (launch into air).
      * - Convert long iteration of lists to "stream()"
      * - Handle try-catches for command arguments in a seperate class/util.java
-     * -
+     * - Reduce if/else branch scoping as much as possible.
+     * - Follow sonar lint standards.
+     * - Use modern (Java11+) tech when possible
+     * - JavaDoc & Comment all methods.
      */
 
     // Setup resource files for the plugin to use.

@@ -25,7 +25,7 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
         if (Objects.isNull(lb)) {
             return;
         }
-        if (lb.getDroppableItems().size() == 0) {
+        if (lb.getDroppableItems().isEmpty()) {
             e.getPlayer().sendMessage(ChatColor.RED
                     + "This was a lucky block but it did not drop anything because no drops were available.");
             e.setCancelled(true);
