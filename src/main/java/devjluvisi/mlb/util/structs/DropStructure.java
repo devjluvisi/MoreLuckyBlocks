@@ -21,9 +21,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.util.*;
+
+import static devjluvisi.mlb.util.structs.DropStructure.BUILD_LIMIT;
 
 /**
  * <h2>DropStructure</h2>
@@ -39,11 +40,11 @@ public class DropStructure implements Listener {
     /**
      * Maximum allowed build limit in the world.
      */
-    private static final int BUILD_LIMIT = 128;
+    static final int BUILD_LIMIT = 128;
     /**
      * Size of the world border from the origin.
      */
-    private static final byte WORLD_BORDER_SIZE = 50;
+    static final byte WORLD_BORDER_SIZE = 50;
 
     /**
      * Default name of the world to be created in the world directory on the server folder.
@@ -104,7 +105,6 @@ public class DropStructure implements Listener {
             }
 
         }
-
         // Set the spawn location at the origin.
         assert this.structWorld != null;
         this.structWorld
@@ -181,8 +181,11 @@ public class DropStructure implements Listener {
                 r.place(this.structWorld);
             }
         }
-        // Set the base lucky block at the origin.
-        this.structWorld.getBlockAt(0, BUILD_LIMIT / 2, 0).setType(lb.getBlockMaterial());
+        if (structWorld.getBlockAt(0, BUILD_LIMIT / 2, 0).isEmpty()) {
+// Set the base lucky block at the origin.
+            this.structWorld.getBlockAt(0, BUILD_LIMIT / 2, 0).setType(lb.getBlockMaterial());
+        }
+
         this.lastKnownInventory = p.getInventory().getContents();
         this.lastKnownLocation = p.getLocation();
         this.lastKnownPotionEffects = p.getActivePotionEffects();
@@ -198,60 +201,6 @@ public class DropStructure implements Listener {
 
         // Finally teleport the player to the world.
         this.teleport(p);
-    }
-
-    public final boolean isConfirmExit() {
-        return this.confirmExit;
-    }
-
-    public final void setConfirmExit(boolean confirmExit) {
-        this.confirmExit = confirmExit;
-    }
-
-    public final boolean isUnsavedChanges() {
-        return this.unsavedChanges;
-    }
-
-    public final void setUnsavedChanges(boolean unsavedChanges) {
-        this.unsavedChanges = unsavedChanges;
-    }
-
-    /**
-     * Resets all instance variables to default or null values.
-     */
-    private void reset() {
-        this.spawnableEntities.clear();
-        this.lb = null;
-        this.drop = null;
-        this.editingPlayerUUID = null;
-        this.lastKnownInventory = null;
-        this.lastKnownLocation = null;
-        this.lastKnownPotionEffects = null;
-        this.confirmExit = false;
-        this.unsavedChanges = false;
-    }
-
-    /**
-     * Removes a player from the structure world.
-     * Teleports them to their last known location.
-     *
-     * @param p The player to kick.
-     */
-    public void kick(Player p) {
-        p.teleport(this.lastKnownLocation);
-        p.getInventory().setContents(this.lastKnownInventory);
-        for (final PotionEffect effect : this.lastKnownPotionEffects) {
-            p.addPotionEffect(effect);
-        }
-        p.sendMessage(ChatColor.GRAY + "You have left the structure modification world.");
-        this.reset();
-    }
-
-    /**
-     * @return UUID of the player currently in the structure world.
-     */
-    public final UUID getEditingPlayerUUID() {
-        return this.editingPlayerUUID;
     }
 
     /**
@@ -290,6 +239,29 @@ public class DropStructure implements Listener {
             new EditingStructureTask(this).runTaskTimerAsynchronously(this.plugin, 10, 20);
             p.sendTitle(ChatColor.GREEN + "Editing", "Now editing structure for drop.", 10, 70, 20);
         }
+    }
+
+    public final boolean isConfirmExit() {
+        return this.confirmExit;
+    }
+
+    public final void setConfirmExit(boolean confirmExit) {
+        this.confirmExit = confirmExit;
+    }
+
+    public final boolean isUnsavedChanges() {
+        return this.unsavedChanges;
+    }
+
+    public final void setUnsavedChanges(boolean unsavedChanges) {
+        this.unsavedChanges = unsavedChanges;
+    }
+
+    /**
+     * @return UUID of the player currently in the structure world.
+     */
+    public final UUID getEditingPlayerUUID() {
+        return this.editingPlayerUUID;
     }
 
     public World getWorld() {
@@ -398,15 +370,13 @@ public class DropStructure implements Listener {
         if (!(e.getBlock().getLocation().getWorld().getUID().equals(this.structWorld.getUID()))) {
             return;
         }
-        if (e.getBlock().getLocation().equals(new Location(this.structWorld, 0, BUILD_LIMIT / 2, 0))) {
-            e.setCancelled(true);
-            e.getPlayer()
-                    .sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You cannot break this block.");
-            e.getPlayer().sendMessage(ChatColor.GRAY
-                    + "This block is used to serve as a reference for what structure to create when a player gets this drop.");
-            e.getPlayer().sendMessage(ChatColor.GRAY + "You should build your structure around this block.");
+
+        if (e.getBlock().getLocation().equals(new Location(this.structWorld, 0, BUILD_LIMIT / 2, 0)) && structWorld.getBlockAt(0, BUILD_LIMIT / 2, 0).getType() == lb.getBlockMaterial()) {
+            e.getPlayer().sendMessage(ChatColor.YELLOW + "You broke the reference lucky block. Particles will spawn to indicate where the reference block is.");
             return;
         }
+
+
         this.unsavedChanges = true;
         this.confirmExit = false;
     }
@@ -418,6 +388,37 @@ public class DropStructure implements Listener {
         }
         this.kick(e.getPlayer());
         this.reset();
+    }
+
+    /**
+     * Removes a player from the structure world.
+     * Teleports them to their last known location.
+     *
+     * @param p The player to kick.
+     */
+    public void kick(Player p) {
+        p.teleport(this.lastKnownLocation);
+        p.getInventory().setContents(this.lastKnownInventory);
+        for (final PotionEffect effect : this.lastKnownPotionEffects) {
+            p.addPotionEffect(effect);
+        }
+        p.sendMessage(ChatColor.GRAY + "You have left the structure modification world.");
+        this.reset();
+    }
+
+    /**
+     * Resets all instance variables to default or null values.
+     */
+    private void reset() {
+        this.spawnableEntities.clear();
+        this.lb = null;
+        this.drop = null;
+        this.editingPlayerUUID = null;
+        this.lastKnownInventory = null;
+        this.lastKnownLocation = null;
+        this.lastKnownPotionEffects = null;
+        this.confirmExit = false;
+        this.unsavedChanges = false;
     }
 
     @EventHandler
@@ -444,7 +445,7 @@ public class DropStructure implements Listener {
             for (int z = -(WORLD_BORDER_SIZE / 2); z < (WORLD_BORDER_SIZE / 2); z++) {
                 for (int y = 0; y < BUILD_LIMIT; y++) {
                     // Ignore Lucky Block
-                    if ((x == 0) && (z == 0) && (y == (BUILD_LIMIT / 2))) {
+                    if ((x == 0) && (z == 0) && (y == (BUILD_LIMIT / 2)) && structWorld.getBlockAt(x, y, z).getType() == lb.getBlockMaterial()) {
                         continue;
                     }
                     final Material m = this.structWorld.getBlockAt(x, y, z).getType();
@@ -516,6 +517,11 @@ class EditingStructureTask extends BukkitRunnable {
             this.cancel();
             return;
         }
+        struct.getWorld().spawnParticle(Particle.GLOW, 0.5, BUILD_LIMIT / 2, 0.5, 50);
+        struct.getWorld().spawnParticle(Particle.GLOW, 0.25, BUILD_LIMIT / 2, 0.5, 50);
+        struct.getWorld().spawnParticle(Particle.GLOW, 0.5, BUILD_LIMIT / 2, 0.25, 50);
+        struct.getWorld().spawnParticle(Particle.GLOW, 0.75, BUILD_LIMIT / 2, 0.5, 50);
+        struct.getWorld().spawnParticle(Particle.GLOW, 0.5, BUILD_LIMIT / 2, 0.75, 50);
         this.p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
                 TextComponent
                         .fromLegacyText(ChatColor.DARK_RED + "Editing block \"" + this.struct.getLb().getInternalName()

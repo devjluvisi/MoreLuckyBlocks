@@ -1,6 +1,8 @@
 package devjluvisi.mlb.cmds.admin;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
 import net.md_5.bungee.api.ChatColor;
@@ -50,7 +52,7 @@ public record ConfigCommand(MoreLuckyBlocks plugin) implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
+    public CommandResult perform(CommandSender sender, String[] args) {
         if (args[1].equalsIgnoreCase("save")) {
             sender.sendMessage(
                     ChatColor.GREEN + "Configuration files have been updated according to unmodified changes.");
@@ -64,17 +66,17 @@ public record ConfigCommand(MoreLuckyBlocks plugin) implements SubCommand {
             this.plugin.getBlocksYaml().save();
             this.plugin.getBlocksYaml().reload();
 
-            this.plugin.getConfigYaml().save();
-            this.plugin.getConfigYaml().reload();
+            this.plugin.getSettingsManager().save();
+            this.plugin.getSettingsManager().reload();
 
-            this.plugin.getMessagesYaml().save();
-            this.plugin.getMessagesYaml().reload();
+            this.plugin.getMessagesManager().save();
+            this.plugin.getMessagesManager().reload();
 
             this.plugin.getLuckyBlocks().upload();
         } else {
-            return ExecutionResult.BAD_USAGE;
+            return new CommandResult(ResultType.BAD_USAGE);
         }
-        return ExecutionResult.PASSED;
+        return new CommandResult(ResultType.PASSED);
     }
 
 }

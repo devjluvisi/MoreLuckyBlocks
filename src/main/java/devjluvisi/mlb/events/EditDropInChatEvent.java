@@ -20,9 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
 
-
     // TODO: Test to ensure that it works.
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void commandEvent(PlayerCommandPreprocessEvent e) {
 
@@ -31,7 +29,7 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
         }
 
         final MenuManager manager = new MenuManager(plugin);
-        final EditDropMenu b =plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId());
+        final EditDropMenu b = plugin.getPlayersEditingDrop().get(e.getPlayer().getUniqueId());
 
         final Player p = e.getPlayer();
         final String command = ChatColor.stripColor(e.getMessage());
@@ -183,8 +181,6 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
             p.sendMessage("");
         }
     }
-
-
 
 
 }

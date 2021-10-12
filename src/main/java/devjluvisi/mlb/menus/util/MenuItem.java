@@ -1,9 +1,7 @@
 package devjluvisi.mlb.menus.util;
 
-import devjluvisi.mlb.api.gui.Menu;
 import devjluvisi.mlb.helper.Util;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -12,13 +10,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 
 public class MenuItem {
-
-    /** Special items are menu items that are used frequently or perform certain major actions. */
-    public enum SpecialItem {
-        EXIT_BUTTON, ADD_NEW_DROP, REMOVE_ALL_DROPS, EDIT_DROP, DELETE_DROP, COPY_DROP, CHANGE_RARITY,
-        ADD_POTION_EFFECT, ADD_COMMAND, SAVE_BUTTON, CANCEL_BUTTON, CONFIRM_BUTTON, INCREASE_RARITY, DECREASE_RARITY,
-        DELETE_LUCKY_BLOCK, ADD_STRUCTURE
-    }
 
     private Material m;
     private String displayName;
@@ -53,6 +44,14 @@ public class MenuItem {
         flags = Collections.emptyList();
     }
 
+    public static MenuItem blackPlaceholder() {
+        return new MenuItem(Material.BLACK_STAINED_GLASS_PANE);
+    }
+
+    public static MenuItem redPlaceholder() {
+        return new MenuItem(Material.RED_STAINED_GLASS_PANE);
+    }
+
     public MenuItem with(Material m) {
         this.m = m;
         return this;
@@ -73,22 +72,8 @@ public class MenuItem {
         return this;
     }
 
-
-    public ItemStack asItem() {
-        ItemStack item = new ItemStack(m);
-        ItemMeta meta = item.getItemMeta();
-        assert meta != null;
-        meta.setDisplayName(Util.toColor(displayName));
-        meta.setLore(Util.listToColor(lore));
-        for(ItemFlag flag : flags) {
-            meta.addItemFlags(flag);
-        }
-        item.setItemMeta(meta);
-        return item;
-    }
-
     public MenuItem of(SpecialItem specialItem) {
-        switch(specialItem) {
+        switch (specialItem) {
             case EXIT_BUTTON -> {
                 m = Material.BARRIER;
                 displayName = "&c&lExit";
@@ -177,21 +162,47 @@ public class MenuItem {
                 lore.add("&ba lucky block and gets this drop.");
                 lore.add("&e&l/mlb struct &7 for more info.");
             }
+            case DELETE_EXCHANGE -> {
+                m = Material.TNT;
+                displayName = "&cDelete";
+                lore.add("&7Delete the exchange for");
+                lore.add("&7the current lucky block.");
+            }
+            case SAVE_EXCHANGE -> {
+                m = Material.EMERALD;
+                displayName = "&2Save";
+                lore.add("&7Save your changes");
+                lore.add("&7to this exchange.");
+            }
         }
         return this;
     }
 
-    public static MenuItem blackPlaceholder() {
-         return new MenuItem(Material.BLACK_STAINED_GLASS_PANE);
-    }
-
-    public static MenuItem redPlaceholder() {
-        return new MenuItem(Material.RED_STAINED_GLASS_PANE);
-    }
-
-
     public boolean equals(ItemStack item) {
         final ItemStack i = asItem();
-        return item.getItemMeta() != null && item.getType()==i.getType() && item.getItemMeta().getDisplayName().equals(Objects.requireNonNull(i.getItemMeta()).getDisplayName()) && Objects.equals(item.getItemMeta().getLore(), i.getItemMeta().getLore());
+        return item.getItemMeta() != null && item.getType() == i.getType() && item.getItemMeta().getDisplayName().equals(Objects.requireNonNull(i.getItemMeta()).getDisplayName()) && Objects.equals(item.getItemMeta().getLore(), i.getItemMeta().getLore());
+    }
+
+    public ItemStack asItem() {
+        ItemStack item = new ItemStack(m);
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName(Util.toColor(displayName));
+        meta.setLore(Util.listToColor(lore));
+        for (ItemFlag flag : flags) {
+            meta.addItemFlags(flag);
+        }
+        item.setItemMeta(meta);
+        return item;
+    }
+
+
+    /**
+     * Special items are menu items that are used frequently or perform certain major actions.
+     */
+    public enum SpecialItem {
+        EXIT_BUTTON, ADD_NEW_DROP, REMOVE_ALL_DROPS, EDIT_DROP, DELETE_DROP, COPY_DROP, CHANGE_RARITY,
+        ADD_POTION_EFFECT, ADD_COMMAND, SAVE_BUTTON, CANCEL_BUTTON, CONFIRM_BUTTON, INCREASE_RARITY, DECREASE_RARITY,
+        DELETE_LUCKY_BLOCK, ADD_STRUCTURE, DELETE_EXCHANGE, SAVE_EXCHANGE
     }
 }

@@ -1,6 +1,8 @@
 package devjluvisi.mlb.cmds.general;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
 import net.md_5.bungee.api.ChatColor;
@@ -39,7 +41,7 @@ public record VersionCommand(MoreLuckyBlocks plugin) implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
+    public CommandResult perform(CommandSender sender, String[] args) {
         sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + ChatColor.STRIKETHROUGH
                 + "--------------------------------");
         sender.sendMessage(ChatColor.GOLD + "MoreLuckyBlocks " + ChatColor.GRAY + "(" + ChatColor.YELLOW
@@ -53,7 +55,7 @@ public record VersionCommand(MoreLuckyBlocks plugin) implements SubCommand {
         sender.sendMessage(ChatColor.BLUE.toString() + ChatColor.UNDERLINE + this.plugin.getDescription().getWebsite());
         sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + ChatColor.STRIKETHROUGH
                 + "--------------------------------");
-        return ExecutionResult.PASSED;
+        return new CommandResult(ResultType.PASSED);
     }
 
 }

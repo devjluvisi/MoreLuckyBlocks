@@ -4,9 +4,9 @@ import devjluvisi.mlb.util.Range;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Class which contains static utility methods.
@@ -89,25 +89,13 @@ public final class Util {
 
         unformatted = StringUtils.replace(unformatted, " ", "_");
 
-        for(char c: unformatted.toCharArray()) {
-            if(!allowedChars.contains(String.valueOf(c))) {
+        for (char c : unformatted.toCharArray()) {
+            if (!allowedChars.contains(String.valueOf(c))) {
                 unformatted = StringUtils.replace(unformatted, String.valueOf(c), StringUtils.EMPTY);
             }
         }
         return unformatted;
     }
-
-    /**
-     * Returns if the string passed is a valid number. Should always be used over
-     * try/catch, .parse, etc.
-     *
-     * @param str String to test.
-     * @return If the string is a number.
-     */
-    public static boolean isNumber(String str) {
-        return NumberUtils.isNumber(str);
-    }
-
 
     /**
      * Returns if the string passed is a valid number and is within a range.
@@ -125,6 +113,17 @@ public final class Util {
             throw new NumberFormatException("Type not of number.");
         }
         return NumberUtils.toDouble(str);
+    }
+
+    /**
+     * Returns if the string passed is a valid number. Should always be used over
+     * try/catch, .parse, etc.
+     *
+     * @param str String to test.
+     * @return If the string is a number.
+     */
+    public static boolean isNumber(String str) {
+        return NumberUtils.isNumber(str);
     }
 
     public static String toColor(String str) {

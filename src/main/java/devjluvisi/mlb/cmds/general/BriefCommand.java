@@ -1,5 +1,7 @@
 package devjluvisi.mlb.cmds.general;
 
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
 import org.bukkit.command.CommandSender;
@@ -43,8 +45,10 @@ public class BriefCommand implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
-        return ExecutionResult.PASSED;
+    public CommandResult perform(CommandSender sender, String[] args) {
+        return
+                new CommandResult(ResultType.PASSED);
+
     }
 
 }

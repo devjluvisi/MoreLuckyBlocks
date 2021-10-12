@@ -9,22 +9,22 @@ import org.bukkit.entity.Player;
 public abstract class SimpleMenu extends Menu implements Page {
 
     @Override
+    public Page getPage(int index) {
+        return this;
+    }
+
+    @Override
     public int getPageCount() {
         return 1;
     }
 
     @Override
-    public Page getPage(int index) {
-        return this;
+    public Page[] getPages() {
+        return new Page[] { this };
     }
 
     public Page getPage() {
         return this;
-    }
-
-    @Override
-    public Page[] getPages() {
-        return new Page[]{this};
     }
 
     /**

@@ -26,14 +26,6 @@ public record PlayerManager(MoreLuckyBlocks plugin) {
     }
 
     /**
-     * Save config and reload it.
-     */
-    public void save() {
-        this.plugin.getPlayersYaml().save();
-        this.plugin.getPlayersYaml().reload();
-    }
-
-    /**
      * Update a player offline.
      *
      * @param uuid UUID of the player.
@@ -42,6 +34,14 @@ public record PlayerManager(MoreLuckyBlocks plugin) {
     public void updateOffline(UUID uuid, float luck) {
         this.plugin.getPlayersYaml().getConfig().set("players." + uuid.toString() + ".luck", String.valueOf(luck));
         this.save();
+    }
+
+    /**
+     * Save config and reload it.
+     */
+    public void save() {
+        this.plugin.getPlayersYaml().save();
+        this.plugin.getPlayersYaml().reload();
     }
 
     /**

@@ -84,12 +84,6 @@ public class LuckyBlockPotionEffect implements LootProperty {
     }
 
     @Override
-    public String toString() {
-        return "LuckyBlockPotionEffect [type=" + this.type + ", duration=" + this.duration + ", amplifier="
-                + this.amplifier + "]";
-    }
-
-    @Override
     public ItemStack asItem() {
         final ItemStack i = new ItemStack(Material.POTION);
         final ItemMeta meta = i.getItemMeta();
@@ -109,6 +103,13 @@ public class LuckyBlockPotionEffect implements LootProperty {
     public boolean isValid() {
         return (this.type != null) && (this.duration >= 1) && (this.amplifier >= 0);
     }
+
+    @Override
+    public String toString() {
+        return "LuckyBlockPotionEffect [type=" + this.type + ", duration=" + this.duration + ", amplifier="
+                + this.amplifier + "]";
+    }
+
 
     @Override
     public int hashCode() {

@@ -35,11 +35,6 @@ public class LuckyBlockItem implements LootProperty {
     }
 
     @Override
-    public String toString() {
-        return "LuckyBlockItem [item=" + this.item + "]";
-    }
-
-    @Override
     public ItemStack asItem() {
         return this.item;
     }
@@ -52,6 +47,11 @@ public class LuckyBlockItem implements LootProperty {
     @Override
     public boolean equals(Object obj) {
         return this.item.equals(((LuckyBlockItem) obj).item);
+    }
+
+    @Override
+    public String toString() {
+        return "LuckyBlockItem [item=" + this.item + "]";
     }
 
 }

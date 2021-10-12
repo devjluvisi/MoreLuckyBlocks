@@ -1,7 +1,8 @@
 package devjluvisi.mlb.cmds.lb;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import devjluvisi.mlb.api.gui.MenuView;
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuType;
@@ -29,7 +30,7 @@ public record ListCommand(MoreLuckyBlocks plugin) implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "mlb.list";
+        return "";
     }
 
     @Override
@@ -43,14 +44,18 @@ public record ListCommand(MoreLuckyBlocks plugin) implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
-        if(plugin.getLuckyBlocks().size() == 0) {
+    public CommandResult perform(CommandSender sender, String[] args) {
+        if (plugin.getLuckyBlocks().size() == 0) {
             sender.sendMessage(ChatColor.RED + "Could not run this command because you have no lucky blocks on this server.");
             sender.sendMessage(ChatColor.GRAY + "Try /mlb create to create a new lucky block.");
-            return ExecutionResult.PASSED;
+            return new CommandResult(ResultType.PASSED);
         }
-        new MenuManager(plugin).open((Player)sender, MenuType.LIST_LUCKY_BLOCKS);
-        return ExecutionResult.PASSED;
+        MenuType type = MenuType.USER_LIST_LUCKY_BLOCKS;
+        if (sender.hasPermission("mlb.admin")) {
+            type = MenuType.LIST_LUCKY_BLOCKS;
+        }
+        new MenuManager(plugin).open((Player) sender, type);
+        return new CommandResult(ResultType.PASSED);
     }
 
 }

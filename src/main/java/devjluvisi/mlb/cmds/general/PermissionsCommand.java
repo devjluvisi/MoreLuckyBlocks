@@ -1,6 +1,8 @@
 package devjluvisi.mlb.cmds.general;
 
 import devjluvisi.mlb.cmds.CommandManager;
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -10,7 +12,6 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -23,6 +24,7 @@ import java.util.List;
 public class PermissionsCommand implements SubCommand {
 
     public List<SubCommand> commandList;
+
     public PermissionsCommand(CommandManager manager) {
         this.commandList = manager.getSubcommands();
     }
@@ -58,11 +60,11 @@ public class PermissionsCommand implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
+    public CommandResult perform(CommandSender sender, String[] args) {
         sender.sendMessage(ChatColor.GRAY + "Your Permissions:");
 
-        for(SubCommand cmd : commandList) {
-            if(sender.hasPermission(cmd.getPermission())) {
+        for (SubCommand cmd : commandList) {
+            if (sender.hasPermission(cmd.getPermission())) {
                 TextComponent txtcomp = new TextComponent(TextComponent.fromLegacyText(ChatColor.GRAY + "/mlb " + cmd.getName()));
                 txtcomp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(cmd.getPermission())));
                 txtcomp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, cmd.getSyntax().split("\n")[0]));
@@ -70,7 +72,7 @@ public class PermissionsCommand implements SubCommand {
             }
         }
         sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "Hover over commands to give permission nodes.");
-        return ExecutionResult.PASSED;
+        return new CommandResult(ResultType.PASSED);
     }
 
 }

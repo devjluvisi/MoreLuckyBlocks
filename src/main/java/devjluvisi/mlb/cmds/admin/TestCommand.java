@@ -1,6 +1,8 @@
 package devjluvisi.mlb.cmds.admin;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
 import org.bukkit.command.CommandSender;
@@ -38,12 +40,12 @@ public record TestCommand(MoreLuckyBlocks plugin) implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
+    public CommandResult perform(CommandSender sender, String[] args) {
         sender.sendMessage("Running Test. Check logger");
         this.plugin.getServerDropStructure().save();
         this.plugin.getAudit().dumpLogger();
         this.plugin.getLuckyBlocks().dumpLogger();
-        return ExecutionResult.PASSED;
+        return new CommandResult(ResultType.PASSED);
     }
 
 }

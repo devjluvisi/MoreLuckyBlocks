@@ -1,7 +1,6 @@
 package devjluvisi.mlb.menus.admin;
 
 import devjluvisi.mlb.api.gui.MenuView;
-import devjluvisi.mlb.api.gui.pages.PageType;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.menus.MenuBuilder;
@@ -13,28 +12,16 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
-import java.util.Random;
 
-public class ChangeRarityMenu extends MenuBuilder  {
+public class ChangeRarityMenu extends MenuBuilder {
 
-    private LuckyBlock lb;
-    private LuckyBlockDrop lbDrop;
     private static final float RARITY_STEP_INTERVAL = 5.0F;
     float rarity;
+    private LuckyBlock lb;
+    private LuckyBlockDrop lbDrop;
 
     public ChangeRarityMenu(MenuManager manager) {
         super(manager, "Change Rarity");
-    }
-
-    private void init() {
-        lb = manager.getMenuData().getLuckyBlock();
-        lbDrop = manager.getMenuData().getDrop();
-        this.setMenuName("Change Rarity of Drop #" + lb.indexOf(lbDrop));
-        if (lb.getDroppableItems().size() <= lb.indexOf(lbDrop)) {
-            this.rarity = 50.0F; // default
-            return;
-        }
-        this.rarity = lbDrop.getRarity();
     }
 
     @Override
@@ -54,10 +41,26 @@ public class ChangeRarityMenu extends MenuBuilder  {
         return content;
     }
 
+    private void init() {
+        lb = manager.getMenuData().getLuckyBlock();
+        lbDrop = manager.getMenuData().getDrop();
+        this.setMenuName("Change Rarity of Drop #" + lb.indexOf(lbDrop));
+        if (lb.getDroppableItems().size() <= lb.indexOf(lbDrop)) {
+            this.rarity = 50.0F; // default
+            return;
+        }
+        this.rarity = lbDrop.getRarity();
+    }
+
+    @Override
+    public MenuType type() {
+        return MenuType.CHANGE_RARITY;
+    }
+
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-        if(itemStack == null) return;
-        if(itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.INCREASE_RARITY).asItem())) {
+        if (itemStack == null) return;
+        if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.INCREASE_RARITY).asItem())) {
             if (this.rarity <= RARITY_STEP_INTERVAL) {
                 this.rarity = 0.1F;
             } else {
@@ -67,7 +70,7 @@ public class ChangeRarityMenu extends MenuBuilder  {
             view.reopen();
             return;
         }
-        if(itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.DECREASE_RARITY).asItem())) {
+        if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.DECREASE_RARITY).asItem())) {
             if (this.rarity >= 95.0F) {
                 this.rarity = 100.0F;
             } else {
@@ -77,15 +80,10 @@ public class ChangeRarityMenu extends MenuBuilder  {
             view.reopen();
             return;
         }
-        if(itemStack.getType().equals(Material.EXPERIENCE_BOTTLE)) {
+        if (itemStack.getType().equals(Material.EXPERIENCE_BOTTLE)) {
             lbDrop.setRarity(rarity);
             manager.open(manager.getPlayer(), MenuType.LIST_LOOT);
         }
 
-    }
-
-    @Override
-    public MenuType type() {
-        return MenuType.CHANGE_RARITY;
     }
 }

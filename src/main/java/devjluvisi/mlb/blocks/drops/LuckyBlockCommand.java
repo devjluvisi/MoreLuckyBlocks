@@ -25,11 +25,6 @@ public class LuckyBlockCommand implements LootProperty {
     }
 
     @Override
-    public String toString() {
-        return "LuckyBlockCommand [command=" + this.command + "]";
-    }
-
-    @Override
     public ItemStack asItem() {
         final ItemStack i = new ItemStack(Material.OAK_SIGN);
         final ItemMeta meta = i.getItemMeta();
@@ -45,6 +40,12 @@ public class LuckyBlockCommand implements LootProperty {
     public boolean isValid() {
         return this.command.contains("/");
     }
+
+    @Override
+    public String toString() {
+        return "LuckyBlockCommand [command=" + this.command + "]";
+    }
+
 
     @Override
     public int hashCode() {

@@ -50,41 +50,6 @@ public class MenuView implements Listener {
     }
 
     /**
-     * @return the player who is viewing the menu
-     */
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    /**
-     * @return the current inventory view
-     */
-    public InventoryView getInventoryView() {
-        return this.view;
-    }
-
-    /**
-     * @return the menu of the MenuView
-     */
-    public Menu getMenu() {
-        return this.menu;
-    }
-
-    /**
-     * @return the page that the player is currently viewing
-     */
-    public Page getCurrentPage() {
-        return this.menu.getPage(this.currentPage);
-    }
-
-    /**
-     * @return the index of the current page
-     */
-    public int getCurrentPageIndex() {
-        return this.currentPage;
-    }
-
-    /**
      * @param index the index of the page
      * @throws IllegalArgumentException if the page index is out of bounds or if the
      *                                  page is invalid
@@ -117,10 +82,38 @@ public class MenuView implements Listener {
     }
 
     /**
+     * @return the page that the player is currently viewing
+     */
+    public Page getCurrentPage() {
+        return this.menu.getPage(this.currentPage);
+    }
+
+    /**
+     * @return the player who is viewing the menu
+     */
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    /**
+     * @return the menu of the MenuView
+     */
+    public Menu getMenu() {
+        return this.menu;
+    }
+
+    /**
      * Reopens the current page.
      */
     public void reopen() {
         this.setPage(this.getCurrentPageIndex());
+    }
+
+    /**
+     * @return the index of the current page
+     */
+    public int getCurrentPageIndex() {
+        return this.currentPage;
     }
 
     /**
@@ -180,5 +173,12 @@ public class MenuView implements Listener {
             }
 
         }
+    }
+
+    /**
+     * @return the current inventory view
+     */
+    public InventoryView getInventoryView() {
+        return this.view;
     }
 }

@@ -13,10 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.security.SecureRandom;
-import java.sql.Array;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Represents a single lucky block with any range of values.
@@ -76,6 +73,10 @@ public class LuckyBlock {
         this.setBlockLuck(defaultBlockLuck);
     }
 
+    public ItemStack asItem(MoreLuckyBlocks plugin, int amount) {
+        return this.asItem(plugin, this.defaultBlockLuck, amount);
+    }
+
     /**
      * Convert the LuckyBlock into a minecraft item which can be placed.
      *
@@ -110,8 +111,16 @@ public class LuckyBlock {
 
     }
 
-    public ItemStack asItem(MoreLuckyBlocks plugin, int amount) {
-        return this.asItem(plugin, this.defaultBlockLuck, amount);
+    public List<String> getRefreshedLore() {
+        final ArrayList<String> copy = new ArrayList<>();
+        for (final String s : this.lore) {
+            copy.add(ChatColor.translateAlternateColorCodes('&',
+                    s.replaceAll("%luck%", "" + this.blockLuck).replaceAll("%default_luck%", "" + this.defaultBlockLuck)
+                            .replaceAll("%break_perm%", this.breakPermission)
+                            .replaceAll("%internal_name%", this.internalName)));
+
+        }
+        return copy;
     }
 
     public String getInternalName() {
@@ -152,18 +161,6 @@ public class LuckyBlock {
 
     public void setLore(List<String> lore) {
         this.lore = lore;
-    }
-
-    public List<String> getRefreshedLore() {
-        final ArrayList<String> copy = new ArrayList<>();
-        for (final String s : this.lore) {
-            copy.add(ChatColor.translateAlternateColorCodes('&',
-                    s.replaceAll("%luck%", "" + this.blockLuck).replaceAll("%default_luck%", "" + this.defaultBlockLuck)
-                            .replaceAll("%break_perm%", this.breakPermission)
-                            .replaceAll("%internal_name%", this.internalName)));
-
-        }
-        return copy;
     }
 
     public float getDefaultBlockLuck() {
@@ -232,10 +229,6 @@ public class LuckyBlock {
         this.droppableItems.add(drop);
     }
 
-    public void removeDrop(LuckyBlockDrop drop) {
-        this.droppableItems.remove(drop);
-    }
-
     public int indexOf(LuckyBlockDrop drop) {
         for (int i = 0; i < this.droppableItems.size(); i++) {
             if (this.droppableItems.get(i).equals(drop)) {
@@ -278,6 +271,10 @@ public class LuckyBlock {
                 this.removeDrop(d);
             }
         }
+    }
+
+    public void removeDrop(LuckyBlockDrop drop) {
+        this.droppableItems.remove(drop);
     }
 
     @Override

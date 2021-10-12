@@ -1,4 +1,4 @@
-package devjluvisi.mlb.events.players;
+package devjluvisi.mlb.events.luck;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;

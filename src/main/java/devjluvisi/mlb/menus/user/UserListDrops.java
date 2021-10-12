@@ -1,8 +1,7 @@
-package devjluvisi.mlb.menus.admin;
+package devjluvisi.mlb.menus.user;
 
 import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.blocks.LuckyBlock;
-import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.menus.MenuBuilder;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuType;
@@ -15,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class DropsMenu extends MenuBuilder {
+public class UserListDrops extends MenuBuilder {
 
     private static final byte CHEST_ROW_SIZE = 18;
     /**
@@ -24,7 +23,7 @@ public class DropsMenu extends MenuBuilder {
     private int beginIndex;
     private LuckyBlock lb;
 
-    public DropsMenu(MenuManager manager) {
+    public UserListDrops(MenuManager manager) {
         super(manager, "");
         this.beginIndex = 0;
     }
@@ -34,9 +33,9 @@ public class DropsMenu extends MenuBuilder {
         this.lb = manager.getMenuData().getLuckyBlock();
         setMenuName("Viewing: " + lb.getInternalName());
 
-        ItemStack noDropSet = new MenuItem(Material.GRAY_STAINED_GLASS_PANE, "&7You have no drop set for this slot.").asItem();
-        Arrays.fill(content[0], noDropSet);
-        Arrays.fill(content[1], noDropSet);
+        ItemStack emptyItem = new MenuItem().with(Material.GRAY_STAINED_GLASS_PANE).with("&7Empty").asItem();
+        Arrays.fill(content[0], emptyItem);
+        Arrays.fill(content[1], emptyItem);
 
         int row = 0;
         int col = 0;
@@ -47,12 +46,10 @@ public class DropsMenu extends MenuBuilder {
                 row++;
             }
             content[row][col] = new MenuItem().with(Material.GREEN_STAINED_GLASS_PANE).with("&aDrop: " + i)
-                    .addLine("&bYou have a drop set for this item!")
                     .addLine("&7&lTotal Drops: &d" + lb.getDroppableItems().get(i).getLoot().size())
                     .addLine("&7&lRarity: &d" + lb.getDroppableItems().get(i).getRarity())
                     .addLine("\n")
-                    .addLine("&7&oClick to configure drop contents.").asItem();
-
+                    .addLine("&7&oClick to view drop contents.").asItem();
 
             if (row == 2) break;
 
@@ -60,14 +57,13 @@ public class DropsMenu extends MenuBuilder {
         }
         Arrays.fill(content[2], MenuItem.redPlaceholder().asItem());
 
-        content[2][1] = new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem();
-        content[2][3] = new MenuItem().of(MenuItem.SpecialItem.ADD_NEW_DROP).asItem();
-        content[2][4] = new MenuItem().of(MenuItem.SpecialItem.REMOVE_ALL_DROPS).asItem();
-        content[2][5] = new MenuItem().of(MenuItem.SpecialItem.DELETE_LUCKY_BLOCK).asItem();
+        content[2][0] = new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem();
 
         final int maxPages = lb.getDroppableItems().size()
                 / CHEST_ROW_SIZE + 1;
+
         final int currPage = (this.beginIndex / CHEST_ROW_SIZE) + 1;
+
         content[2][7] = new MenuItem().with(Material.FEATHER).with("&ePrevious Page &8(&6" + currPage + "&e/&6" + maxPages + "&8)").addLine("&7Go back to the previous page.").asItem();
         content[2][8] = new MenuItem().with(Material.ARROW).with("&eNext Page &8(&6" + currPage + "&e/&6" + maxPages + "&8)").addLine("&7Go back to the next page.").asItem();
         return content;
@@ -75,7 +71,7 @@ public class DropsMenu extends MenuBuilder {
 
     @Override
     public MenuType type() {
-        return MenuType.LIST_DROPS;
+        return MenuType.USER_LIST_DROPS;
     }
 
     @Override
@@ -85,23 +81,7 @@ public class DropsMenu extends MenuBuilder {
             final int dropIndex = Integer
                     .parseInt(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).split(": ")[1]);
             manager.setMenuData(manager.getMenuData().with(lb.getDroppableItems().get(dropIndex)));
-            manager.open(view.getPlayer(), MenuType.LIST_LOOT);
-            return;
-        }
-        if (new MenuItem().of(MenuItem.SpecialItem.ADD_NEW_DROP).equals(itemStack)) {
-            lb.getDroppableItems().add(new LuckyBlockDrop());
-            manager.setMenuData(manager.getMenuData().with(lb.getDroppableItems().get(lb.getDroppableItems().size() - 1)));
-            manager.open(view.getPlayer(), MenuType.EDIT_LOOT);
-            return;
-        }
-        if (new MenuItem().of(MenuItem.SpecialItem.REMOVE_ALL_DROPS).equals(itemStack)) {
-            manager.setMenuData(manager.getMenuData().with(lb));
-            manager.open(manager.getPlayer(), new ConfirmMenu(manager).request(ConfirmMenu.ConfirmAction.REMOVE_ALL_DROPS).returnTo(type()));
-            return;
-        }
-        if (new MenuItem().of(MenuItem.SpecialItem.DELETE_LUCKY_BLOCK).equals(itemStack)) {
-            manager.setMenuData(manager.getMenuData().with(lb));
-            manager.open(manager.getPlayer(), new ConfirmMenu(manager).request(ConfirmMenu.ConfirmAction.REMOVE_LUCKY_BLOCK).returnTo(type()));
+            manager.open(view.getPlayer(), MenuType.USER_LIST_LOOT);
             return;
         }
         // Back Page Button
@@ -129,7 +109,7 @@ public class DropsMenu extends MenuBuilder {
 
         // Exit
         if (new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).equals(itemStack)) {
-            manager.open(view.getPlayer(), MenuType.LIST_LUCKY_BLOCKS);
+            manager.open(view.getPlayer(), MenuType.USER_LIST_LUCKY_BLOCKS);
         }
     }
 }

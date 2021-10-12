@@ -2,8 +2,9 @@ package devjluvisi.mlb.cmds.lb;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;
-import devjluvisi.mlb.api.gui.Menu;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.menus.MenuManager;
@@ -14,8 +15,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Arrays;
 
 /**
  * "/mlb drops" Will display all possible drops to the user (GUI) based on the
@@ -57,50 +56,46 @@ public record DropsCommand(MoreLuckyBlocks plugin) implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
+    public CommandResult perform(CommandSender sender, String[] args) {
 
-        Player p = (Player)sender;
+        Player p = (Player) sender;
         ItemStack item = p.getInventory().getItemInMainHand();
         LuckyBlock lb;
         MenuManager manager = new MenuManager(plugin);
 
-        if(args.length == 1) {
-            if(item.getItemMeta() == null || !plugin.getLuckyBlocks().contains(plugin.getMetaFactory().createCustomMeta(item.getItemMeta()).getString(PluginConstants.LuckyIdentifier))) {
+        if (args.length == 1) {
+            if (item.getItemMeta() == null || !plugin.getLuckyBlocks().contains(plugin.getMetaFactory().createCustomMeta(item.getItemMeta()).getString(PluginConstants.LuckyIdentifier))) {
                 p.sendMessage(ChatColor.RED + "You must hold a valid lucky block in your hand.\nOr use: /mlb drops <name>");
-                return ExecutionResult.PASSED;
+                return new CommandResult(ResultType.PASSED);
             }
             String name = plugin.getMetaFactory().createCustomMeta(item.getItemMeta()).getString(PluginConstants.LuckyIdentifier);
             lb = plugin.getLuckyBlocks().get(name);
             manager.setMenuData(new MenuResource().with(lb));
             manager.open(p, MenuType.LIST_DROPS);
 
-        }else if(args.length == 2) {
-            if(!plugin.getLuckyBlocks().contains(Util.makeInternal(args[1]))) {
-                p.sendMessage(ChatColor.RED + "Could not find lucky block: " + args[1]);
-                return ExecutionResult.PASSED;
+        } else if (args.length == 2) {
+            if (!plugin.getLuckyBlocks().contains(Util.makeInternal(args[1]))) {
+                return new CommandResult(ResultType.INVALID_LUCKY_BLOCK, args[1]);
             }
             lb = plugin.getLuckyBlocks().get(Util.makeInternal(args[1]));
             manager.setMenuData(new MenuResource().with(lb));
             manager.open(p, MenuType.LIST_DROPS);
-        }else if(args.length == 3) {
-            if(!plugin.getLuckyBlocks().contains(Util.makeInternal(args[1]))) {
-                p.sendMessage(ChatColor.RED + "Could not find lucky block: " + args[1]);
-                return ExecutionResult.PASSED;
+        } else if (args.length == 3) {
+            if (!plugin.getLuckyBlocks().contains(Util.makeInternal(args[1]))) {
+                return new CommandResult(ResultType.INVALID_LUCKY_BLOCK, args[1]);
             }
-            if(!Util.isNumber(args[2])) {
-                return ExecutionResult.BAD_ARGUMENT_TYPE;
+            if (!Util.isNumber(args[2])) {
+                return new CommandResult(ResultType.BAD_ARGUMENT_TYPE, args[2]);
             }
-            if(!new Range(0, plugin.getLuckyBlocks().get(args[1]).getDroppableItems().size()-1).isInRange(Util.toNumber(args[2]))) {
+            if (!new Range(0, plugin.getLuckyBlocks().get(args[1]).getDroppableItems().size() - 1).isInRange(Util.toNumber(args[2]))) {
                 sender.sendMessage(ChatColor.RED + "Lucky block " + args[1] + " only has " + (plugin.getLuckyBlocks().get(args[1]).getDroppableItems().size()) + " drops (including drop zero).");
-                return ExecutionResult.PASSED;
+                return new CommandResult(ResultType.PASSED);
             }
             lb = plugin.getLuckyBlocks().get(Util.makeInternal(args[1]));
             manager.setMenuData(new MenuResource().with(lb).with(lb.getDroppableItems().get(Integer.parseInt(args[2]))));
             manager.open(p, MenuType.LIST_LOOT);
         }
-
-
-        return ExecutionResult.PASSED;
+        return new CommandResult(ResultType.PASSED);
     }
 
 }

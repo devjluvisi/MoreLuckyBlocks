@@ -58,30 +58,6 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
         this.structure = null;
     }
 
-    public ArrayList<LuckyBlockItem> getItems() {
-        return this.items;
-    }
-
-    public void setItems(ArrayList<LuckyBlockItem> items) {
-        this.items = items;
-    }
-
-    public ArrayList<LuckyBlockCommand> getCommands() {
-        return this.commands;
-    }
-
-    public void setCommands(ArrayList<LuckyBlockCommand> commands) {
-        this.commands = commands;
-    }
-
-    public ArrayList<LuckyBlockPotionEffect> getPotionEffects() {
-        return this.potionEffects;
-    }
-
-    public void setPotionEffects(ArrayList<LuckyBlockPotionEffect> potionEffects) {
-        this.potionEffects = potionEffects;
-    }
-
     public float getRarity() {
         return this.rarity;
     }
@@ -112,23 +88,6 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
         return !Objects.isNull(this.structure);
     }
 
-    /**
-     * @return An array list of all of the drops from the luckyblock under the
-     * parent "DropProperty" interface.
-     */
-    public ArrayList<LootProperty> getLoot() {
-        final ArrayList<LootProperty> drops = new ArrayList<>();
-        // TODO: Exclude potions which are still being edited.
-        drops.addAll(this.items);
-        drops.addAll(this.potionEffects);
-        drops.addAll(this.commands);
-        return drops;
-    }
-
-    public LootProperty getDrop(ItemStack lootAsItem) {
-        return getLoot().stream().filter(e -> e.asItem().equals(lootAsItem)).findFirst().orElse(null);
-    }
-
     public void removeLoot(ItemStack lootAsItem) {
         Validate.notNull(lootAsItem, "Attempted to remove \"null\" from a loot list (removeLoot)");
         final LootProperty loot = getDrop(lootAsItem);
@@ -142,6 +101,23 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
         if (loot instanceof LuckyBlockCommand) {
             this.commands.remove(loot);
         }
+    }
+
+    public LootProperty getDrop(ItemStack lootAsItem) {
+        return getLoot().stream().filter(e -> e.asItem().equals(lootAsItem)).findFirst().orElse(null);
+    }
+
+    /**
+     * @return An array list of all of the drops from the luckyblock under the
+     * parent "DropProperty" interface.
+     */
+    public ArrayList<LootProperty> getLoot() {
+        final ArrayList<LootProperty> drops = new ArrayList<>();
+        // TODO: Exclude potions which are still being edited.
+        drops.addAll(this.items);
+        drops.addAll(this.potionEffects);
+        drops.addAll(this.commands);
+        return drops;
     }
 
     public void applyTo(Location blockLocation, Player p) {
@@ -191,10 +167,28 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
         blocksYaml.getConfig().set(path + ".commands", commandStringList);
     }
 
-    @Override
-    public String toString() {
-        return "LuckyBlockDrop [items=" + this.items + ", commands=" + this.commands + ", potionEffects="
-                + this.potionEffects + ", rarity=" + this.rarity + "]";
+    public ArrayList<LuckyBlockItem> getItems() {
+        return this.items;
+    }
+
+    public void setItems(ArrayList<LuckyBlockItem> items) {
+        this.items = items;
+    }
+
+    public ArrayList<LuckyBlockPotionEffect> getPotionEffects() {
+        return this.potionEffects;
+    }
+
+    public ArrayList<LuckyBlockCommand> getCommands() {
+        return this.commands;
+    }
+
+    public void setCommands(ArrayList<LuckyBlockCommand> commands) {
+        this.commands = commands;
+    }
+
+    public void setPotionEffects(ArrayList<LuckyBlockPotionEffect> potionEffects) {
+        this.potionEffects = potionEffects;
     }
 
     /**
@@ -224,6 +218,13 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
         d.rarity = this.rarity;
         return d;
     }
+
+    @Override
+    public String toString() {
+        return "LuckyBlockDrop [items=" + this.items + ", commands=" + this.commands + ", potionEffects="
+                + this.potionEffects + ", rarity=" + this.rarity + "]";
+    }
+
 
     @Override
     public int hashCode() {

@@ -28,17 +28,17 @@ public abstract class Menu {
     }
 
     /**
+     * @return the number of pages
+     */
+    public abstract int getPageCount();
+
+    /**
      * Gets a array that contains all the pages. This is just a copy of the original
      * array, all the changes would be discarded.
      *
      * @return an array that contains all the pages
      */
     public abstract Page[] getPages();
-
-    /**
-     * @return the number of pages
-     */
-    public abstract int getPageCount();
 
     /**
      * Open the menu to the player.

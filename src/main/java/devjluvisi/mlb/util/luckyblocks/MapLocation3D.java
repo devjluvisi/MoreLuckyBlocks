@@ -69,12 +69,12 @@ public final class MapLocation3D {
         this.world = world;
     }
 
-    public World getBukkitWorld() {
-        return Bukkit.getServer().getWorld(this.world);
-    }
-
     public Block getBlock() {
         return new Location(this.getBukkitWorld(), this.x, this.y, this.z).getBlock();
+    }
+
+    public World getBukkitWorld() {
+        return Bukkit.getServer().getWorld(this.world);
     }
 
     public boolean equals(Location location) {
@@ -84,7 +84,7 @@ public final class MapLocation3D {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.x, this.y, this.z, this.world);
+        return (int) (x + y + z + world.hashCode());
     }
 
     @Override

@@ -44,33 +44,25 @@ public class ConfigManager {
     }
 
     /**
-     * Saves the YAML configuration file and reloads its contents. Note that this
-     * method DOES NOT save comments below the header comment in the file. As a
-     * result, this method should not be called on config files it should only be
-     * called on data files that do not need comments.
-     */
-    public void save() {
-        try {
-            this.yamlConfig.save(this.configFile);
-            this.reload(); // Reload the config on the server now that the file has been saved.
-        } catch (final IOException e) {
-            this.plugin.getLogger()
-                    .severe("Could not save config file: " + this.configFile.getName() + ". No data was written.");
-        }
-    }
-
-    /**
-     * Reloads the YAML configuration file. Keeps Comments.
-     */
-    public void reload() {
-        this.yamlConfig = YamlConfiguration.loadConfiguration(new File(this.plugin.getDataFolder(), this.name));
-    }
-
-    /**
      * @return The configuration object for Spigot.
      */
     public YamlConfiguration getConfig() {
         return this.yamlConfig;
+    }
+
+    /**
+     * Get a string from a node in the configuration file. Allows the declaration of
+     * placeholders and a string to replace them with. Placeholders are replaced
+     * using the fast {@link StringUtils} class. Parses '&' color codes
+     * automatically.
+     *
+     * @param node         The configuration node to search
+     * @param placeHolders A map of all placeholders.
+     * @return The new string to send to the player.
+     */
+    public String getString(String node, Map<String, String> placeHolders) {
+        return StringUtils.replaceEachRepeatedly(this.getString(node), placeHolders.keySet().toArray(new String[0]),
+                placeHolders.values().toArray(new String[0]));
     }
 
     /**
@@ -87,21 +79,6 @@ public class ConfigManager {
             this.plugin.getLogger().severe("CONFIG EXCEPTION: Could not read String Value at node: " + node);
             return ChatColor.RED + "Error with message. Contact a server administrator for more help.";
         }
-    }
-
-    /**
-     * Get a string from a node in the configuration file. Allows the declaration of
-     * placeholders and a string to replace them with. Placeholders are replaced
-     * using the fast {@link StringUtils} class. Parses '&' color codes
-     * automatically.
-     *
-     * @param node         The configuration node to search
-     * @param placeHolders A map of all placeholders.
-     * @return The new string to send to the player.
-     */
-    public String getString(String node, Map<String, String> placeHolders) {
-        return StringUtils.replaceEachRepeatedly(this.getString(node), placeHolders.keySet().toArray(new String[0]),
-                placeHolders.values().toArray(new String[0]));
     }
 
     /**
@@ -136,14 +113,32 @@ public class ConfigManager {
      * @param value The value to set.
      */
     public void setValue(String node, Object value) {
+        this.yamlConfig.set(node, value);
+        save();
+        reload();
+    }
+
+    /**
+     * Saves the YAML configuration file and reloads its contents. Note that this
+     * method DOES NOT save comments below the header comment in the file. As a
+     * result, this method should not be called on config files it should only be
+     * called on data files that do not need comments.
+     */
+    public void save() {
         try {
-            this.yamlConfig.set(node, value);
             this.yamlConfig.save(this.configFile);
+            this.reload(); // Reload the config on the server now that the file has been saved.
         } catch (final IOException e) {
-            this.plugin.getLogger().severe("ERROR: Could not save value to configuration file.");
-            this.plugin.getLogger().severe("Could not write data to " + node);
-            this.plugin.getLogger().severe(e.getMessage());
+            this.plugin.getLogger()
+                    .severe("Could not save config file: " + this.configFile.getName() + ". No data was written.");
         }
+    }
+
+    /**
+     * Reloads the YAML configuration file. Keeps Comments.
+     */
+    public void reload() {
+        this.yamlConfig = YamlConfiguration.loadConfiguration(new File(this.plugin.getDataFolder(), this.name));
     }
 
 }

@@ -11,6 +11,7 @@ public class MenuResource {
 
     public MenuResource() {
     }
+
     public MenuResource with(LuckyBlock lb) {
         Validate.isTrue(lb != null, "Lucky block passed through MenuResource was null.");
         this.lb = lb;

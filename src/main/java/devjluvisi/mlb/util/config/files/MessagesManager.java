@@ -1,5 +1,8 @@
 package devjluvisi.mlb.util.config.files;
 
+import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.util.config.ConfigManager;
+
 /**
  * Manages all possible data which is accessed through the "messages.yml" file.
  * Communicates directly with the configuration file from the plugin. The values
@@ -8,6 +11,9 @@ package devjluvisi.mlb.util.config.files;
  *
  * @author jacob
  */
-public final class MessagesManager {
+public final class MessagesManager extends ConfigManager {
+    public MessagesManager(MoreLuckyBlocks plugin) {
+        super(plugin, "messages.yml");
+    }
 
 }

@@ -1,7 +1,6 @@
 package devjluvisi.mlb.menus.admin;
 
 import devjluvisi.mlb.api.gui.MenuView;
-import devjluvisi.mlb.api.gui.pages.PageType;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.blocks.drops.LootProperty;
@@ -15,9 +14,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
-public class LootMenu extends MenuBuilder  {
+public class LootMenu extends MenuBuilder {
 
     private LuckyBlock lb;
     private LuckyBlockDrop lbDrop;
@@ -29,7 +27,7 @@ public class LootMenu extends MenuBuilder  {
 
     @Override
     public ItemStack[][] getContent(ItemStack[][] content) {
-        setMenuName("Viewing Loot: #"+ manager.getMenuData().getLuckyBlock().indexOf(manager.getMenuData().getDrop()));
+        setMenuName("Viewing Loot: #" + manager.getMenuData().getLuckyBlock().indexOf(manager.getMenuData().getDrop()));
         this.lb = manager.getMenuData().getLuckyBlock();
         this.lbDrop = manager.getMenuData().getDrop();
 
@@ -72,8 +70,13 @@ public class LootMenu extends MenuBuilder  {
     }
 
     @Override
+    public MenuType type() {
+        return MenuType.LIST_LOOT;
+    }
+
+    @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-        if(itemStack == null) return;
+        if (itemStack == null) return;
         if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.EDIT_DROP).asItem())) {
             manager.open(manager.getPlayer(), MenuType.EDIT_LOOT);
             return;
@@ -97,10 +100,5 @@ public class LootMenu extends MenuBuilder  {
             return;
         }
 
-    }
-
-    @Override
-    public MenuType type() {
-        return MenuType.LIST_LOOT;
     }
 }

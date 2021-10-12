@@ -3,6 +3,8 @@ package devjluvisi.mlb.cmds.admin.struct;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.Range;
@@ -56,7 +58,7 @@ public class StructureCommand implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
+    public CommandResult perform(CommandSender sender, String[] args) {
         final Player p = (Player) sender;
         if (args.length == 1) {
             sender.sendMessage("");
@@ -95,13 +97,14 @@ public class StructureCommand implements SubCommand {
             sender.sendMessage(
                     ChatColor.LIGHT_PURPLE + "/mlb struct help " + ChatColor.GRAY + "for a list of commands.");
             sender.sendMessage("");
-            return ExecutionResult.PASSED;
+            return new CommandResult(ResultType.PASSED);
         }
 
         if (args.length == 2) {
 
             final ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
             final BookMeta meta = (BookMeta) book.getItemMeta();
+            assert meta != null;
             meta.setAuthor("MoreLuckyBlocks");
             meta.setTitle("Struct Tutorial");
 
@@ -158,29 +161,28 @@ public class StructureCommand implements SubCommand {
                 p.openBook(book);
             } else {
                 p.performCommand("mlb struct help");
-                return ExecutionResult.PASSED;
+                return new CommandResult(ResultType.PASSED);
             }
         }
         if (args.length == 4) {
             final String internalName = Util.makeInternal(args[2]);
             final int dropIndex = (int) Util.toNumber(args[3]);
             if (!this.plugin.getLuckyBlocks().contains(internalName)) {
-                sender.sendMessage(ChatColor.RED + "Lucky block " + args[2] + " does not exist.");
-                return ExecutionResult.PASSED;
+                return new CommandResult(ResultType.INVALID_LUCKY_BLOCK, args[2]);
             }
             final LuckyBlock lb = this.plugin.getLuckyBlocks().get(internalName);
 
             if (!(new Range(0, lb.getDroppableItems().size()).isInRange(dropIndex))) {
                 sender.sendMessage(ChatColor.RED + "Request drop index of " + dropIndex
                         + " is out of range for lucky block " + lb.getInternalName());
-                return ExecutionResult.PASSED;
+                return new CommandResult(ResultType.PASSED);
             }
             final LuckyBlockDrop selectedDrop = lb.getDroppableItems().get(dropIndex);
 
             if (args[1].equalsIgnoreCase("edit")) {
                 if (this.plugin.getServerDropStructure().hasEditingPlayer()) {
                     p.sendMessage(ChatColor.RED + "There is already a player editing a lucky block structure.");
-                    return ExecutionResult.PASSED;
+                    return new CommandResult(ResultType.PASSED);
                 }
                 this.plugin.getServerDropStructure().update(lb, selectedDrop, p);
             } else if (args[1].equalsIgnoreCase("has")) {
@@ -195,9 +197,9 @@ public class StructureCommand implements SubCommand {
                 p.performCommand("mlb struct help");
             }
         } else {
-            return ExecutionResult.PASSED;
+            return new CommandResult(ResultType.PASSED);
         }
-        return ExecutionResult.PASSED;
+        return new CommandResult(ResultType.PASSED);
     }
 
 }

@@ -2,7 +2,8 @@ package devjluvisi.mlb.cmds.lb;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
-import devjluvisi.mlb.blocks.LuckyBlockDrop;
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.Range;
@@ -56,10 +57,9 @@ public record InfoCommand(MoreLuckyBlocks plugin) implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
+    public CommandResult perform(CommandSender sender, String[] args) {
         if (!this.plugin.getLuckyBlocks().contains(Util.makeInternal(args[1]))) {
-            sender.sendMessage("Could not find lucky block " + args[1] + ".");
-            return ExecutionResult.PASSED;
+            return new CommandResult(ResultType.INVALID_LUCKY_BLOCK, args[1]);
         }
 
         final LuckyBlock lb = this.plugin.getLuckyBlocks().get(Util.makeInternal(args[1]));
@@ -82,7 +82,7 @@ public record InfoCommand(MoreLuckyBlocks plugin) implements SubCommand {
         sender.sendMessage(ChatColor.ITALIC + "-- Drops --");
         ArrayList<TextComponent> drops = new ArrayList<>();
 
-        for(int i = 0; i < lb.getDroppableItems().size() && i < 50; i++) {
+        for (int i = 0; i < lb.getDroppableItems().size() && i < 50; i++) {
             TextComponent txtComponent = new TextComponent();
             txtComponent.addExtra("[");
             txtComponent.addExtra(String.valueOf(i));
@@ -103,7 +103,7 @@ public record InfoCommand(MoreLuckyBlocks plugin) implements SubCommand {
             sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to break this lucky block.");
         }
 
-        return ExecutionResult.PASSED;
+        return new CommandResult(ResultType.PASSED);
     }
 
 }

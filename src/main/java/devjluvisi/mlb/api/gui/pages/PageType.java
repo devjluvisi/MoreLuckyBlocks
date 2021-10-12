@@ -25,27 +25,6 @@ public enum PageType {
     }
 
     /**
-     * @return the number of rows
-     */
-    public int getRow() {
-        return this.row;
-    }
-
-    /**
-     * @return the number of columns
-     */
-    public int getColumn() {
-        return this.column;
-    }
-
-    /**
-     * @return the number of slots
-     */
-    public int getSize() {
-        return this.row * this.column;
-    }
-
-    /**
      * Gets the 2D coordinates of the item with a given index.
      *
      * @param index the index of the item in the content array
@@ -56,6 +35,13 @@ public enum PageType {
     }
 
     /**
+     * @return the number of rows
+     */
+    public int getRow() {
+        return this.row;
+    }
+
+    /**
      * Gets the index the item with coordinates.
      *
      * @param coords2D the coordinates of the item
@@ -63,6 +49,13 @@ public enum PageType {
      */
     public int getIndexFrom2D(Coords2D coords2D) {
         return (this.getColumn() * coords2D.getY()) + coords2D.getX();
+    }
+
+    /**
+     * @return the number of columns
+     */
+    public int getColumn() {
+        return this.column;
     }
 
     /**
@@ -91,6 +84,23 @@ public enum PageType {
         }
 
         return rtn;
+    }
+
+    /**
+     * @return the number of slots
+     */
+    public int getSize() {
+        return this.row * this.column;
+    }
+
+    /**
+     * Gets a blank array (filled with null) with the shape of the page. It gives a
+     * 2-dimensional array (an array of rows).
+     *
+     * @return an array
+     */
+    public ItemStack[][] getBlank2DArray() {
+        return new ItemStack[this.getRow()][this.getColumn()];
     }
 
     /**
@@ -134,16 +144,6 @@ public enum PageType {
      */
     public ItemStack[] getBlankArray() {
         return new ItemStack[this.getSize()];
-    }
-
-    /**
-     * Gets a blank array (filled with null) with the shape of the page. It gives a
-     * 2-dimensional array (an array of rows).
-     *
-     * @return an array
-     */
-    public ItemStack[][] getBlank2DArray() {
-        return new ItemStack[this.getRow()][this.getColumn()];
     }
 
     /**

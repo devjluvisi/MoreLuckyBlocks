@@ -50,10 +50,6 @@ public class PlayerData {
         return this;
     }
 
-    public boolean isNull() {
-        return Objects.isNull(this.UUID);
-    }
-
     public final float getLuck() {
         return this.luck;
     }
@@ -70,6 +66,13 @@ public class PlayerData {
         this.UUID = uUID;
     }
 
+    public OfflinePlayer getOfflinePlayer() {
+        if (this.isOnline()) {
+            return null;
+        }
+        return Bukkit.getOfflinePlayer(this.UUID);
+    }
+
     public boolean isOnline() {
         if (this.isNull()) {
             return true;
@@ -77,21 +80,8 @@ public class PlayerData {
         return Objects.isNull(Bukkit.getPlayer(this.UUID));
     }
 
-    /**
-     * @return Bukkit representation of the player.
-     */
-    public Player getPlayer() {
-        if (!this.isOnline()) {
-            return null;
-        }
-        return Bukkit.getPlayer(this.UUID);
-    }
-
-    public OfflinePlayer getOfflinePlayer() {
-        if (this.isOnline()) {
-            return null;
-        }
-        return Bukkit.getOfflinePlayer(this.UUID);
+    public boolean isNull() {
+        return Objects.isNull(this.UUID);
     }
 
     /**
@@ -115,6 +105,16 @@ public class PlayerData {
         playersYaml.getConfig().set("players." + this.UUID + ".luck", String.valueOf(this.luck));
         playersYaml.save();
         playersYaml.reload();
+    }
+
+    /**
+     * @return Bukkit representation of the player.
+     */
+    public Player getPlayer() {
+        if (!this.isOnline()) {
+            return null;
+        }
+        return Bukkit.getPlayer(this.UUID);
     }
 
     @Override

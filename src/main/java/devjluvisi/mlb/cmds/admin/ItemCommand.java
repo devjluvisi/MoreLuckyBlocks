@@ -1,5 +1,7 @@
 package devjluvisi.mlb.cmds.admin;
 
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
 import net.md_5.bungee.api.ChatColor;
@@ -45,12 +47,12 @@ public class ItemCommand implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
+    public CommandResult perform(CommandSender sender, String[] args) {
         final Player p = (Player) sender;
         p.getInventory().getItemInMainHand();
         if (p.getInventory().getItemInMainHand().getType().isAir()) {
             p.sendMessage(ChatColor.RED + "You must hold an item to set.");
-            return ExecutionResult.PASSED;
+            return new CommandResult(ResultType.PASSED);
         }
         final ItemStack i = p.getInventory().getItemInMainHand();
         final ItemMeta meta = i.getItemMeta();
@@ -77,10 +79,10 @@ public class ItemCommand implements SubCommand {
             meta.setLore(lore);
             p.sendMessage(ChatColor.AQUA + "Lore has been set.");
         } else {
-            return ExecutionResult.BAD_ARGUMENT_TYPE;
+            return new CommandResult(ResultType.BAD_USAGE);
         }
         i.setItemMeta(meta);
-        return ExecutionResult.PASSED;
+        return new CommandResult(ResultType.PASSED);
     }
 
 }

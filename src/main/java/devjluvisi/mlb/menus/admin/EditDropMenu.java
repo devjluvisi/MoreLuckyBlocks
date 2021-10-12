@@ -19,9 +19,8 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 
-public class EditDropMenu extends MenuBuilder  {
+public class EditDropMenu extends MenuBuilder {
 
     private LuckyBlock lb;
     private LuckyBlockDrop lbDrop;
@@ -32,10 +31,6 @@ public class EditDropMenu extends MenuBuilder  {
     public EditDropMenu(MenuManager manager) {
         super(manager, "Editing Drop", PageType.CHEST);
         this.addPotionEffectStage = 0;
-    }
-
-    private boolean canAddItems() {
-        return lbDrop.getLoot().size() >= PluginConstants.MAX_LOOT_AMOUNT;
     }
 
     @Override
@@ -81,21 +76,26 @@ public class EditDropMenu extends MenuBuilder  {
     }
 
     @Override
+    public MenuType type() {
+        return MenuType.EDIT_LOOT;
+    }
+
+    @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-        if(itemStack == null) return;
-        if(clickType == ClickType.SHIFT_LEFT) {
-            if(isPlayerSlot(slot)) {
-                if(canAddItems()) {
+        if (itemStack == null) return;
+        if (clickType == ClickType.SHIFT_LEFT) {
+            if (isPlayerSlot(slot)) {
+                if (canAddItems()) {
                     manager.getPlayer().sendMessage(ChatColor.RED + "You are only allowed to add up to "
                             + PluginConstants.MAX_LOOT_AMOUNT + " items per drop.");
                     return;
                 }
-               lbDrop.getItems().add(new LuckyBlockItem(itemStack));
-            }else{
+                lbDrop.getItems().add(new LuckyBlockItem(itemStack));
+            } else {
                 if (!(((slot >= 2) && (slot <= 8)) || ((slot >= 11) && (slot <= 17)))) {
                     return;
                 }
-               lbDrop.removeLoot(itemStack);
+                lbDrop.removeLoot(itemStack);
             }
             view.reopen();
             return;
@@ -104,7 +104,7 @@ public class EditDropMenu extends MenuBuilder  {
             manager.getPlayer().performCommand("mlb config save");
             return;
         }
-        if(itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.ADD_COMMAND).asItem())) {
+        if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.ADD_COMMAND).asItem())) {
             if (this.canAddItems()) {
                 manager.getPlayer().sendMessage(ChatColor.RED + "You are only allowed to add up to "
                         + PluginConstants.MAX_LOOT_AMOUNT + " items per drop.");
@@ -122,7 +122,7 @@ public class EditDropMenu extends MenuBuilder  {
             view.close();
             return;
         }
-        if(itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.ADD_POTION_EFFECT).asItem())) {
+        if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.ADD_POTION_EFFECT).asItem())) {
             if (this.canAddItems()) {
                 manager.getPlayer().sendMessage(ChatColor.RED + "You are only allowed to add up to "
                         + PluginConstants.MAX_LOOT_AMOUNT + " items per drop.");
@@ -142,13 +142,21 @@ public class EditDropMenu extends MenuBuilder  {
             view.close();
 
         }
-        if(itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.ADD_STRUCTURE).asItem())) {
+        if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.ADD_STRUCTURE).asItem())) {
             manager.getPlayer().performCommand("mlb struct");
             view.close();
         }
-        if(itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem())) {
+        if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem())) {
             manager.open(manager.getPlayer(), MenuType.LIST_LOOT);
         }
+    }
+
+    private boolean canAddItems() {
+        return lbDrop.getLoot().size() >= PluginConstants.MAX_LOOT_AMOUNT;
+    }
+
+    public int getDropIndex() {
+        return lb.indexOf(lbDrop);
     }
 
     public MenuResource getResource() {
@@ -159,20 +167,11 @@ public class EditDropMenu extends MenuBuilder  {
         return manager.getPlugin().getLuckyBlocks().indexOf(lb);
     }
 
-    public int getDropIndex() {
-        return lb.indexOf(lbDrop);
-    }
-
     public int getAddPotionEffectStage() {
         return this.addPotionEffectStage;
     }
 
     public void setAddPotionEffectStage(int addPotionEffectStage) {
         this.addPotionEffectStage = addPotionEffectStage;
-    }
-
-    @Override
-    public MenuType type() {
-        return MenuType.EDIT_LOOT;
     }
 }

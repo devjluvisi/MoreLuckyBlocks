@@ -7,7 +7,6 @@ import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Location;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -42,130 +41,20 @@ public final class LuckyAudit {
     }
 
     /**
-     * @param checkingLocation Location on the server.
-     * @return If there is a lucky block at the specified location.
+     * Pulls all of the block data from "block-data.yml" and converts it
+     * into objects.
      */
-    public boolean isLuckyBlock(Location checkingLocation) {
-        Validate.notNull(checkingLocation);
-        return this.luckyBlockMap.containsKey(new MapLocation3D(checkingLocation)) && (checkingLocation.getBlock()
-                .getType() == this.luckyBlockMap.get(new MapLocation3D(checkingLocation)).getBlockMaterial());
-    }
-
-
-
-    /**
-     * Finds a lucky block at a given location.
-     *
-     * @param loc A specified location.
-     * @return The lucky block as an object.
-     */
-    public LuckyBlock find(MapLocation3D loc) {
-        final LuckyValues lv = this.luckyBlockMap.get(loc);
-
-        final int hash = lv.getLuckyBlockHash();
-        final float blockLuck = lv.getBlockLuck();
-
-        for (final LuckyBlock lb : this.plugin.getLuckyBlocks()) {
-            if (lb.hashCode() == hash) {
-                lb.setBlockLuck(blockLuck);
-                return lb;
+    private void pullFromConfig() {
+        long index = 0;
+        while (this.worldDataYaml.getConfig().get("locations." + index) != null) {
+            final String val = (String) this.worldDataYaml.getConfig().get("locations." + index);
+            if (this.deserializeEntry(val) == null) {
+                index++;
+                continue;
             }
+            this.luckyBlockMap.put(Objects.requireNonNull(this.deserializeEntry(val)).getKey(), Objects.requireNonNull(this.deserializeEntry(val)).getValue());
+            index++;
         }
-        return null;
-    }
-
-    /**
-     * Finds a lucky block at a given location.
-     *
-     * @param loc A specified location.
-     * @return The lucky block as an object.
-     */
-    public LuckyBlock find(Location loc) {
-        Validate.notNull(loc);
-        return this.find(new MapLocation3D(loc));
-    }
-
-    public float getBlockLuck(Location loc) {
-        Validate.notNull(loc);
-        return this.luckyBlockMap.get(new MapLocation3D(loc)).getBlockLuck();
-    }
-
-    public ConcurrentHashMap<MapLocation3D, LuckyValues> getMap() {
-        return this.luckyBlockMap;
-    }
-
-    public void put(Location l, LuckyBlock lb) {
-        Validate.notNull(l);
-        Validate.notNull(lb);
-        this.luckyBlockMap.put(new MapLocation3D(l),
-                new LuckyValues(lb.getBlockMaterial(), lb.hashCode(), lb.getBlockLuck()));
-        // this.writeAll();
-    }
-
-    public void put(MapLocation3D l, LuckyBlock lb) {
-        Validate.notNull(l);
-        Validate.notNull(lb);
-        this.luckyBlockMap.put(l,
-                new LuckyValues(lb.getBlockMaterial(), lb.hashCode(), lb.getBlockLuck()));
-    }
-
-    public void remove(Location l) {
-        Validate.notNull(l);
-        this.luckyBlockMap.remove(new MapLocation3D(l));
-        // this.writeAll();
-    }
-
-    public void removeAll(LuckyBlock block) {
-        for(Map.Entry<MapLocation3D, LuckyValues> entry : luckyBlockMap.entrySet()) {
-            if(entry.getValue().getLuckyBlockHash() == block.hashCode()) {
-                luckyBlockMap.remove(entry.getKey());
-            }
-        }
-    }
-
-    public void removeAll() {
-        this.luckyBlockMap.clear();
-    }
-
-//	public void removeAll(LuckyBlock block) {
-//
-//	}
-//
-//	public void writeNew(Location loc, LuckyBlock block) {
-//
-//	}
-
-    public String serializeEntry(MapLocation3D key, LuckyValues value) {
-        final StringBuilder str = new StringBuilder();
-        str.append("[{");
-        str.append(key.getX());
-        str.append(",");
-        str.append(key.getY());
-        str.append(",");
-        str.append(key.getZ());
-        str.append(",");
-        str.append(key.getWorld());
-        str.append("},{");
-        str.append(value.getBlockLuck());
-        str.append(",");
-        str.append(value.getLuckyBlockHash());
-        str.append("}]");
-        return str.toString();
-    }
-
-    /**
-     * Search all cached lucky blocks and find one by its hash code.
-     *
-     * @param hash The hash code of the block.
-     * @return LuckyBlock found as a {@link LuckyBlock} object.
-     */
-    private LuckyBlock search(int hash) {
-        for (final LuckyBlock lb : this.plugin.getLuckyBlocks()) {
-            if (lb.hashCode() == hash) {
-                return lb;
-            }
-        }
-        return null;
     }
 
     /**
@@ -207,6 +96,113 @@ public final class LuckyAudit {
     }
 
     /**
+     * Search all cached lucky blocks and find one by its hash code.
+     *
+     * @param hash The hash code of the block.
+     * @return LuckyBlock found as a {@link LuckyBlock} object.
+     */
+    private LuckyBlock search(int hash) {
+        for (final LuckyBlock lb : this.plugin.getLuckyBlocks()) {
+            if (lb.hashCode() == hash) {
+                return lb;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @param checkingLocation Location on the server.
+     * @return If there is a lucky block at the specified location.
+     */
+    public boolean isLuckyBlock(Location checkingLocation) {
+        Validate.notNull(checkingLocation);
+        return this.luckyBlockMap.containsKey(new MapLocation3D(checkingLocation)) && (checkingLocation.getBlock()
+                .getType() == this.luckyBlockMap.get(new MapLocation3D(checkingLocation)).getBlockMaterial());
+    }
+
+    /**
+     * Finds a lucky block at a given location.
+     *
+     * @param loc A specified location.
+     * @return The lucky block as an object.
+     */
+    public LuckyBlock find(Location loc) {
+        Validate.notNull(loc);
+        return this.find(new MapLocation3D(loc));
+    }
+
+    /**
+     * Finds a lucky block at a given location.
+     *
+     * @param loc A specified location.
+     * @return The lucky block as an object.
+     */
+    public LuckyBlock find(MapLocation3D loc) {
+        final LuckyValues lv = this.luckyBlockMap.get(loc);
+
+        final int hash = lv.getLuckyBlockHash();
+        final float blockLuck = lv.getBlockLuck();
+
+        for (final LuckyBlock lb : this.plugin.getLuckyBlocks()) {
+            if (lb.hashCode() == hash) {
+                lb.setBlockLuck(blockLuck);
+                return lb;
+            }
+        }
+        return null;
+    }
+
+    public float getBlockLuck(Location loc) {
+        Validate.notNull(loc);
+        return this.luckyBlockMap.get(new MapLocation3D(loc)).getBlockLuck();
+    }
+
+    public ConcurrentHashMap<MapLocation3D, LuckyValues> getMap() {
+        return this.luckyBlockMap;
+    }
+
+    public void put(Location l, LuckyBlock lb) {
+        Validate.notNull(l);
+        Validate.notNull(lb);
+        this.luckyBlockMap.put(new MapLocation3D(l),
+                new LuckyValues(lb.getBlockMaterial(), lb.hashCode(), lb.getBlockLuck()));
+        // this.writeAll();
+    }
+
+    public void put(MapLocation3D l, LuckyBlock lb) {
+        Validate.notNull(l);
+        Validate.notNull(lb);
+        this.luckyBlockMap.put(l,
+                new LuckyValues(lb.getBlockMaterial(), lb.hashCode(), lb.getBlockLuck()));
+    }
+
+//	public void removeAll(LuckyBlock block) {
+//
+//	}
+//
+//	public void writeNew(Location loc, LuckyBlock block) {
+//
+//	}
+
+    public void remove(Location l) {
+        Validate.notNull(l);
+        this.luckyBlockMap.remove(new MapLocation3D(l));
+        // this.writeAll();
+    }
+
+    public void removeAll(LuckyBlock block) {
+        for (Map.Entry<MapLocation3D, LuckyValues> entry : luckyBlockMap.entrySet()) {
+            if (entry.getValue().getLuckyBlockHash() == block.hashCode()) {
+                luckyBlockMap.remove(entry.getKey());
+            }
+        }
+    }
+
+    public void removeAll() {
+        this.luckyBlockMap.clear();
+    }
+
+    /**
      * Writes all data in the cached {@link LuckyAudit} to config.
      */
     public void writeAll() {
@@ -221,21 +217,22 @@ public final class LuckyAudit {
         this.worldDataYaml.reload();
     }
 
-    /**
-     * Pulls all of the block data from "block-data.yml" and converts it
-     * into objects.
-     */
-    private void pullFromConfig() {
-        long index = 0;
-        while (this.worldDataYaml.getConfig().get("locations." + index) != null) {
-            final String val = (String) this.worldDataYaml.getConfig().get("locations." + index);
-            if (this.deserializeEntry(val) == null) {
-                index++;
-                continue;
-            }
-            this.luckyBlockMap.put(Objects.requireNonNull(this.deserializeEntry(val)).getKey(), Objects.requireNonNull(this.deserializeEntry(val)).getValue());
-            index++;
-        }
+    public String serializeEntry(MapLocation3D key, LuckyValues value) {
+        final StringBuilder str = new StringBuilder();
+        str.append("[{");
+        str.append(key.getX());
+        str.append(",");
+        str.append(key.getY());
+        str.append(",");
+        str.append(key.getZ());
+        str.append(",");
+        str.append(key.getWorld());
+        str.append("},{");
+        str.append(value.getBlockLuck());
+        str.append(",");
+        str.append(value.getLuckyBlockHash());
+        str.append("}]");
+        return str.toString();
     }
 
     /**

@@ -2,6 +2,8 @@ package devjluvisi.mlb.cmds.admin;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.cmds.CommandResult;
+import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
 import net.md_5.bungee.api.ChatColor;
@@ -48,18 +50,17 @@ public record GiveCommand(MoreLuckyBlocks plugin) implements SubCommand {
     }
 
     @Override
-    public ExecutionResult perform(CommandSender sender, String[] args) {
+    public CommandResult perform(CommandSender sender, String[] args) {
 
         final Player p = Bukkit.getPlayerExact(args[1]);
 
         if (p == null) {
-            return ExecutionResult.INVALID_PLAYER;
+            return new CommandResult(ResultType.INVALID_PLAYER, args[1]);
         }
 
         final int index = this.plugin.getLuckyBlocks().indexOf(new LuckyBlock(args[2].toLowerCase()));
         if (index == -1) {
-            sender.sendMessage(ChatColor.RED + "Lucky block does not exist.");
-            return ExecutionResult.PASSED;
+            return new CommandResult(ResultType.INVALID_LUCKY_BLOCK, args[2]);
         }
         final LuckyBlock block = this.plugin.getLuckyBlocks().get(index);
 
@@ -75,13 +76,13 @@ public record GiveCommand(MoreLuckyBlocks plugin) implements SubCommand {
             }
 
         } catch (final NumberFormatException e) {
-            return ExecutionResult.BAD_ARGUMENT_TYPE;
+            return new CommandResult(ResultType.BAD_ARGUMENT_TYPE);
         }
 
         block.setBlockLuck(luck);
         p.getInventory().addItem(block.asItem(this.plugin, luck, amount));
         sender.sendMessage(ChatColor.GREEN + "Success!");
-        return ExecutionResult.PASSED;
+        return new CommandResult(ResultType.PASSED);
     }
 
 }
