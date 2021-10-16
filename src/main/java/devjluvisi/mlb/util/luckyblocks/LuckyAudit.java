@@ -210,14 +210,14 @@ public final class LuckyAudit {
         long index = 0;
         for (final Map.Entry<MapLocation3D, LuckyValues> entry : this.luckyBlockMap.entrySet()) {
             this.worldDataYaml.getConfig().set("locations." + index,
-                    this.serializeEntry(entry.getKey(), entry.getValue()));
+                    serializeEntry(entry.getKey(), entry.getValue()));
             index++;
         }
         this.worldDataYaml.save();
         this.worldDataYaml.reload();
     }
 
-    public String serializeEntry(MapLocation3D key, LuckyValues value) {
+    public static String serializeEntry(MapLocation3D key, LuckyValues value) {
         final StringBuilder str = new StringBuilder();
         str.append("[{");
         str.append(key.getX());

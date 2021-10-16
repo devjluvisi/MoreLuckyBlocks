@@ -8,6 +8,8 @@ package devjluvisi.mlb;
  */
 public interface PluginConstants {
 
+    byte SPLIT_LORE_LINE_THRESHOLD = 18;
+
     float LUCK_MIN_VALUE = -100.0F;
     float LUCK_MAX_VALUE = 100.0F;
 

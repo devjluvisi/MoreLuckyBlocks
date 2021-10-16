@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -168,7 +169,7 @@ public class MenuView implements Listener {
             // if (event.getRawSlot() >= this.getCurrentPage().getContent().length ||
             // event.getRawSlot() < 0) return;
 
-            if (event.isShiftClick() || event.isRightClick() || event.isLeftClick()) {
+            if (event.isShiftClick() || event.isRightClick() || event.isLeftClick() || event.getClick() == ClickType.MIDDLE || event.getClick() == ClickType.NUMBER_KEY) {
                 event.setCancelled(true);
             }
 

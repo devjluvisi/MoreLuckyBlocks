@@ -1,6 +1,2 @@
 # For managing exchanges between the server and players using /mlb exchange.
 exchanges:
-  default:
-    items:
-      - f
-      - f

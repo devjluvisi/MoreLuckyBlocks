@@ -1,39 +1,66 @@
 # A configuration file for all lucky blocks in MoreLuckyBlocks.
 # Version: v1.0
-lucky-blocks:
-  default:
-    item-name: "&6Lucky Block"
-    block: "DIAMOND_BLOCK"
-    # Lore placeholders:
-    # %luck%, %default_luck%, %internal_name%, %break_perm%
-    item-lore:
-      - "&7A mythical lucky block of luck &c%luck%"
-      - "&7Default Luck of &5%default_luck%"
-    permission: "mlb.block.default"
-    drops:
-      '0':
-        rarity: 65.0
-        items:
-          '0':
-            type: 'SPONGE'
-            amount: 64
-            enchants: "[SHARPNESS:1,UNBREAKING:3]"
-            display-name: "&cSuper Sponge"
-            lore:
-              - "&cLine 1"
-              - "Line 2"
-        commands:
-          - "/kill %player%"
-        potions:
-          - "[SPEED, 1, 100]"
-          - "[FAST_DIGGING, 56, 100]"
-      '1':
-        rarity: 65.0
-        items:
-          '0':
-            type: 'DIAMOND_SWORD'
-            amount: 1
-            enchants: "[SHARPNESS:5]"
-            display-name: "&4&lULTRA SWORD"
-            lore:
-              - "&7This sword is very good!"
+
+# DO NOT CHANGE
+major-config-version: 1.0
+
+# The max number of unopened lucky blocks before warning server administrators. (-1 for no warning)
+lucky-block-warning-threshold: 50000
+
+# Show the lucky block version message on join.
+join-message: true
+
+# Alert that a new update can be downloaded.
+new-update-message: true
+
+# Show whenever the plugin saves player and block data to config (specified by "data-save-interval")
+# Only shows to players with mlb.admin or mlb.admin.alert permission.
+show-saving-messages: false
+
+# Enable advanced permissions.
+# Advanced permissions are extended permission nodes for every command in MoreLuckyBlocks.
+# Ex: Instead of mlb.admin being the permission node for /mlb give and /mlb purge, the permission nodes would be mlb.admin.give and mlb.admin.purge (need both to do both commands)
+# With advanced permissions enabled, mlb.admin.* will allow all permissions for admin.
+advanced-permissions: false
+
+# Enable extra player data.
+# This will make the plugin track:
+# - The luck of the player.
+# - How many lucky blocks a player has broken
+# - How many they have placed.
+# - How "lucky" they are in the rarity of the drops they get.
+# By default, only "player luck" is tracked.
+use-extra-player-data: false
+
+# Players banned from breaking/placing lucky blocks.
+banned-players:
+  - player
+
+# Worlds to disable the placing/breaking of lucky blocks.
+disabled-worlds:
+  - test
+
+# Commands to disable for the plugin. Make sure just to use the subcommand name (ex. /mlb give would be "give")
+disabled-commands:
+  - example
+
+# Disabled lucky blocks which cannot be accessed on the server (still exist in blocks.yml)
+disabled-lucky-blocks:
+  - test
+
+# Which commands should play sounds when executed successfully?
+play-command-sounds:
+  - 'mlb test'
+  - 'mlb test2'
+
+# Which commands should play particles?
+show-command-particles:
+  - 'mlb test'
+  - 'mlb test2'
+
+# File Saving Config
+file-saving:
+  # Auto save edits to lucky blocks in game.
+  auto-save-edits: false
+  # Interval for saving worldData.yml in seconds.
+  data-save-interval: 60

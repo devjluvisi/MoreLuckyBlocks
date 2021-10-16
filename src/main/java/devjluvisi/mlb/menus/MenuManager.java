@@ -30,13 +30,13 @@ public class MenuManager {
             return null;
         }
         try {
-            return Objects.requireNonNull(menus.stream()
+            return Objects.requireNonNull(
+                    menus.stream()
                             .filter(e -> e.equals(type))
                             .findFirst()
                             .orElse(null))
                     .getMenuClass()
                     .getConstructor(MenuManager.class).newInstance(this);
-
         } catch (Exception e) {
             plugin.getServer().getLogger().severe("[CRITICAL] Could not parse menu requested via reflection. [type=" + type.name() + "]");
         }

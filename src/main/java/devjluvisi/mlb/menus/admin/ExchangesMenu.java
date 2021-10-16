@@ -34,7 +34,7 @@ public class ExchangesMenu extends MenuBuilder {
         }
         int itemIndex = 0;
         for (int i = 0; i < 4; i++) {
-            for (int j = 2; j < 9; j++) {
+            for (int j = 2; j < 8; j++) {
                 if (itemIndex == items.size()) break;
 
                 content[i][j] = items.get(itemIndex);
@@ -50,12 +50,16 @@ public class ExchangesMenu extends MenuBuilder {
                 .addLine("&7Editing exchange for " + lb.getInternalName())
                 .addLine("&9Shift+RC to add items to the exchange.")
                 .addLine("&3Shift+LC to remove items from the exchange.")
+                .addLine("Up to " + MAX_EXCHANGEABLE_ITEMS + " items are allowed.")
                 .addLine("&7Make sure to save your progress.")
                 .addLine("&7Exchanges can be redeemed with &2/mlb redeem").asItem();
         content[1][0] = new MenuItem().of(MenuItem.SpecialItem.SAVE_EXCHANGE).asItem();
         content[2][0] = new MenuItem().of(MenuItem.SpecialItem.DELETE_EXCHANGE).asItem();
         content[3][0] = new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem();
-
+        content[0][8] = MenuItem.blackPlaceholder().asItem();
+        content[1][8] = MenuItem.blackPlaceholder().asItem();
+        content[2][8] = MenuItem.blackPlaceholder().asItem();
+        content[3][8] = MenuItem.blackPlaceholder().asItem();
         return content;
     }
 
@@ -64,11 +68,13 @@ public class ExchangesMenu extends MenuBuilder {
         return MenuType.VIEW_EXCHANGE;
     }
 
+    private static final byte MAX_EXCHANGEABLE_ITEMS = 24;
+
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
         if (itemStack == null) return;
         if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.SAVE_EXCHANGE).asItem()) && !isPlayerSlot(slot)) {
-            if (items.size() == 0) {
+            if (items.isEmpty()) {
                 return;
             }
             if (!manager.getPlugin().getExchangesManager().hasExchange(lb.getInternalName())) {
@@ -89,7 +95,7 @@ public class ExchangesMenu extends MenuBuilder {
         }
         if (isPlayerSlot(slot)) {
             if (clickType == ClickType.SHIFT_LEFT) {
-                if (items.size() == 28) {
+                if (items.size() == MAX_EXCHANGEABLE_ITEMS) {
                     return;
                 }
                 items.add(itemStack);

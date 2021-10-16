@@ -23,6 +23,12 @@ public class MenuItem {
         flags = new ArrayList<>();
     }
 
+    public MenuItem(SpecialItem specialItem) {
+        lore = new LinkedList<>();
+        flags = new ArrayList<>();
+        of(specialItem);
+    }
+
     public MenuItem(Material m) {
         this.m = m;
         this.displayName = StringUtils.EMPTY;
@@ -46,6 +52,10 @@ public class MenuItem {
 
     public static MenuItem blackPlaceholder() {
         return new MenuItem(Material.BLACK_STAINED_GLASS_PANE);
+    }
+
+    public static MenuItem whitePlaceholder() {
+        return new MenuItem(Material.WHITE_STAINED_GLASS_PANE);
     }
 
     public static MenuItem redPlaceholder() {
@@ -72,7 +82,7 @@ public class MenuItem {
         return this;
     }
 
-    public MenuItem of(SpecialItem specialItem) {
+    public final MenuItem of(SpecialItem specialItem) {
         switch (specialItem) {
             case EXIT_BUTTON -> {
                 m = Material.BARRIER;

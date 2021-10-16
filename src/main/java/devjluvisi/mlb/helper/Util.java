@@ -1,10 +1,14 @@
 package devjluvisi.mlb.helper;
 
+import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.util.Range;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -113,6 +117,43 @@ public final class Util {
             throw new NumberFormatException("Type not of number.");
         }
         return NumberUtils.toDouble(str);
+    }
+
+    /**
+     * Converts a string "desc" to a proper lore (list of strings).
+     * The method splits up the string every 18 characters.
+     *
+     * Maintains Chat Colors throughout the lore.
+     *
+     * @see {@link devjluvisi.mlb.PluginConstants}
+     * @param desc The string to convert to lore.
+     * @return List of strings.
+     */
+    public static List<String> descriptionToLore(String desc) {
+        String lastCode = "";
+        ArrayList<String> lore = new ArrayList<>();
+        StringBuilder str = new StringBuilder();
+        int iterations = 0;
+        int index = 0;
+        while(iterations != desc.length()) {
+            if((index >= PluginConstants.SPLIT_LORE_LINE_THRESHOLD && desc.charAt(iterations) == ' ') || desc.charAt(iterations) == '\n') {
+                if(!ChatColor.getLastColors(str.toString()).isEmpty()) {
+                    lastCode = ChatColor.getLastColors(str.toString());
+                }
+                lore.add(lastCode + str);
+                str.setLength(0);
+                index = 0;
+            }else{
+                str.append(desc.charAt(iterations));
+                index++;
+            }
+            iterations++;
+        }
+        // Add any remainder characters at the end.
+        if(!str.isEmpty()) {
+            lore.add(lastCode + str);
+        }
+        return lore;
     }
 
     /**

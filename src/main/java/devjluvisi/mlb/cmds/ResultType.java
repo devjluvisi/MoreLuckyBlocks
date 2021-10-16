@@ -6,6 +6,8 @@ package devjluvisi.mlb.cmds;
 public enum ResultType {
     /** The command completed successfully or resulted in an error not present in the execution result enum. */
     PASSED,
+    /** A general failure represents a specific reason a command could not be executed. Does not display a message to the player. */
+    GENERAL_FAILURE,
     /** Player specified is not found. */
     INVALID_PLAYER,
     /** Player does not have permission to execute the specific command specified. */

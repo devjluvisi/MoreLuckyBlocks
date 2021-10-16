@@ -60,6 +60,7 @@ public class CommandManager implements CommandExecutor {
         this.subcommands.addLast(new SaveCommand(plugin));
         this.subcommands.addLast(new ResetCommand(plugin));
         this.subcommands.addLast(new SettingsCommand(plugin));
+        this.subcommands.addLast(new TrackCommand(plugin));
         this.subcommands.addLast(new TestCommand(plugin));
         this.subcommands.addLast(new HelpCommand(this));
     }
@@ -96,6 +97,9 @@ public class CommandManager implements CommandExecutor {
                 // Get the result that comes out after the subcommand is performed.
                 final CommandResult result = sub.perform(sender, args);
                 if (result.getResult() == ResultType.PASSED) {
+                    // Play particles or sound.
+                    return true;
+                }else if(result.getResult() == ResultType.GENERAL_FAILURE) {
                     return true;
                 }
                 sender.sendMessage(ChatColor.RED + "There was a problem executing your command.");
@@ -126,6 +130,9 @@ public class CommandManager implements CommandExecutor {
                     }
                     case INVALID_MATERIAL -> {
                         sender.sendMessage(ChatColor.RED + "Invalid material specified: \"" + result.getBadArg() + "\"" + ChatColor.RED + ".");
+                    }
+                    default -> {
+                        return true;
                     }
                 }
                 return true;

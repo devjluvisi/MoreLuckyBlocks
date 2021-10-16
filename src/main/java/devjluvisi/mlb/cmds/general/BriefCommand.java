@@ -31,7 +31,7 @@ public class BriefCommand implements SubCommand {
 
     @Override
     public String getPermission() {
-        return "";
+        return "mlb.brief";
     }
 
     @Override
@@ -46,8 +46,8 @@ public class BriefCommand implements SubCommand {
 
     @Override
     public CommandResult perform(CommandSender sender, String[] args) {
-        return
-                new CommandResult(ResultType.PASSED);
+
+        return new CommandResult(ResultType.PASSED);
 
     }
 

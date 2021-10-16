@@ -12,6 +12,8 @@ public enum MenuType {
     EDIT_LOOT(EditDropMenu.class),
     CHANGE_RARITY(ChangeRarityMenu.class),
     VIEW_EXCHANGE(ExchangesMenu.class),
+    ADJUST_SETTINGS(ConfigSettingsMenu.class),
+    TRACK_MENU(TrackMenu.class),
     CONFIRM(ConfirmMenu.class),
     // Empty menu
     EMPTY(null),

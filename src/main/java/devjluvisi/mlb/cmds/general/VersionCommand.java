@@ -50,6 +50,7 @@ public record VersionCommand(MoreLuckyBlocks plugin) implements SubCommand {
                 ChatColor.GRAY + "API Version: " + ChatColor.RED + this.plugin.getDescription().getAPIVersion());
         sender.sendMessage(ChatColor.GRAY + "Server Version: " + ChatColor.RED
                 + this.plugin.getServer().getVersion().substring(this.plugin.getServer().getVersion().indexOf('(')));
+        sender.sendMessage(ChatColor.GRAY + "Config Version: " + ChatColor.RED + plugin.getSettingsManager().getMajorConfigVersion());
         sender.sendMessage(ChatColor.GRAY + "Author: " + ChatColor.RED + this.plugin.getDescription().getAuthors());
         sender.sendMessage("");
         sender.sendMessage(ChatColor.BLUE.toString() + ChatColor.UNDERLINE + this.plugin.getDescription().getWebsite());

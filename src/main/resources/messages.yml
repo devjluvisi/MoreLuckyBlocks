@@ -1,4 +1,24 @@
 # MoreLuckyBlocks v1.0 Messages File
-no-permission-msg: "&cYou do not have permission to perform this command!"
-must-be-player-msg: "&cYou must be a player to execute this command!"
-incorrect-usage: "&cIncorrect Command Usage.\nUsage: %usage%"
+general:
+  no-permission: ""
+  unknown-command: ""
+
+commands:
+  ex:
+menus:
+  menu1:
+    ex:
+  menu2:
+    ex:
+lucky-blocks:
+  no-permission: "" # No permission to break.
+  disabled-lucky-block: ""
+  bad-world: ""
+  banned-from-breaking: ""
+  placed-block: ""
+  destroyed-block: ""
+
+brief-command:
+  - "Hello"
+  - "This is the second page"
+  - "A new page will be automatically added if a line is too long."

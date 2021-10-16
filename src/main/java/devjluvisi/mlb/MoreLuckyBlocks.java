@@ -68,9 +68,21 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - Follow sonar lint standards.
      * - Use modern (Java11+) tech when possible
      * - JavaDoc & Comment all methods.
+     * - Command to show number of unopened lucky blocks.
+     * - GUI for structures.
+     * - Fix bug lucky blocks arent removed from audit
      */
 
-    // Setup resource files for the plugin to use.
+    /*
+    todo for blocks.yml
+
+    - particles per lucky block
+    - sounds per lucky block
+    - tools required to break
+    - cooldown for placing
+    - cooldown for breaking
+    - enchanted/
+     */
 
     /**
      * "blocks.yml" resource file.
@@ -203,35 +215,13 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         return this.structuresYaml;
     }
 
-    @Override
-    public void onDisable() {
-        this.audit.writeAll();
-        this.playerManager.save();
-        this.getServer().getScheduler().cancelTasks(this);
-        this.getLogger().info("*-----------------------------------------*");
-        this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has been disabled!");
-        this.getLogger().info("Server Version -> "
-                + super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('(')));
-        this.getLogger().info("By Paroxi, (Jacob)");
-        this.getLogger().info("https://github.com/devjluvisi/MoreLuckyBlocks");
-        this.getLogger().info("*-----------------------------------------*");
-        super.onDisable();
-    }
-
     /**
      * --> FEATURE ADDITIONS <--
      * <p>
      * Also: Fix issue where a breaking of a lucky block with a structure might not appear infront of a player.
-     * <p>
-     * TODO: 10/10/2021
-     * - Implement /mlb edit for block type
-     * - Implement blocking out editing for /mlb drops for players with no perms.
-     * - Implement exchanges
-     * - Implement brief command
-     * <p>
      * TODO: 10/11/2021
      * - Implement config.yml file.
-     *  - With autosave
+     * - With autosave
      * - Implement SettingsCommand
      * - Implement parts of messages.
      * <p>
@@ -248,7 +238,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - Implement /playsound command
      * - Implement many types of clickable and hoverable text.
      * - Implement permission nodes per lucky block.
-     * - Implement user-only GUI for /mlb list.
      * - Implement scheduler saving for world-data.yml
      * - Implement out of date notification (refer to spigot)
      * - Implement numerous Validate.(...) functions to verify parts of the program.
@@ -325,6 +314,21 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new BreakEvent(this), this);
         this.getServer().getPluginManager().registerEvents(new PlaceEvent(this), this);
         this.getServer().getPluginManager().registerEvents(new JoinEvent(this), this);
+    }
+
+    @Override
+    public void onDisable() {
+        this.audit.writeAll();
+        this.playerManager.save();
+        this.getServer().getScheduler().cancelTasks(this);
+        this.getLogger().info("*-----------------------------------------*");
+        this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has been disabled!");
+        this.getLogger().info("Server Version -> "
+                + super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('(')));
+        this.getLogger().info("By Paroxi, (Jacob)");
+        this.getLogger().info("https://github.com/devjluvisi/MoreLuckyBlocks");
+        this.getLogger().info("*-----------------------------------------*");
+        super.onDisable();
     }
 
     /**

@@ -9,7 +9,7 @@ public class MenuResource {
     private LuckyBlock lb;
     private LuckyBlockDrop lbDrop;
 
-    public MenuResource() {
+    public MenuResource () {
     }
 
     public MenuResource with(LuckyBlock lb) {
@@ -23,6 +23,7 @@ public class MenuResource {
         this.lbDrop = lbDrop;
         return this;
     }
+
 
     public LuckyBlock getLuckyBlock() {
         Validate.notNull(lb, "LuckyBlock data for MenuResource is null after request.");

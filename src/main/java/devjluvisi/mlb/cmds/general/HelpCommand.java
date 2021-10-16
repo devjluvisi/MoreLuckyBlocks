@@ -109,14 +109,14 @@ public class HelpCommand implements SubCommand {
         return new CommandResult(ResultType.PASSED);
     }
 
-    private TextComponent asInteractable(SubCommand cmd) {
+    private static TextComponent asInteractable(SubCommand cmd) {
         TextComponent cmp = new TextComponent(TextComponent.fromLegacyText(Util.toColor("&d/mlb " + cmd.getName() + "&7 - &a" + cmd.getDescription())));
         cmp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(Util.toColor("&oClick to paste.")))));
         cmp.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, cmd.getSyntax().split("\n")[0]));
         return cmp;
     }
 
-    private TextComponent pageSelector(int currPage, int maxPage) {
+    private static TextComponent pageSelector(int currPage, int maxPage) {
         TextComponent cmp = new TextComponent();
         cmp.addExtra(goBack(currPage));
         cmp.addExtra(" Page " + currPage + "/" + maxPage + " ");
@@ -128,7 +128,7 @@ public class HelpCommand implements SubCommand {
         return cmp;
     }
 
-    private TextComponent goBack(int currPage) {
+    private static TextComponent goBack(int currPage) {
         if (currPage == 1) {
             return new TextComponent();
         }
@@ -139,7 +139,7 @@ public class HelpCommand implements SubCommand {
         return cmp;
     }
 
-    private TextComponent goForward(int currPage) {
+    private static TextComponent goForward(int currPage) {
         TextComponent cmp = new TextComponent(TextComponent.fromLegacyText(Util.toColor("→")));
         cmp.setBold(true);
         cmp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(Util.toColor("&aGo to page " + (currPage + 1))))));
