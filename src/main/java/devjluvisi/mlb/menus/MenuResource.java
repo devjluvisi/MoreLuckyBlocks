@@ -9,7 +9,7 @@ public class MenuResource {
     private LuckyBlock lb;
     private LuckyBlockDrop lbDrop;
 
-    public MenuResource () {
+    public MenuResource() {
     }
 
     public MenuResource with(LuckyBlock lb) {
