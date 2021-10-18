@@ -7,6 +7,14 @@ package devjluvisi.mlb.util;
  */
 public record Range(double min, double max) {
 
+    public double getMin() {
+        return min;
+    }
+
+    public double getMax() {
+        return max;
+    }
+
     /**
      * Check if a value is in range of a specified min and max. This method is
      * inclusive.

@@ -34,7 +34,7 @@ public class ExchangesManager extends ConfigManager {
      * @return If the lucky block has an exchange.
      */
     public boolean hasExchange(String name) {
-        return getConfig().get("exchanges.%s" .formatted(name)) != null;
+        return getConfig().get("exchanges.%s".formatted(name)) != null;
     }
 
     /**
@@ -45,7 +45,7 @@ public class ExchangesManager extends ConfigManager {
     public void addExchange(String internalName, List<ItemStack> items) {
         int index = 0;
         for (ItemStack i : items) {
-            setValue("exchanges.%s.%d" .formatted(internalName, index), i);
+            setValue("exchanges.%s.%d".formatted(internalName, index), i);
             index++;
         }
     }
@@ -58,8 +58,8 @@ public class ExchangesManager extends ConfigManager {
     public List<ItemStack> getItems(String internalName) {
         List<ItemStack> itemStackList = new ArrayList<>();
         int index = 0;
-        while (getConfig().get("exchanges.%s.%d" .formatted(internalName, index)) != null) {
-            itemStackList.add(getConfig().getItemStack("exchanges.%s.%d" .formatted(internalName, index)));
+        while (getConfig().get("exchanges.%s.%d".formatted(internalName, index)) != null) {
+            itemStackList.add(getConfig().getItemStack("exchanges.%s.%d".formatted(internalName, index)));
             index++;
         }
         return itemStackList;
@@ -70,7 +70,7 @@ public class ExchangesManager extends ConfigManager {
      */
     public void removeExchange(String internalName) {
         if (!hasExchange(internalName)) return;
-        setValue("exchanges.%s" .formatted(internalName), null);
+        setValue("exchanges.%s".formatted(internalName), null);
     }
 
 }

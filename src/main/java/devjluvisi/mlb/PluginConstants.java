@@ -1,5 +1,7 @@
 package devjluvisi.mlb;
 
+import devjluvisi.mlb.util.Range;
+
 /**
  * Non-User editable constants in the plugin. Values which will not change no
  * matter what.
@@ -9,6 +11,7 @@ package devjluvisi.mlb;
 public interface PluginConstants {
 
     byte SPLIT_LORE_LINE_THRESHOLD = 18;
+    Range INTERNAL_NAME_RANGE = new Range(2, 28);
 
     float LUCK_MIN_VALUE = -100.0F;
     float LUCK_MAX_VALUE = 100.0F;

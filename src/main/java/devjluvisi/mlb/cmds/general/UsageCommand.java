@@ -59,8 +59,8 @@ public class UsageCommand implements SubCommand {
         for (SubCommand cmd : cmdManager.getSubcommands()) {
             if (cmd.getName().equalsIgnoreCase(args[1])) {
                 sender.sendMessage(ChatColor.GRAY + "Usage of /mlb " + cmd.getName());
-                sender.sendMessage(ChatColor.GREEN.toString() + cmd.getSyntax());
-                sender.sendMessage(ChatColor.RESET.toString() + ChatColor.ITALIC.toString() + cmd.getDescription());
+                sender.sendMessage(ChatColor.GREEN + cmd.getSyntax());
+                sender.sendMessage(ChatColor.RESET.toString() + ChatColor.ITALIC + cmd.getDescription());
                 return new CommandResult(ResultType.PASSED);
             }
         }

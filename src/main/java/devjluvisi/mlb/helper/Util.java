@@ -4,11 +4,9 @@ import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.util.Range;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -89,7 +87,7 @@ public final class Util {
         unformatted = StringUtils.trim(unformatted);
         unformatted = StringUtils.lowerCase(unformatted);
 
-        String allowedChars = "abcdefghijklmnopqrstuvwxyz0123456789_";
+        final String allowedChars = "abcdefghijklmnopqrstuvwxyz0123456789_";
 
         unformatted = StringUtils.replace(unformatted, " ", "_");
 
@@ -98,6 +96,19 @@ public final class Util {
                 unformatted = StringUtils.replace(unformatted, String.valueOf(c), StringUtils.EMPTY);
             }
         }
+        // Remove underscores at the end of the lucky block name.
+        try {
+            for(int i = unformatted.length(); i > 0; i--) {
+                if(unformatted.charAt(i-1) == '_') {
+                    unformatted = unformatted.substring(0, i-1);
+                }else{
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            return StringUtils.EMPTY;
+        }
+
         return unformatted;
     }
 
@@ -120,6 +131,17 @@ public final class Util {
     }
 
     /**
+     * Returns if the string passed is a valid number. Should always be used over
+     * try/catch, .parse, etc.
+     *
+     * @param str String to test.
+     * @return If the string is a number.
+     */
+    public static boolean isNumber(String str) {
+        return NumberUtils.isNumber(str);
+    }
+
+    /**
      * Converts a string "desc" to a proper lore (list of strings).
      * The method splits up the string every 18 characters.
      *
@@ -135,36 +157,25 @@ public final class Util {
         StringBuilder str = new StringBuilder();
         int iterations = 0;
         int index = 0;
-        while(iterations != desc.length()) {
-            if((index >= PluginConstants.SPLIT_LORE_LINE_THRESHOLD && desc.charAt(iterations) == ' ') || desc.charAt(iterations) == '\n') {
-                if(!ChatColor.getLastColors(str.toString()).isEmpty()) {
+        while (iterations != desc.length()) {
+            if ((index >= PluginConstants.SPLIT_LORE_LINE_THRESHOLD && desc.charAt(iterations) == ' ') || desc.charAt(iterations) == '\n') {
+                if (!ChatColor.getLastColors(str.toString()).isEmpty()) {
                     lastCode = ChatColor.getLastColors(str.toString());
                 }
                 lore.add(lastCode + str);
                 str.setLength(0);
                 index = 0;
-            }else{
+            } else {
                 str.append(desc.charAt(iterations));
                 index++;
             }
             iterations++;
         }
         // Add any remainder characters at the end.
-        if(!str.isEmpty()) {
+        if (!str.isEmpty()) {
             lore.add(lastCode + str);
         }
         return lore;
-    }
-
-    /**
-     * Returns if the string passed is a valid number. Should always be used over
-     * try/catch, .parse, etc.
-     *
-     * @param str String to test.
-     * @return If the string is a number.
-     */
-    public static boolean isNumber(String str) {
-        return NumberUtils.isNumber(str);
     }
 
     public static String toColor(String str) {

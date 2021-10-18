@@ -54,11 +54,11 @@ public class UserRedeemMenu extends MenuBuilder {
 
         content[0][7] = new MenuItem().with(Material.RED_DYE).with("&c-1 Quantity")
                 .addLine("&7Decrease the amount of")
-                .addLine("&7requested lucky blocks to: &6" + (lbRequestAmount-1) + "&7.").asItem();
+                .addLine("&7requested lucky blocks to: &6" + (lbRequestAmount - 1) + "&7.").asItem();
         content[0][6] = new MenuItem(Material.WHITE_STAINED_GLASS_PANE).asItem();
         content[0][5] = new MenuItem().with(Material.LIME_DYE).with("&a+1 Quantity")
                 .addLine("&7Increase the amount of")
-                .addLine("&7requested lucky blocks to: &6" + (lbRequestAmount+1) + "&7.").asItem();
+                .addLine("&7requested lucky blocks to: &6" + (lbRequestAmount + 1) + "&7.").asItem();
         content[1][5] = new MenuItem(Material.WHITE_STAINED_GLASS_PANE).asItem();
         content[1][6] = lb.asItem(manager.getPlugin(), lbRequestAmount);
         content[1][7] = new MenuItem(Material.WHITE_STAINED_GLASS_PANE).asItem();
@@ -111,8 +111,8 @@ public class UserRedeemMenu extends MenuBuilder {
                 final Inventory playerInventory = manager.getPlayer().getInventory();
 
                 for (ItemStack i : requiredItems) {
-                    int amt = (i.getAmount()*requiredItems.stream().filter(e -> e.equals(i)).toList().size() * lbRequestAmount);
-                    if(!playerInventory.containsAtLeast(i, amt)) {
+                    int amt = (i.getAmount() * requiredItems.stream().filter(e -> e.equals(i)).toList().size() * lbRequestAmount);
+                    if (!playerInventory.containsAtLeast(i, amt)) {
                         manager.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Could not complete transaction.");
                         TextComponent textComponent = new TextComponent("You are missing an item: \"" + ChatColor.RESET + ChatColor.WHITE + "x" + amt + " " + (i.hasItemMeta() && Objects.requireNonNull(i.getItemMeta()).hasDisplayName() ? i.getItemMeta().getDisplayName() : i.getType().name()) + ChatColor.GRAY + "\".");
                         textComponent.addExtra("\nHover over item to view information.");
@@ -131,7 +131,7 @@ public class UserRedeemMenu extends MenuBuilder {
                     return;
                 }
                 //TODO: Play Chime, Particles maybe?
-                for(int i = 0; i < lbRequestAmount; i++) {
+                for (int i = 0; i < lbRequestAmount; i++) {
                     requiredItems.forEach(playerInventory::removeItem);
                 }
                 playerInventory.addItem(lb.asItem(manager.getPlugin(), lbRequestAmount));

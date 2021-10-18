@@ -21,5 +21,5 @@ public enum ResultType {
     /** The material specified is not valid. */
     INVALID_MATERIAL,
     /** Request to execute command cancelled for any reason. */
-    BAD_REQUEST;
+    BAD_REQUEST
 }

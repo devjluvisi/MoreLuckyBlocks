@@ -14,8 +14,7 @@
     <description>A fully customizable lucky blocks plugin designed without the need for modifying config files.
     </description>
     <properties>
-        <!-- MoreLuckyBlock was designed to operate on JDK 16 -->
-        <!-- A Java 1.8 Version will likely be made available before release -->
+        <!-- MoreLuckyBlock was designed to operate on JDK-16+ ONLY -->
         <java.version>16</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

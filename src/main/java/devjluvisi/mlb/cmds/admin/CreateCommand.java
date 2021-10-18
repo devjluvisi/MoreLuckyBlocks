@@ -78,6 +78,10 @@ public record CreateCommand(MoreLuckyBlocks plugin) implements SubCommand {
                     + " lucky blocks.");
             return new CommandResult(ResultType.PASSED);
         }
+        if(!PluginConstants.INTERNAL_NAME_RANGE.isInRange(Util.makeInternal(item.getItemMeta().getDisplayName()).length())) {
+            p.sendMessage(ChatColor.RED + "Name cannot be longer then " + PluginConstants.INTERNAL_NAME_RANGE.getMax() + " characters or less than " + PluginConstants.INTERNAL_NAME_RANGE.getMax() + " characters.");
+        return new CommandResult(ResultType.PASSED);
+        }
         if (args.length >= 1) {
             luckyBlock.setInternalName(Util.makeInternal(item.getItemMeta().getDisplayName()));
             luckyBlock.setName(item.getItemMeta().getDisplayName());

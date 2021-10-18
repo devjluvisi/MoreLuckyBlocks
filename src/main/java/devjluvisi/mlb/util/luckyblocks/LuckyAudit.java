@@ -45,16 +45,26 @@ public final class LuckyAudit {
      * into objects.
      */
     private void pullFromConfig() {
-        long index = 0;
+        int index = 0;
+        int removedCount = 0;
         while (this.worldDataYaml.getConfig().get("locations." + index) != null) {
             final String val = (String) this.worldDataYaml.getConfig().get("locations." + index);
-            if (this.deserializeEntry(val) == null) {
+            var entry = deserializeEntry(val);
+            if (entry == null) {
                 index++;
                 continue;
             }
-            this.luckyBlockMap.put(Objects.requireNonNull(this.deserializeEntry(val)).getKey(), Objects.requireNonNull(this.deserializeEntry(val)).getValue());
+            if (Objects.requireNonNull(search(entry.getValue().getLuckyBlockHash())).getBlockMaterial() == entry.getValue().getBlockMaterial()) {
+                this.luckyBlockMap.put(entry.getKey(), entry.getValue());
+            } else {
+                removedCount++;
+            }
             index++;
         }
+        if (removedCount == 0) {
+            return;
+        }
+        plugin.getServer().getLogger().info("Removed %d old lucky blocks.".formatted(removedCount));
     }
 
     /**
@@ -209,6 +219,10 @@ public final class LuckyAudit {
         this.worldDataYaml.getConfig().set("locations", null);
         long index = 0;
         for (final Map.Entry<MapLocation3D, LuckyValues> entry : this.luckyBlockMap.entrySet()) {
+            if (entry.getValue().getBlockMaterial() != search(entry.getValue().getLuckyBlockHash()).getBlockMaterial()) {
+                index++;
+                continue;
+            }
             this.worldDataYaml.getConfig().set("locations." + index,
                     serializeEntry(entry.getKey(), entry.getValue()));
             index++;

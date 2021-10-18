@@ -17,6 +17,7 @@ import java.util.List;
 
 public class ExchangesMenu extends MenuBuilder {
 
+    private static final byte MAX_EXCHANGEABLE_ITEMS = 24;
     private LuckyBlock lb;
     private List<ItemStack> items;
 
@@ -67,8 +68,6 @@ public class ExchangesMenu extends MenuBuilder {
     public MenuType type() {
         return MenuType.VIEW_EXCHANGE;
     }
-
-    private static final byte MAX_EXCHANGEABLE_ITEMS = 24;
 
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {

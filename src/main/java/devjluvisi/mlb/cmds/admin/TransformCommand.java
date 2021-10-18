@@ -22,7 +22,7 @@ import java.util.Objects;
  */
 public class TransformCommand implements SubCommand {
 
-    private MoreLuckyBlocks plugin;
+    private final MoreLuckyBlocks plugin;
 
     public TransformCommand(MoreLuckyBlocks plugin) {
         this.plugin = plugin;
@@ -76,7 +76,7 @@ public class TransformCommand implements SubCommand {
                 Validate.notNull(orgin.getWorld());
                 Validate.notNull(orgin);
             } catch (Exception e) {
-                sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "Failed." + ChatColor.RED + " There are or more errors in your command. Make sure all numbers are valid and the specified world exists.");
+                sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Failed." + ChatColor.RED + " There are or more errors in your command. Make sure all numbers are valid and the specified world exists.");
                 return new CommandResult(ResultType.BAD_ARGUMENT_TYPE, args[1]);
             }
         } else if (args.length == 3) {

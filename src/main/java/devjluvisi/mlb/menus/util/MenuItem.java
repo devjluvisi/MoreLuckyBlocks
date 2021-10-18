@@ -14,7 +14,7 @@ public class MenuItem {
     private Material m;
     private String displayName;
     private List<String> lore;
-    private List<ItemFlag> flags;
+    private final List<ItemFlag> flags;
 
     public MenuItem() {
         m = Material.AIR;
@@ -27,59 +27,6 @@ public class MenuItem {
         lore = new LinkedList<>();
         flags = new ArrayList<>();
         of(specialItem);
-    }
-
-    public MenuItem(Material m) {
-        this.m = m;
-        this.displayName = StringUtils.EMPTY;
-        this.lore = Collections.emptyList();
-        flags = Collections.emptyList();
-    }
-
-    public MenuItem(Material m, String displayName) {
-        this.m = m;
-        this.displayName = displayName;
-        this.lore = Collections.emptyList();
-        flags = Collections.emptyList();
-    }
-
-    public MenuItem(Material m, String displayName, List<String> lore) {
-        this.m = m;
-        this.displayName = displayName;
-        this.lore = lore;
-        flags = Collections.emptyList();
-    }
-
-    public static MenuItem blackPlaceholder() {
-        return new MenuItem(Material.BLACK_STAINED_GLASS_PANE);
-    }
-
-    public static MenuItem whitePlaceholder() {
-        return new MenuItem(Material.WHITE_STAINED_GLASS_PANE);
-    }
-
-    public static MenuItem redPlaceholder() {
-        return new MenuItem(Material.RED_STAINED_GLASS_PANE);
-    }
-
-    public MenuItem with(Material m) {
-        this.m = m;
-        return this;
-    }
-
-    public MenuItem with(String name) {
-        this.displayName = name;
-        return this;
-    }
-
-    public MenuItem with(List<String> lore) {
-        this.lore = lore;
-        return this;
-    }
-
-    public MenuItem addLine(String line) {
-        this.lore.add(line);
-        return this;
     }
 
     public final MenuItem of(SpecialItem specialItem) {
@@ -184,7 +131,128 @@ public class MenuItem {
                 lore.add("&7Save your changes");
                 lore.add("&7to this exchange.");
             }
+            case EDIT_NAME -> {
+                m = Material.NAME_TAG;
+                displayName = "&eEdit Name";
+                lore.add("&7Edit the name of the lucky block.");
+                lore.add("&7This edits both the name of the");
+                lore.add("&7item as well as the internal name.");
+            }
+            case EDIT_LORE -> {
+                m = Material.MAP;
+                displayName = "&eEdit Item Lore";
+                lore.add("&7Edit the lore of the lucky block.");
+            }
+            case EDIT_ENCHANTED -> {
+                m = Material.ENCHANTED_BOOK;
+                displayName = "&eToggle Enchanted";
+                lore.add("&7Edit if the lucky block should");
+                lore.add("&7be enchanted.");
+            }
+            case EDIT_BREAK_COOLDOWN -> {
+                m = Material.REDSTONE;
+                displayName = "&eEdit Break Cooldown";
+                lore.add("&7Edit the cooldown for");
+                lore.add("&7breaking this lucky block.");
+            }
+            case EDIT_PLACE_COOLDOWN -> {
+                m = Material.GLOWSTONE_DUST;
+                displayName = "&eEdit Place Cooldown";
+                lore.add("&7Edit the cooldown for");
+                lore.add("&7placing this lucky block.");
+            }
+            case EDIT_BREAK_PERMISSION -> {
+                m = Material.BEDROCK;
+                displayName = "&eEdit Break Permission";
+                lore.add("&7Edit the permission required");
+                lore.add("&7to break and place this lucky block.");
+            }
+            case EDIT_MATERIAL -> {
+                m = Material.GLASS;
+                displayName = "&eEdit Item Material";
+                lore.add("&7Edit the material of the");
+                lore.add("&7lucky block.");
+                lore.add("&3&oWill disable all placed lucky blocks");
+                lore.add("&3&oof the previous type.");
+            }
+            case EDIT_PARTICLES -> {
+                m = Material.NETHER_WART;
+                displayName = "&eEdit Particles";
+                lore.add("&7Edit the particles that");
+                lore.add("&7surround the lucky block");
+                lore.add("&7when a player gets close.");
+            }
+            case EDIT_SOUND -> {
+                m = Material.NOTE_BLOCK;
+                displayName = "&eEdit Break Sound";
+                lore.add("&7Edit the sound the lucky block");
+                lore.add("&7plays when it is broken.");
+            }
+            case EDIT_TOOL -> {
+                m = Material.DIAMOND_PICKAXE;
+                displayName = "&eEdit Required Tool";
+                lore.add("&7Edit the tool required to");
+                lore.add("&7break the lucky block.");
+            }
         }
+        return this;
+    }
+
+    public MenuItem(Material m) {
+        this.m = m;
+        this.displayName = StringUtils.EMPTY;
+        this.lore = Collections.emptyList();
+        flags = Collections.emptyList();
+    }
+
+    public MenuItem(Material m, String displayName) {
+        this.m = m;
+        this.displayName = displayName;
+        this.lore = Collections.emptyList();
+        flags = Collections.emptyList();
+    }
+
+    public MenuItem(Material m, String displayName, List<String> lore) {
+        this.m = m;
+        this.displayName = displayName;
+        this.lore = lore;
+        flags = Collections.emptyList();
+    }
+
+    public static MenuItem blackPlaceholder() {
+        return new MenuItem(Material.BLACK_STAINED_GLASS_PANE);
+    }
+
+    public static MenuItem whitePlaceholder() {
+        return new MenuItem(Material.WHITE_STAINED_GLASS_PANE);
+    }
+
+    public static MenuItem redPlaceholder() {
+        return new MenuItem(Material.RED_STAINED_GLASS_PANE);
+    }
+
+    public MenuItem with(Material m) {
+        this.m = m;
+        return this;
+    }
+
+    public MenuItem with(String name) {
+        this.displayName = name;
+        return this;
+    }
+
+    public MenuItem with(List<String> lore) {
+        this.lore = lore;
+        return this;
+    }
+
+    public MenuItem addLine(String line) {
+        this.lore.add(line);
+        return this;
+    }
+
+    public MenuItem addAllLine(String[] lines) {
+        this.lore.addAll(Arrays.stream(lines).toList());
         return this;
     }
 
@@ -213,6 +281,7 @@ public class MenuItem {
     public enum SpecialItem {
         EXIT_BUTTON, ADD_NEW_DROP, REMOVE_ALL_DROPS, EDIT_DROP, DELETE_DROP, COPY_DROP, CHANGE_RARITY,
         ADD_POTION_EFFECT, ADD_COMMAND, SAVE_BUTTON, CANCEL_BUTTON, CONFIRM_BUTTON, INCREASE_RARITY, DECREASE_RARITY,
-        DELETE_LUCKY_BLOCK, ADD_STRUCTURE, DELETE_EXCHANGE, SAVE_EXCHANGE
+        DELETE_LUCKY_BLOCK, ADD_STRUCTURE, DELETE_EXCHANGE, SAVE_EXCHANGE, EDIT_NAME, EDIT_LORE, EDIT_MATERIAL, EDIT_BREAK_PERMISSION,
+        EDIT_TOOL, EDIT_PARTICLES, EDIT_SOUND, EDIT_PLACE_COOLDOWN, EDIT_BREAK_COOLDOWN, EDIT_ENCHANTED
     }
 }

@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 
 import java.text.MessageFormat;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Class which manages the base command within the plugin "/mlb" and then goes
@@ -67,6 +68,9 @@ public class CommandManager implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if(!cmd.getName().equalsIgnoreCase("mlb")) {
+            return false;
+        }
         if (args.length == 0) {
             sender.sendMessage(ChatColor.GOLD + "[MoreLuckyBlocks] " + ChatColor.RED
                     + "Unknown Command.\nType /mlb help to view a list of commands.");
@@ -76,7 +80,6 @@ public class CommandManager implements CommandExecutor {
         // Go through all of the sub commands and check if the argument matches.
         for (final SubCommand sub : this.subcommands) {
             if (args[0].equalsIgnoreCase(sub.getName())) {
-
                 if (!(sender instanceof Player) && !sub.isAllowConsole()) {
                     sender.sendMessage(ChatColor.RED + "You must be a player to execute this command.");
                     return true;
@@ -99,7 +102,7 @@ public class CommandManager implements CommandExecutor {
                 if (result.getResult() == ResultType.PASSED) {
                     // Play particles or sound.
                     return true;
-                }else if(result.getResult() == ResultType.GENERAL_FAILURE) {
+                } else if (result.getResult() == ResultType.GENERAL_FAILURE) {
                     return true;
                 }
                 sender.sendMessage(ChatColor.RED + "There was a problem executing your command.");
@@ -145,7 +148,7 @@ public class CommandManager implements CommandExecutor {
         return true;
     }
 
-    public LinkedList<SubCommand> getSubcommands() {
+    public List<SubCommand> getSubcommands() {
         return this.subcommands;
     }
 

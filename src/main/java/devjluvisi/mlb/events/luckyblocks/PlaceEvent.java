@@ -28,13 +28,14 @@ public record PlaceEvent(MoreLuckyBlocks plugin) implements Listener {
         final String luckId = specialMeta.getString(PluginConstants.LuckyIdentifier);
 
         for (final LuckyBlock lb : this.plugin.getLuckyBlocks()) {
-            if (lb.getInternalName().equals(luckId)) {
+            if (lb.getInternalName().equals(luckId) && lb.getBlockMaterial() == item.getType()) {
                 blockPlaced = lb;
             }
         }
         if (Objects.isNull(blockPlaced)) {
             return;
         }
+
         if (blockPlaced.getDroppableItems().size() == 0) {
             e.getPlayer().sendMessage(
                     ChatColor.RED + "This lucky block cannot be placed because there have been no drops set for it.");

@@ -3,7 +3,6 @@ package devjluvisi.mlb.menus.admin;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.api.gui.pages.PageType;
-import devjluvisi.mlb.api.gui.utils.Coords2D;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.menus.MenuBuilder;
 import devjluvisi.mlb.menus.MenuManager;
@@ -11,7 +10,6 @@ import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.menus.util.MenuItem;
 import devjluvisi.mlb.util.config.files.SettingType;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -28,7 +26,7 @@ public class ConfigSettingsMenu extends MenuBuilder {
 
     private final int maxPages;
 
-    private MoreLuckyBlocks plugin;
+    private final MoreLuckyBlocks plugin;
     private int currentPage;
 
     public ConfigSettingsMenu(MenuManager manager) {
@@ -54,11 +52,51 @@ public class ConfigSettingsMenu extends MenuBuilder {
 
     private void addSetting(Slot s, SettingType type) {
         Map.Entry<Slot, SettingType> entry = Map.entry(s, type);
-        if(!settings.isEmpty() && settings.get(settings.size()-1).size() != MAX_SETTINGS_PER_PAGE) {
-            settings.get(settings.size()-1).add(entry);
+        if (!settings.isEmpty() && settings.get(settings.size() - 1).size() != MAX_SETTINGS_PER_PAGE) {
+            settings.get(settings.size() - 1).add(entry);
             return;
         }
         settings.add(new ArrayList<>(List.of(entry)));
+    }
+
+    @Override
+    public ItemStack[][] getContent(ItemStack[][] content) {
+        setMenuName("Settings Menu (" + currentPage + "/" + maxPages + ")");
+        Arrays.stream(content).forEach(e -> Arrays.fill(e, MenuItem.blackPlaceholder().asItem()));
+        for (int i = 1; i < 4; i++) {
+            for (int j = 1; j < 8; j++) {
+                content[i][j] = MenuItem.whitePlaceholder().asItem();
+            }
+        }
+
+        // Display the settings.
+        for (int i = 0; i < MAX_SETTINGS_PER_PAGE; i++) {
+            if (i >= settings.get(currentPage - 1).size()) {
+                break;
+            }
+            content
+                    [rawSlotToCoords(settings.get(currentPage - 1).get(i).getKey().get())[0]]
+                    [rawSlotToCoords(settings.get(currentPage - 1).get(i).getKey().get())[1]]
+                    = getItemForValue(settings.get(currentPage - 1).get(i).getValue());
+        }
+
+
+        if (currentPage == 1) {
+            content[4][6] = new MenuItem().with(Material.FEATHER).with("&ePrevious Page").addLine("&7You are on the first page.").asItem();
+        } else {
+            content[4][6] = new MenuItem().with(Material.FEATHER).with("&ePrevious Page").addLine("&7Click to go to page " + (currentPage - 1) + ".").asItem();
+        }
+        if (currentPage == maxPages) {
+            content[4][7] = new MenuItem().with(Material.ARROW).with("&eNext Page").addLine("&7You are on the last page.").asItem();
+        } else {
+            content[4][7] = new MenuItem().with(Material.ARROW).with("&eNext Page").addLine("&7Click to go to page " + (currentPage + 1) + ".").asItem();
+        }
+        content[5][4] = new MenuItem(MenuItem.SpecialItem.EXIT_BUTTON).asItem();
+        return content;
+    }
+
+    private static int[] rawSlotToCoords(int slot) {
+        return new int[] { slot / 9, slot % 9 };
     }
 
     private ItemStack getItemForValue(SettingType type) {
@@ -69,19 +107,19 @@ public class ConfigSettingsMenu extends MenuBuilder {
         String description = ChatColor.BLUE + type.getDescription();
         String name = ChatColor.YELLOW + type.getName();
 
-        if(type.getReturnType() == SettingType.ReturnType.BOOLEAN) {
-            boolean b = (boolean)settingValue;
-            if(b) {
+        if (type.getReturnType() == SettingType.ReturnType.BOOLEAN) {
+            boolean b = (boolean) settingValue;
+            if (b) {
                 item.setType(Material.GREEN_DYE);
-            }else{
+            } else {
                 item.setType(Material.RED_DYE);
             }
             name = StringUtils.replace(name, SettingType.CURRENT_VALUE_PLACEHOLDER, b ? "ON" : "OFF");
             description = StringUtils.replace(description, SettingType.CURRENT_VALUE_PLACEHOLDER, b ? ChatColor.GREEN + "✔ Enabled" : ChatColor.RED + "✖ Disabled");
-        } else if(type.getReturnType() == SettingType.ReturnType.INT || type.getReturnType() == SettingType.ReturnType.DECIMAL) {
+        } else if (type.getReturnType() == SettingType.ReturnType.INT || type.getReturnType() == SettingType.ReturnType.DECIMAL) {
             double val = Double.parseDouble(String.valueOf(settingValue));
-            if(type.getReturnType() == SettingType.ReturnType.INT) {
-                val = (int)val;
+            if (type.getReturnType() == SettingType.ReturnType.INT) {
+                val = (int) val;
             }
             name = StringUtils.replace(name, SettingType.CURRENT_VALUE_PLACEHOLDER, String.valueOf(val));
             description = StringUtils.replace(description, SettingType.CURRENT_VALUE_PLACEHOLDER, String.valueOf(val));
@@ -94,70 +132,13 @@ public class ConfigSettingsMenu extends MenuBuilder {
     }
 
     @Override
-    public ItemStack[][] getContent(ItemStack[][] content) {
-        setMenuName("Settings Menu (" + currentPage + "/" + maxPages + ")");
-        Arrays.stream(content).forEach(e -> Arrays.fill(e, MenuItem.blackPlaceholder().asItem()));
-        for(int i = 1; i < 4; i++) {
-            for(int j = 1; j < 8; j++) {
-                content[i][j] = MenuItem.whitePlaceholder().asItem();
-            }
-        }
-
-        // Display the settings.
-        for(int i = 0; i < MAX_SETTINGS_PER_PAGE; i++) {
-            if(i >= settings.get(currentPage-1).size()) {
-                break;
-            }
-            content
-                    [rawSlotToCoords(settings.get(currentPage-1).get(i).getKey().get())[0]]
-                    [rawSlotToCoords(settings.get(currentPage-1).get(i).getKey().get())[1]]
-                    = getItemForValue(settings.get(currentPage-1).get(i).getValue());
-        }
-
-
-        if(currentPage == 1) {
-            content[4][6] = new MenuItem().with(Material.FEATHER).with("&ePrevious Page").addLine("&7You are on the first page.").asItem();
-        }else{
-            content[4][6] = new MenuItem().with(Material.FEATHER).with("&ePrevious Page").addLine("&7Click to go to page " + (currentPage-1) + ".").asItem();
-        }
-        if(currentPage == maxPages) {
-            content[4][7] = new MenuItem().with(Material.ARROW).with("&eNext Page").addLine("&7You are on the last page.").asItem();
-        }else{
-            content[4][7] = new MenuItem().with(Material.ARROW).with("&eNext Page").addLine("&7Click to go to page " + (currentPage+1) + ".").asItem();
-        }
-         content[5][4] = new MenuItem(MenuItem.SpecialItem.EXIT_BUTTON).asItem();
-        return content;
-    }
-
-    enum Slot {
-        PREVIOUS_PAGE((byte)42), NEXT_PAGE((byte)43), EXIT_MENU((byte)49),
-        SETTINGS_1((byte)10),
-        SETTINGS_2((byte)13),
-        SETTINGS_3((byte)16),
-        SETTINGS_4((byte)28),
-        SETTINGS_5((byte)31),
-        SETTINGS_6((byte)34),
-        EMPTY((byte)0);
-
-        final byte val;
-        Slot(byte val) {
-            this.val = val;
-        }
-        public byte get() {
-            return this.val;
-        }
-        public static Slot ofValue(byte val) {
-            return EnumSet.copyOf(Arrays.stream(Slot.values()).toList()).stream().filter(e -> e.get() == val).findFirst().orElse(EMPTY);
-        }
-    }
-
-    private static int[] rawSlotToCoords(int slot) {
-        return new int[] {slot/9, slot%9};
+    public MenuType type() {
+        return MenuType.ADJUST_SETTINGS;
     }
 
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-        if(itemStack == null || isPlayerSlot(slot)) {
+        if (itemStack == null || isPlayerSlot(slot)) {
             return;
         }
         // Slot 49 = Exit Button
@@ -178,7 +159,7 @@ public class ConfigSettingsMenu extends MenuBuilder {
                 view.reopen();
             }
             case NEXT_PAGE -> {
-                if(currentPage == maxPages) {
+                if (currentPage == maxPages) {
                     return;
                 }
                 this.currentPage++;
@@ -188,15 +169,15 @@ public class ConfigSettingsMenu extends MenuBuilder {
                 view.close();
             }
             case SETTINGS_1, SETTINGS_2, SETTINGS_3, SETTINGS_4, SETTINGS_5, SETTINGS_6 -> {
-                Map.Entry<Slot, SettingType> entry = settings.get(currentPage-1).stream().filter(e -> e.getKey().get() == slot).findFirst().orElse(null);
-                if(entry==null) {
+                Map.Entry<Slot, SettingType> entry = settings.get(currentPage - 1).stream().filter(e -> e.getKey().get() == slot).findFirst().orElse(null);
+                if (entry == null) {
                     return;
                 }
-                if(entry.getValue().getReturnType() == SettingType.ReturnType.BOOLEAN) {
-                    plugin.getSettingsManager().setValue(entry.getValue().getNode(), !(boolean)plugin.getSettingsManager().getGenericSetting(entry.getValue()));
-                    manager.getPlayer().sendMessage("Updated the value of " + entry.getValue().name() + " to " + (boolean)plugin.getSettingsManager().getGenericSetting(entry.getValue()));
+                if (entry.getValue().getReturnType() == SettingType.ReturnType.BOOLEAN) {
+                    plugin.getSettingsManager().setValue(entry.getValue().getNode(), !(boolean) plugin.getSettingsManager().getGenericSetting(entry.getValue()));
+                    manager.getPlayer().sendMessage("Updated the value of " + entry.getValue().name() + " to " + plugin.getSettingsManager().getGenericSetting(entry.getValue()));
                     view.reopen();
-                }else{
+                } else {
 
                 }
             }
@@ -206,8 +187,28 @@ public class ConfigSettingsMenu extends MenuBuilder {
         }
     }
 
-    @Override
-    public MenuType type() {
-        return MenuType.ADJUST_SETTINGS;
+    enum Slot {
+        PREVIOUS_PAGE((byte) 42), NEXT_PAGE((byte) 43), EXIT_MENU((byte) 49),
+        SETTINGS_1((byte) 10),
+        SETTINGS_2((byte) 13),
+        SETTINGS_3((byte) 16),
+        SETTINGS_4((byte) 28),
+        SETTINGS_5((byte) 31),
+        SETTINGS_6((byte) 34),
+        EMPTY((byte) 0);
+
+        final byte val;
+
+        Slot(byte val) {
+            this.val = val;
+        }
+
+        public static Slot ofValue(byte val) {
+            return EnumSet.copyOf(Arrays.stream(Slot.values()).toList()).stream().filter(e -> e.get() == val).findFirst().orElse(EMPTY);
+        }
+
+        public byte get() {
+            return this.val;
+        }
     }
 }

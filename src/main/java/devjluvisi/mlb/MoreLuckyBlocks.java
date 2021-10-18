@@ -10,6 +10,7 @@ import devjluvisi.mlb.events.luckyblocks.BreakEvent;
 import devjluvisi.mlb.events.luckyblocks.PlaceEvent;
 import devjluvisi.mlb.events.player.JoinEvent;
 import devjluvisi.mlb.menus.admin.EditDropMenu;
+import devjluvisi.mlb.menus.admin.EditLuckyBlockMenu;
 import devjluvisi.mlb.util.config.ConfigManager;
 import devjluvisi.mlb.util.config.files.ExchangesManager;
 import devjluvisi.mlb.util.config.files.MessagesManager;
@@ -22,7 +23,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -151,14 +154,14 @@ public final class MoreLuckyBlocks extends JavaPlugin {
     /**
      * @return All of the players attempting to "edit" a drop in a luckyblock.
      */
-    public HashMap<UUID, EditDropMenu> getPlayersEditingDrop() {
+    public Map<UUID, EditDropMenu> getPlayersEditingDrop() {
         return this.playersEditingDrop;
     }
 
     /**
      * @return The custom meta factory object (Items API) for managing custom item tags (PersistentDataContainer)
      */
-    public final CustomMetaFactory getMetaFactory() {
+    public CustomMetaFactory getMetaFactory() {
         return this.metaFactory;
     }
 
@@ -215,6 +218,20 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         return this.structuresYaml;
     }
 
+    @Override
+    public void onDisable() {
+        this.audit.writeAll();
+        this.playerManager.save();
+        this.getServer().getScheduler().cancelTasks(this);
+        this.getLogger().info("*-----------------------------------------*");
+        this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has been disabled!");
+        this.getLogger().info(MessageFormat.format("Server Version -> {0}", super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('('))));
+        this.getLogger().info("By Paroxi, (Jacob)");
+        this.getLogger().info("https://github.com/devjluvisi/MoreLuckyBlocks");
+        this.getLogger().info("*-----------------------------------------*");
+        super.onDisable();
+    }
+
     /**
      * --> FEATURE ADDITIONS <--
      * <p>
@@ -253,8 +270,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
         this.getLogger().info("*-----------------------------------------*");
         this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has started!");
-        this.getLogger().info("Server Version -> "
-                + super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('(')));
+        this.getLogger().info(MessageFormat.format("Server Version -> {0}", super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('('))));
         this.getLogger().info("By Paroxi, (Jacob)");
         this.getLogger().info("https://github.com/devjluvisi/MoreLuckyBlocks");
         this.getLogger().info("*-----------------------------------------*");
@@ -282,6 +298,13 @@ public final class MoreLuckyBlocks extends JavaPlugin {
     }
 
     /**
+     * @return String representation of the version.
+     */
+    private String getVersion() {
+        return MessageFormat.format("{0} for Minecraft Version [{1}]", super.getDescription().getVersion(), super.getDescription().getAPIVersion());
+    }
+
+    /**
      * Sets up the configuration files for the plugin.
      */
     private void setupConfig() {
@@ -302,7 +325,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      */
     private void registerCommands() {
         Objects.requireNonNull(this.getCommand("mlb")).setExecutor(new CommandManager(this));
-
     }
 
     /**
@@ -314,29 +336,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new BreakEvent(this), this);
         this.getServer().getPluginManager().registerEvents(new PlaceEvent(this), this);
         this.getServer().getPluginManager().registerEvents(new JoinEvent(this), this);
-    }
-
-    @Override
-    public void onDisable() {
-        this.audit.writeAll();
-        this.playerManager.save();
-        this.getServer().getScheduler().cancelTasks(this);
-        this.getLogger().info("*-----------------------------------------*");
-        this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has been disabled!");
-        this.getLogger().info("Server Version -> "
-                + super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('(')));
-        this.getLogger().info("By Paroxi, (Jacob)");
-        this.getLogger().info("https://github.com/devjluvisi/MoreLuckyBlocks");
-        this.getLogger().info("*-----------------------------------------*");
-        super.onDisable();
-    }
-
-    /**
-     * @return String representation of the version.
-     */
-    private final String getVersion() {
-        return super.getDescription().getVersion() + " for Minecraft Version [" + super.getDescription().getAPIVersion()
-                + "]";
+        this.getServer().getPluginManager().registerEvents(new EditLuckyBlockMenu(this), this);
     }
 
 }

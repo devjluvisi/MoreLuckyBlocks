@@ -14,6 +14,8 @@ public enum MenuType {
     VIEW_EXCHANGE(ExchangesMenu.class),
     ADJUST_SETTINGS(ConfigSettingsMenu.class),
     TRACK_MENU(TrackMenu.class),
+    EDIT_LUCKY_BLOCK_ATTRIBUTES(EditLuckyBlockMenu.class),
+    EDIT_PARTICLES_SUB(ParticlesSubMenu.class),
     CONFIRM(ConfirmMenu.class),
     // Empty menu
     EMPTY(null),

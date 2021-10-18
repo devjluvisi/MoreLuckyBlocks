@@ -435,6 +435,7 @@ public class DropStructure implements Listener {
      * "structures.yml" configuration file.
      */
     public void save() {
+
         if (this.drop.getStructure() == null) {
             this.drop.setStructure(UUID.randomUUID());
         }

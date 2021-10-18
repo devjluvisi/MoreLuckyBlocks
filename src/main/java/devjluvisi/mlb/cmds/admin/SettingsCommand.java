@@ -5,7 +5,6 @@ import devjluvisi.mlb.cmds.CommandResult;
 import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.menus.MenuManager;
-import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.menus.admin.ConfigSettingsMenu;
 import devjluvisi.mlb.util.Range;
 import org.bukkit.command.CommandSender;
@@ -53,7 +52,7 @@ public record SettingsCommand(MoreLuckyBlocks plugin) implements SubCommand {
     @Override
     public CommandResult perform(CommandSender sender, String[] args) {
         MenuManager manager = new MenuManager(plugin);
-        manager.open((Player)sender, new ConfigSettingsMenu(manager));
+        manager.open((Player) sender, new ConfigSettingsMenu(manager));
         return new CommandResult(ResultType.PASSED);
     }
 

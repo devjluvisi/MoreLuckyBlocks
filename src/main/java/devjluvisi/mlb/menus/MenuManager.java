@@ -25,27 +25,27 @@ public class MenuManager {
         return this;
     }
 
+    public void open(Player p, MenuType type) {
+        this.p = p;
+        get(type).open(p);
+    }
+
     public MenuBuilder get(MenuType type) {
-        if(type == MenuType.EMPTY) {
+        if (type == MenuType.EMPTY) {
             return null;
         }
         try {
             return Objects.requireNonNull(
-                    menus.stream()
-                            .filter(e -> e.equals(type))
-                            .findFirst()
-                            .orElse(null))
+                            menus.stream()
+                                    .filter(e -> e.equals(type))
+                                    .findFirst()
+                                    .orElse(null))
                     .getMenuClass()
                     .getConstructor(MenuManager.class).newInstance(this);
         } catch (Exception e) {
             plugin.getServer().getLogger().severe("[CRITICAL] Could not parse menu requested via reflection. [type=" + type.name() + "]");
         }
         return null;
-    }
-
-    public void open(Player p, MenuType type) {
-        this.p = p;
-        get(type).open(p);
     }
 
     public void open(Player p, MenuBuilder menu) {

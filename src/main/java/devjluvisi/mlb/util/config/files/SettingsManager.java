@@ -1,10 +1,7 @@
 package devjluvisi.mlb.util.config.files;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import devjluvisi.mlb.api.gui.Menu;
-import devjluvisi.mlb.menus.util.MenuItem;
 import devjluvisi.mlb.util.config.ConfigManager;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Manages the "config.yml" file and pulls strings directly from it to indicate
@@ -41,7 +38,6 @@ public class SettingsManager extends ConfigManager {
     }
 
 
-
     public boolean isAutoSaveEnabled() {
         return getConfig().getBoolean("file-saving.auto-save-edits");
     }
@@ -49,7 +45,6 @@ public class SettingsManager extends ConfigManager {
     public int getBlockDataSaveInterval() {
         return getConfig().getInt("file-saving.data-save-interval");
     }
-
 
 
 }

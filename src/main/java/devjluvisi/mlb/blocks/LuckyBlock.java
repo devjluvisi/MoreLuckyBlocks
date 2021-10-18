@@ -8,6 +8,9 @@ import devjluvisi.mlb.util.config.ConfigManager;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -32,8 +35,16 @@ public class LuckyBlock {
     private List<String> lore;
     private float defaultBlockLuck;
     private List<LuckyBlockDrop> droppableItems;
+    private ItemStack requiredTool;
+    private EnumMap<Particle, Integer> particleMap;
+    private Sound breakSound;
+    private int placeCooldown;
+    private int breakCooldown;
+    private boolean itemEnchanted;
+
 
     // Per-Item Fields (For individual lucky blocks)
+    // These fields are not saved to config.s
     private float blockLuck;
 
     public LuckyBlock() {
@@ -46,6 +57,12 @@ public class LuckyBlock {
         this.defaultBlockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
         this.droppableItems = new ArrayList<>();
         this.blockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
+        this.requiredTool = null;
+        this.particleMap = new EnumMap<>(Particle.class);
+        this.breakSound = null;
+        this.placeCooldown = 0;
+        this.breakCooldown = 0;
+        this.itemEnchanted = false;
     }
 
     public LuckyBlock(String internalName) {
@@ -58,19 +75,6 @@ public class LuckyBlock {
         this.defaultBlockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
         this.droppableItems = Collections.emptyList();
         this.blockLuck = PluginConstants.DEFAULT_BLOCK_LUCK;
-    }
-
-    public LuckyBlock(String internalName, String name, String breakPermission, Material blockMaterial,
-                      List<String> lore, float defaultBlockLuck, LinkedList<LuckyBlockDrop> droppableItems) {
-        super();
-        this.internalName = internalName;
-        this.name = name;
-        this.breakPermission = breakPermission;
-        this.blockMaterial = blockMaterial;
-        this.lore = lore;
-        this.setDefaultBlockLuck(defaultBlockLuck);
-        this.droppableItems = droppableItems;
-        this.setBlockLuck(defaultBlockLuck);
     }
 
     public ItemStack asItem(MoreLuckyBlocks plugin, int amount) {
@@ -102,9 +106,14 @@ public class LuckyBlock {
         meta.setDisplayName(Util.toColor(name));
         meta.setLore(this.getRefreshedLore());
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+
+        if(!itemEnchanted) {
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        }else{
+            luckyBlock.addUnsafeEnchantment(Enchantment.LUCK, 1);
+        }
 
         luckyBlock.setItemMeta(meta);
         return luckyBlock;
@@ -128,7 +137,10 @@ public class LuckyBlock {
     }
 
     public void setInternalName(String internalName) {
-        this.internalName = internalName.toLowerCase();
+        if(!PluginConstants.INTERNAL_NAME_RANGE.isInRange(internalName.length())) {
+            throw new IllegalArgumentException("Argument length for setting an internal name must be 2-28 characters in length.");
+        }
+        this.internalName = internalName;
     }
 
     public String getName() {
@@ -165,6 +177,54 @@ public class LuckyBlock {
 
     public float getDefaultBlockLuck() {
         return this.defaultBlockLuck;
+    }
+
+    public ItemStack getRequiredTool() {
+        return requiredTool;
+    }
+
+    public EnumMap<Particle, Integer> getParticleMap() {
+        return particleMap;
+    }
+
+    public void setParticleMap(EnumMap<Particle, Integer> particleMap) {
+        this.particleMap = particleMap;
+    }
+
+    public void setRequiredTool(ItemStack requiredTool) {
+        this.requiredTool = requiredTool;
+    }
+
+    public Sound getBreakSound() {
+        return breakSound;
+    }
+
+    public void setBreakSound(Sound breakSound) {
+        this.breakSound = breakSound;
+    }
+
+    public int getPlaceCooldown() {
+        return placeCooldown;
+    }
+
+    public void setPlaceCooldown(int placeCooldown) {
+        this.placeCooldown = placeCooldown;
+    }
+
+    public int getBreakCooldown() {
+        return breakCooldown;
+    }
+
+    public void setBreakCooldown(int breakCooldown) {
+        this.breakCooldown = breakCooldown;
+    }
+
+    public boolean isItemEnchanted() {
+        return itemEnchanted;
+    }
+
+    public void setItemEnchanted(boolean itemEnchanted) {
+        this.itemEnchanted = itemEnchanted;
     }
 
     public void setDefaultBlockLuck(float defaultBlockLuck) {
@@ -214,6 +274,27 @@ public class LuckyBlock {
         blocksYaml.getConfig().set(path + ".block", this.blockMaterial.name());
         blocksYaml.getConfig().set(path + ".item-lore", Util.asNormalColoredString(this.lore));
         blocksYaml.getConfig().set(path + ".permission", this.breakPermission);
+        blocksYaml.getConfig().set(path + ".enchanted", this.itemEnchanted);
+        if(!Objects.isNull(requiredTool)) {
+            blocksYaml.getConfig().set(path + ".required-tool", this.requiredTool);
+        }
+
+        if(!Objects.isNull(breakSound)) {
+            blocksYaml.getConfig().set(path + ".break-sound", this.breakSound.name());
+        }
+
+        if(placeCooldown != 0 || breakCooldown != 0) {
+            blocksYaml.getConfig().set(path + ".place-cooldown", this.placeCooldown);
+            blocksYaml.getConfig().set(path + ".break-cooldown", this.breakCooldown);
+        }
+
+        if(!particleMap.isEmpty()) {
+            StringBuilder str = new StringBuilder();
+            particleMap.forEach((k, v) -> str.append(k.name()).append(",").append(v).append(":"));
+            str.setLength(str.length()-1); // Remove last ":"
+            blocksYaml.getConfig().set(path + ".particles", "[" + str + "]");
+        }
+
         blocksYaml.getConfig().set(path + ".default-luck", this.defaultBlockLuck);
 
         int index = 0;
@@ -293,24 +374,22 @@ public class LuckyBlock {
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("LuckyBlock [internalName=");
-        builder.append(this.internalName);
-        builder.append(", name=");
-        builder.append(this.name);
-        builder.append(", breakPermission=");
-        builder.append(this.breakPermission);
-        builder.append(", blockMaterial=");
-        builder.append(this.blockMaterial);
-        builder.append(", lore=");
-        builder.append(this.lore);
-        builder.append(", defaultBlockLuck=");
-        builder.append(this.defaultBlockLuck);
-        builder.append(", droppableItems=");
-        builder.append(this.droppableItems);
-        builder.append(", blockLuck=");
-        builder.append(this.blockLuck);
-        builder.append("]");
-        return builder.toString();
+        final StringBuilder sb = new StringBuilder("LuckyBlock{");
+        sb.append("internalName='").append(internalName).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", breakPermission='").append(breakPermission).append('\'');
+        sb.append(", blockMaterial=").append(blockMaterial);
+        sb.append(", lore=").append(lore);
+        sb.append(", defaultBlockLuck=").append(defaultBlockLuck);
+        sb.append(", droppableItems=").append(droppableItems);
+        sb.append(", requiredTool=").append(requiredTool);
+        sb.append(", particleMap=").append(particleMap);
+        sb.append(", breakSound=").append(breakSound);
+        sb.append(", placeCooldown=").append(placeCooldown);
+        sb.append(", breakCooldown=").append(breakCooldown);
+        sb.append(", itemEnchanted=").append(itemEnchanted);
+        sb.append(", blockLuck=").append(blockLuck);
+        sb.append('}');
+        return sb.toString();
     }
 }

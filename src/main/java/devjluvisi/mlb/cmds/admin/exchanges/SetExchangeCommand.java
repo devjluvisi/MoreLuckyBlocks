@@ -15,7 +15,7 @@ import org.bukkit.event.Listener;
 
 public class SetExchangeCommand implements SubCommand, Listener {
 
-    private MoreLuckyBlocks plugin;
+    private final MoreLuckyBlocks plugin;
 
     public SetExchangeCommand(MoreLuckyBlocks plugin) {
         this.plugin = plugin;
