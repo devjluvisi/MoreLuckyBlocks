@@ -147,7 +147,7 @@ public class EditDropMenu extends MenuBuilder {
             view.close();
         }
         if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem())) {
-            manager.open(manager.getPlayer(), MenuType.LIST_LOOT);
+            manager.regress(view);
         }
     }
 

@@ -3,17 +3,22 @@ package devjluvisi.mlb.helper;
 import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.util.Range;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class which contains static utility methods.
  */
 public final class Util {
+
+    private Util() {}
 
     public static boolean isSameDisplayName(String n1, String n2) {
         return (ChatColor.stripColor(n1).equals(ChatColor.stripColor(n2)));
@@ -176,6 +181,20 @@ public final class Util {
             lore.add(lastCode + str);
         }
         return lore;
+    }
+
+    /**
+     * Returns an ItemStack as a string.
+     * If the item has a display name, it returns the display name.
+     * If not, it returns the type of the item.
+     * @param item The item to get a name for.
+     * @return The item as a name.
+     */
+    public static String getItemAsString(ItemStack item) {
+        if(item.hasItemMeta() && Objects.requireNonNull(item.getItemMeta()).hasDisplayName()) {
+            return item.getItemMeta().getDisplayName();
+        }
+        return WordUtils.capitalize(StringUtils.lowerCase(StringUtils.replace(item.getType().name(), "_", " ")));
     }
 
     public static String toColor(String str) {

@@ -60,7 +60,8 @@ public class DropsMenu extends MenuBuilder {
         }
         Arrays.fill(content[2], MenuItem.redPlaceholder().asItem());
 
-        content[2][1] = new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem();
+        content[2][0] = new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem();
+        content[2][2] = new MenuItem().of(MenuItem.SpecialItem.EDIT_ATTRIBUTES).asItem();
         content[2][3] = new MenuItem().of(MenuItem.SpecialItem.ADD_NEW_DROP).asItem();
         content[2][4] = new MenuItem().of(MenuItem.SpecialItem.REMOVE_ALL_DROPS).asItem();
         content[2][5] = new MenuItem().of(MenuItem.SpecialItem.DELETE_LUCKY_BLOCK).asItem();
@@ -104,6 +105,9 @@ public class DropsMenu extends MenuBuilder {
             manager.open(manager.getPlayer(), new ConfirmMenu(manager).request(ConfirmMenu.ConfirmAction.REMOVE_LUCKY_BLOCK).returnTo(type()));
             return;
         }
+        if(new MenuItem(MenuItem.SpecialItem.EDIT_ATTRIBUTES).equals(itemStack)) {
+            manager.open(manager.getPlayer(), MenuType.EDIT_LUCKY_BLOCK_ATTRIBUTES);
+        }
         // Back Page Button
         if (itemStack.getType().equals(Material.FEATHER)) {
             if ((this.beginIndex - CHEST_ROW_SIZE) <= 0) {
@@ -129,7 +133,7 @@ public class DropsMenu extends MenuBuilder {
 
         // Exit
         if (new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).equals(itemStack)) {
-            manager.open(view.getPlayer(), MenuType.LIST_LUCKY_BLOCKS);
+            manager.regress(view);
         }
     }
 }

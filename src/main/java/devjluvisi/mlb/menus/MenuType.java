@@ -1,6 +1,7 @@
 package devjluvisi.mlb.menus;
 
 import devjluvisi.mlb.menus.admin.*;
+import devjluvisi.mlb.menus.shared.ItemViewMenu;
 import devjluvisi.mlb.menus.user.*;
 
 public enum MenuType {
@@ -24,7 +25,10 @@ public enum MenuType {
     USER_LIST_DROPS(UserListDrops.class),
     USER_LIST_LOOT(UserListLoot.class),
     USER_REDEEM(UserRedeemMenu.class),
-    USER_REDEEM_LIST(UserRedeemList.class);
+    USER_REDEEM_LIST(UserRedeemList.class),
+    // Shared
+    VIEW_ITEM(ItemViewMenu.class)
+    ;
 
     private final Class<? extends MenuBuilder> classType;
 

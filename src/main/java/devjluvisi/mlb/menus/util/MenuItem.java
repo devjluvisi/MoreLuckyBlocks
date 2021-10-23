@@ -35,6 +35,8 @@ public class MenuItem {
                 m = Material.BARRIER;
                 displayName = "&c&lExit";
                 lore.add("&7Click to exit the menu.");
+                lore.add("&7Will return to previous menu if");
+                lore.add("&7possible.");
             }
             case ADD_NEW_DROP -> {
                 m = Material.GLOWSTONE_DUST;
@@ -193,6 +195,15 @@ public class MenuItem {
                 displayName = "&eEdit Required Tool";
                 lore.add("&7Edit the tool required to");
                 lore.add("&7break the lucky block.");
+                lore.add("&3&oRight-Click to view current tool.");
+                lore.add("&3&oLeft-Click to edit required tool.");
+            }
+            case EDIT_ATTRIBUTES -> {
+                m = Material.ANVIL;
+                displayName = "&9Edit Attributes";
+                lore.add("&7Edit the attributes of this");
+                lore.add("&7lucky block.");
+                lore.add("&f&oEx: Particles, Sounds, Name, Lore, ...");
             }
         }
         return this;
@@ -280,6 +291,7 @@ public class MenuItem {
      */
     public enum SpecialItem {
         EXIT_BUTTON, ADD_NEW_DROP, REMOVE_ALL_DROPS, EDIT_DROP, DELETE_DROP, COPY_DROP, CHANGE_RARITY,
+        EDIT_ATTRIBUTES,
         ADD_POTION_EFFECT, ADD_COMMAND, SAVE_BUTTON, CANCEL_BUTTON, CONFIRM_BUTTON, INCREASE_RARITY, DECREASE_RARITY,
         DELETE_LUCKY_BLOCK, ADD_STRUCTURE, DELETE_EXCHANGE, SAVE_EXCHANGE, EDIT_NAME, EDIT_LORE, EDIT_MATERIAL, EDIT_BREAK_PERMISSION,
         EDIT_TOOL, EDIT_PARTICLES, EDIT_SOUND, EDIT_PLACE_COOLDOWN, EDIT_BREAK_COOLDOWN, EDIT_ENCHANTED

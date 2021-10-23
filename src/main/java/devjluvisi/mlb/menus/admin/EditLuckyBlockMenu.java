@@ -2,6 +2,7 @@ package devjluvisi.mlb.menus.admin;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;
+import devjluvisi.mlb.api.gui.Menu;
 import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.api.gui.pages.PageType;
 import devjluvisi.mlb.blocks.LuckyBlock;
@@ -9,6 +10,7 @@ import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.menus.MenuBuilder;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuType;
+import devjluvisi.mlb.menus.shared.ItemViewMenu;
 import devjluvisi.mlb.menus.util.MenuItem;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -41,6 +43,7 @@ public class EditLuckyBlockMenu extends MenuBuilder implements Listener {
     private static final byte EDIT_PLACE_COOLDOWN_SLOT = 31;
     private static final byte EDIT_BREAK_COOLDOWN_SLOT = 33;
     private static final byte EDIT_ENCHANTED_SLOT = 35;
+    private static final byte EXIT_BUTTON_SLOT = 49;
 
     /**
      * The current part of the lucky block the player is editing.
@@ -58,7 +61,12 @@ public class EditLuckyBlockMenu extends MenuBuilder implements Listener {
         playersEditing = new HashMap<>();
     }
     public EditLuckyBlockMenu(MenuManager manager) {
-        super(manager, "Editing " + manager.getMenuData().getLuckyBlock().getInternalName(), PageType.CHEST_PLUS_PLUS);
+       super(manager, "Editing " + manager.getMenuData().getLuckyBlock().getInternalName());
+       if(manager.isIndirectMenu()) {
+           setPageType(PageType.DOUBLE_CHEST);
+       }else{
+           setPageType(PageType.CHEST_PLUS_PLUS);
+       }
     }
     
     @EventHandler
@@ -188,12 +196,14 @@ public class EditLuckyBlockMenu extends MenuBuilder implements Listener {
 
     @Override
     public ItemStack[][] getContent(ItemStack[][] content) {
-        playersEditing.putIfAbsent(manager.getPlayer().getUniqueId(), Map.entry(EditingAttribute.NONE, manager.getMenuData().getLuckyBlock().getInternalName()));
         Arrays.fill(content[0], MenuItem.blackPlaceholder().asItem());
         Arrays.fill(content[1], MenuItem.whitePlaceholder().asItem());
         Arrays.fill(content[2], MenuItem.blackPlaceholder().asItem());
         Arrays.fill(content[3], MenuItem.whitePlaceholder().asItem());
         Arrays.fill(content[4], MenuItem.blackPlaceholder().asItem());
+        if(manager.isIndirectMenu()) {
+            Arrays.fill(content[5], MenuItem.whitePlaceholder().asItem());
+        }
         LuckyBlock lb = manager.getMenuData().getLuckyBlock();
         content[1][0] = new MenuItem(MenuItem.SpecialItem.EDIT_NAME).addLine("\n").addLine(ChatColor.AQUA + lb.getInternalName()).asItem();
         content[1][2] = new MenuItem(MenuItem.SpecialItem.EDIT_LORE).addLine("\n").addAllLine((lb.getLore().isEmpty() ? new String[] {ChatColor.AQUA + "None"} : lb.getLore().toString().substring(1, lb.getLore().toString().length()-1).split(", "))).asItem();
@@ -201,11 +211,22 @@ public class EditLuckyBlockMenu extends MenuBuilder implements Listener {
         content[1][4] = new MenuItem(MenuItem.SpecialItem.EDIT_MATERIAL).with(lb.getBlockMaterial()).addLine("\n").addLine(ChatColor.AQUA + lb.getBlockMaterial().name()).asItem();
         content[1][6] = new MenuItem(MenuItem.SpecialItem.EDIT_BREAK_PERMISSION).addLine("\n").addLine(ChatColor.AQUA + (lb.getBreakPermission().length()==0 ? "None" : lb.getBreakPermission())).asItem();
         content[1][8] = new MenuItem(MenuItem.SpecialItem.EDIT_TOOL).with(lb.getRequiredTool() != null ? lb.getRequiredTool().getType() : Material.DIAMOND_PICKAXE).addLine("\n").addLine(ChatColor.AQUA + (lb.getRequiredTool() == null ? "None" : (lb.getRequiredTool().hasItemMeta()&&lb.getRequiredTool().getItemMeta().hasDisplayName() ? lb.getRequiredTool().getItemMeta().getDisplayName() : lb.getRequiredTool().getType().name()))).asItem();
-        content[3][0] = new MenuItem(MenuItem.SpecialItem.EDIT_PARTICLES).addLine("\n").addLine(ChatColor.AQUA + (lb.getParticleMap().isEmpty() ? "None" : lb.getParticleMap().entrySet().toString())).asItem();
+        MenuItem particles = new MenuItem(MenuItem.SpecialItem.EDIT_PARTICLES).addLine("\n");
+        if(lb.getParticleMap().isEmpty()) {
+            particles.addLine(ChatColor.AQUA + "None");
+        }else{
+            lb.getParticleMap().entrySet().forEach(k -> particles.addLine(ChatColor.AQUA + ParticlesSubMenu.transform(k.getKey().name()) + " " + ChatColor.GRAY + ParticlesSubMenu.stars(k.getValue())));
+        }
+
+         content[3][0] = particles.asItem();
+
         content[3][2] = new MenuItem(MenuItem.SpecialItem.EDIT_SOUND).addLine("\n").addLine(ChatColor.AQUA + (lb.getBreakSound() == null ? "None" : lb.getBreakSound().name())).asItem();
         content[3][4] = new MenuItem(MenuItem.SpecialItem.EDIT_PLACE_COOLDOWN).addLine("\n").addLine(ChatColor.AQUA + String.valueOf((lb.getPlaceCooldown() == 0 ? "None" : lb.getPlaceCooldown()))).asItem();
         content[3][6] = new MenuItem(MenuItem.SpecialItem.EDIT_BREAK_COOLDOWN).addLine("\n").addLine(ChatColor.AQUA + String.valueOf((lb.getBreakCooldown() == 0 ? "None" : lb.getBreakCooldown()))).asItem();
         content[3][8] = new MenuItem(MenuItem.SpecialItem.EDIT_ENCHANTED).addLine("\n").addLine(ChatColor.AQUA + String.valueOf(lb.isItemEnchanted())).asItem();
+        if(manager.isIndirectMenu()) {
+            content[5][4] = new MenuItem(MenuItem.SpecialItem.EXIT_BUTTON).asItem();
+        }
         return content;
     }
 
@@ -240,12 +261,15 @@ public class EditLuckyBlockMenu extends MenuBuilder implements Listener {
                 p.sendMessage(ChatColor.AQUA + "Type in chat the new break permission for this lucky block.");
             }
             case EDIT_REQUIRED_TOOL_SLOT -> {
+                if(clickType == ClickType.RIGHT && manager.getMenuData().getLuckyBlock().hasRequiredTool()) {
+                    manager.open(manager.getPlayer(), new ItemViewMenu(manager, manager.getMenuData().getLuckyBlock().getRequiredTool()));
+                    return;
+                }
                 playersEditing.put(manager.getPlayer().getUniqueId(), Map.entry(EditingAttribute.REQUIRED_TOOL, manager.getMenuData().getLuckyBlock().getInternalName()));
                 p.sendMessage(ChatColor.AQUA + "Right-Click on a tool/item in your main hand to set it as the required tool to break this lucky block.");
                 p.sendMessage(ChatColor.GRAY + "Right-Click on AIR to disable a required tool.");
             }
             case EDIT_PARTICLES_SLOT -> {
-                playersEditing.put(manager.getPlayer().getUniqueId(), Map.entry(EditingAttribute.PARTICLES, manager.getMenuData().getLuckyBlock().getInternalName()));
                 manager.open(view.getPlayer(), MenuType.EDIT_PARTICLES_SUB);
                 return;
             }
@@ -280,6 +304,10 @@ public class EditLuckyBlockMenu extends MenuBuilder implements Listener {
                     manager.getMenuData().getLuckyBlock().setItemEnchanted(true);
                 }
                 view.close();
+                return;
+            }
+            case EXIT_BUTTON_SLOT -> {
+                manager.regress();
                 return;
             }
             default -> {

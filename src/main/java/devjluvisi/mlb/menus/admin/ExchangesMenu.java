@@ -89,7 +89,7 @@ public class ExchangesMenu extends MenuBuilder {
             return;
         }
         if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem()) && !isPlayerSlot(slot)) {
-            view.close();
+            manager.regress(view);
             return;
         }
         if (isPlayerSlot(slot)) {

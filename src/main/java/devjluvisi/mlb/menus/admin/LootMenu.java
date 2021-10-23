@@ -38,6 +38,7 @@ public class LootMenu extends MenuBuilder {
                 .addLine("&8- &7# of Items: &9" + lbDrop.getItems().size())
                 .addLine("&8- &7# of Potions: &9" + lbDrop.getPotionEffects().size())
                 .addLine("&8- &7# of Commands: &9" + lbDrop.getCommands().size())
+                .addLine("&8- &7Has Structure: &9" + (lbDrop.hasStructure() ? "Yes" : "No"))
                 .addLine("\n")
                 .addLine("&6Click on the Book & Quill to edit the drop.")
                 .asItem();
@@ -96,7 +97,7 @@ public class LootMenu extends MenuBuilder {
             return;
         }
         if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem())) {
-            manager.open(manager.getPlayer(), MenuType.LIST_DROPS);
+            manager.regress(view);
             return;
         }
 

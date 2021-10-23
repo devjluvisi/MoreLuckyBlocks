@@ -95,7 +95,7 @@ public class TrackMenu extends MenuBuilder {
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
         switch (slot) {
             case EXIT_BUTTON -> {
-                view.close();
+                manager.regress(view);
             }
             case NEXT_PAGE -> {
                 if (currentPage == maxPage) {

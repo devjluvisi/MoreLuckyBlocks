@@ -76,17 +76,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - Fix bug lucky blocks arent removed from audit
      */
 
-    /*
-    todo for blocks.yml
-
-    - particles per lucky block
-    - sounds per lucky block
-    - tools required to break
-    - cooldown for placing
-    - cooldown for breaking
-    - enchanted/
-     */
-
     /**
      * "blocks.yml" resource file.
      */

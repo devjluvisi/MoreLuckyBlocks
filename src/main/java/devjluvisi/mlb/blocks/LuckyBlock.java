@@ -227,6 +227,22 @@ public class LuckyBlock {
         this.itemEnchanted = itemEnchanted;
     }
 
+    public boolean hasRequiredTool() {
+        return !Objects.isNull(requiredTool);
+    }
+
+    public boolean hasParticles() {
+        return !this.particleMap.isEmpty();
+    }
+
+    public boolean hasBreakSound() {
+        return !Objects.isNull(breakSound);
+    }
+
+    public boolean hasCooldowns() {
+        return this.breakCooldown != 0 || this.placeCooldown != 0;
+    }
+
     public void setDefaultBlockLuck(float defaultBlockLuck) {
         if (defaultBlockLuck > 100) {
             this.defaultBlockLuck = 100.0F;

@@ -166,7 +166,7 @@ public class ConfigSettingsMenu extends MenuBuilder {
                 view.reopen();
             }
             case EXIT_MENU -> {
-                view.close();
+                manager.regress(view);
             }
             case SETTINGS_1, SETTINGS_2, SETTINGS_3, SETTINGS_4, SETTINGS_5, SETTINGS_6 -> {
                 Map.Entry<Slot, SettingType> entry = settings.get(currentPage - 1).stream().filter(e -> e.getKey().get() == slot).findFirst().orElse(null);

@@ -1,23 +1,30 @@
 package devjluvisi.mlb.menus;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.api.gui.MenuView;
+import org.apache.commons.lang.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.EnumSet;
-import java.util.Objects;
+import javax.xml.validation.Validator;
+import java.sql.Array;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 // One menu for different parts of every GUI
 public class MenuManager {
 
     private final MoreLuckyBlocks plugin;
-    private final EnumSet<MenuType> menus;
+    private static final EnumSet<MenuType> menus = EnumSet.allOf(MenuType.class);
     private MenuResource menuResource;
+    private final Deque<MenuType> traverseHistory;
     private Player p;
+
 
     public MenuManager(MoreLuckyBlocks plugin) {
         this.plugin = plugin;
         this.menuResource = new MenuResource();
-        menus = EnumSet.allOf(MenuType.class);
+        this.traverseHistory = new ArrayDeque<>();
     }
 
     public MenuManager withData(MenuResource src) {
@@ -27,8 +34,58 @@ public class MenuManager {
 
     public void open(Player p, MenuType type) {
         this.p = p;
+        Validate.isTrue(type != MenuType.EMPTY && Objects.nonNull(type), "Cannot open invalid MenuType.");
+        open(p, get(type));
+    }
+
+    public void open(Player p, MenuBuilder menu) {
+        this.p = p;
+        Validate.isTrue(menu.type() != MenuType.EMPTY && Objects.nonNull(menu.type()), "Cannot open invalid MenuType.");
+        menu.open(p);
+        addTraceback(menu.type());
+        Bukkit.broadcastMessage(this.traverseHistory.toString());
+    }
+
+    public void silentOpen(Player p, MenuType type) {
+        this.p = p;
+        Validate.isTrue(type != MenuType.EMPTY && Objects.nonNull(type), "Cannot open invalid MenuType.");
+        traverseHistory.removeFirst();
+        traverseHistory.removeFirst();
         get(type).open(p);
     }
+
+    public boolean isIndirectMenu() {
+        return this.traverseHistory.peek() != MenuType.EMPTY;
+    }
+
+    private void addTraceback(MenuType type) {
+        if(traverseHistory.contains(type)) {
+            return;
+        }
+        traverseHistory.push(type);
+    }
+
+    public boolean regress() {
+        Validate.notNull(p, "Player was null when regress() function was called.");
+        // Remove the last element.
+        traverseHistory.removeFirst();
+        if(traverseHistory.isEmpty()) {
+            return false;
+        }
+        MenuType type = this.traverseHistory.pop();
+
+        open(p, type);
+        p.sendMessage("Returning to " + type);
+        Bukkit.broadcastMessage(this.traverseHistory.toString());
+        return true;
+    }
+
+    public void regress(MenuView view) {
+        if(!regress()) {
+            view.close();
+        }
+    }
+
 
     public MenuBuilder get(MenuType type) {
         if (type == MenuType.EMPTY) {
@@ -48,10 +105,6 @@ public class MenuManager {
         return null;
     }
 
-    public void open(Player p, MenuBuilder menu) {
-        this.p = p;
-        menu.open(p);
-    }
 
     public MenuResource getMenuData() {
         return menuResource;

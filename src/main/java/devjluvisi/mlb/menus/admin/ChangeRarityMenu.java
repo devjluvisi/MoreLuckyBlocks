@@ -82,7 +82,7 @@ public class ChangeRarityMenu extends MenuBuilder {
         }
         if (itemStack.getType().equals(Material.EXPERIENCE_BOTTLE)) {
             lbDrop.setRarity(rarity);
-            manager.open(manager.getPlayer(), MenuType.LIST_LOOT);
+            manager.regress(view);
         }
 
     }

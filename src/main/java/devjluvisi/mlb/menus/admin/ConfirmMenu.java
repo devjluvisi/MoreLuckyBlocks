@@ -93,7 +93,7 @@ public class ConfirmMenu extends MenuBuilder {
             return;
         }
         if (itemStack.getType() == Material.RED_TERRACOTTA) {
-            goBack();
+            goBack(view);
             return;
         }
         if (action == ConfirmAction.DELETE_DROP) {
@@ -103,16 +103,12 @@ public class ConfirmMenu extends MenuBuilder {
                 view.close();
                 return;
             }
-            manager.open(manager.getPlayer(), MenuType.LIST_DROPS);
+            manager.silentOpen(manager.getPlayer(), MenuType.LIST_DROPS);
         }
         if (action == ConfirmAction.REMOVE_ALL_DROPS) {
             lb.getDroppableItems().clear();
             manager.getPlayer().sendMessage(ChatColor.GRAY + "Deleted All Drops for " + lb.getInternalName() + ".");
-            if (returnType == MenuType.EMPTY) {
-                view.close();
-                return;
-            }
-            manager.open(manager.getPlayer(), MenuType.LIST_DROPS);
+            manager.regress(view);
         }
         if (action == ConfirmAction.DELETE_BLOCK_DATA_SPECIFIC) {
             manager.getPlugin().getAudit().removeAll(lb);
@@ -142,12 +138,8 @@ public class ConfirmMenu extends MenuBuilder {
 
     }
 
-    public void goBack() {
-        if (returnType == MenuType.EMPTY) {
-            manager.getPlayer().getOpenInventory().close();
-            return;
-        }
-        manager.open(manager.getPlayer(), returnType);
+    public void goBack(MenuView view) {
+        manager.regress(view);
     }
 
     public enum ConfirmAction {

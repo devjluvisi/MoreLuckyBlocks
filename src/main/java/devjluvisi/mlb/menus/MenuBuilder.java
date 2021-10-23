@@ -7,23 +7,23 @@ import org.bukkit.inventory.ItemStack;
 
 public abstract class MenuBuilder extends SimpleMenu {
 
-    private final PageType pageType;
+    private PageType pageType;
     protected MenuManager manager;
     private String name;
 
-    public MenuBuilder(MenuManager manager) {
+    protected MenuBuilder(MenuManager manager) {
         this.name = StringUtils.EMPTY;
         this.pageType = PageType.CHEST;
         this.manager = manager;
     }
 
-    public MenuBuilder(MenuManager manager, String name) {
+    protected MenuBuilder(MenuManager manager, String name) {
         this.manager = manager;
         this.name = name;
         this.pageType = PageType.CHEST;
     }
 
-    public MenuBuilder(MenuManager manager, String name, PageType pageType) {
+    protected MenuBuilder(MenuManager manager, String name, PageType pageType) {
         this.manager = manager;
         this.name = name;
         this.pageType = pageType;
@@ -46,6 +46,10 @@ public abstract class MenuBuilder extends SimpleMenu {
     public ItemStack[] getContent() {
         final ItemStack[][] content = getContent(this.getPageType().getBlank2DArray());
         return this.getPageType().flatten(content);
+    }
+
+    public void setPageType(PageType pageType) {
+        this.pageType = pageType;
     }
 
     @Override
