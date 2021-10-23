@@ -9,6 +9,7 @@ import devjluvisi.mlb.events.luck.JoinLuckEvent;
 import devjluvisi.mlb.events.luckyblocks.BreakEvent;
 import devjluvisi.mlb.events.luckyblocks.PlaceEvent;
 import devjluvisi.mlb.events.player.JoinEvent;
+import devjluvisi.mlb.menus.admin.ConfigSettingsMenu;
 import devjluvisi.mlb.menus.admin.EditDropMenu;
 import devjluvisi.mlb.menus.admin.EditLuckyBlockMenu;
 import devjluvisi.mlb.util.config.ConfigManager;
@@ -73,7 +74,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - JavaDoc & Comment all methods.
      * - Command to show number of unopened lucky blocks.
      * - GUI for structures.
-     * - Fix bug lucky blocks arent removed from audit
      */
 
     /**

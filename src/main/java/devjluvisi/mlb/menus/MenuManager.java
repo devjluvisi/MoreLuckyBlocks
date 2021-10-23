@@ -41,9 +41,10 @@ public class MenuManager {
     public void open(Player p, MenuBuilder menu) {
         this.p = p;
         Validate.isTrue(menu.type() != MenuType.EMPTY && Objects.nonNull(menu.type()), "Cannot open invalid MenuType.");
-        menu.open(p);
         addTraceback(menu.type());
-        Bukkit.broadcastMessage(this.traverseHistory.toString());
+        menu.open(p);
+
+        //Bukkit.broadcastMessage(this.traverseHistory.toString());
     }
 
     public void silentOpen(Player p, MenuType type) {
@@ -55,7 +56,7 @@ public class MenuManager {
     }
 
     public boolean isIndirectMenu() {
-        return this.traverseHistory.peek() != MenuType.EMPTY;
+        return this.traverseHistory.size() > 1;
     }
 
     private void addTraceback(MenuType type) {

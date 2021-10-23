@@ -9,10 +9,34 @@ public enum SettingType {
     // %value% = value of setting
     AUTO_SAVE_ENABLED(
             "Toggle Auto Save",
-            "Toggle to automatically update blocks.yml file whenever you update a lucky block in game.\n\n" + SettingType.CURRENT_VALUE_PLACEHOLDER,
+            "Toggle to automatically update blocks.yml file whenever you update a lucky block in game.",
             "file-saving.auto-save-edits",
             ReturnType.BOOLEAN
 
+    ),
+    JOIN_MESSAGE(
+            "Toggle Join Message",
+            "Enable or disable the join message when an admin logs into the server. Note that disabling will also disable out-of-date notifications.",
+            "join-message",
+            ReturnType.BOOLEAN
+    ),
+    SHOW_SAVING_MESSAGE(
+            "Toggle Save Alert",
+            "Toggle whether or not to alert staff when the world is saving block data from server to config.",
+            "show-saving-messages",
+            ReturnType.BOOLEAN
+    ),
+    ADVANCED_PERMISSIONS(
+            "Toggle Advanced Permissions",
+            "Toggle whether or not to use advanced permissions. Check out Spigot page for info.",
+            "advanced-permissions",
+            ReturnType.BOOLEAN
+    ),
+    EXTRA_PLAYER_DATA(
+            "Toggle Extra Player Data",
+            "Toggle whether or not additional data about players should be saved into config.",
+            "use-extra-player-data",
+            ReturnType.BOOLEAN
     ),
     GET_BLOCK_DATA_INTERVAL(
             "Block Saving Interval",

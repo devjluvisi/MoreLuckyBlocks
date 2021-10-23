@@ -12,8 +12,14 @@ import devjluvisi.mlb.util.config.files.SettingType;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerEditBookEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
@@ -29,6 +35,7 @@ public class ConfigSettingsMenu extends MenuBuilder {
     private final MoreLuckyBlocks plugin;
     private int currentPage;
 
+
     public ConfigSettingsMenu(MenuManager manager) {
         super(manager, "Settings Menu", PageType.DOUBLE_CHEST);
         this.settings = new ArrayList<>();
@@ -37,10 +44,10 @@ public class ConfigSettingsMenu extends MenuBuilder {
         this.plugin = manager.getPlugin();
         addSetting(Slot.SETTINGS_1, SettingType.AUTO_SAVE_ENABLED);
         addSetting(Slot.SETTINGS_2, SettingType.GET_BLOCK_DATA_INTERVAL);
-        addSetting(Slot.SETTINGS_3, SettingType.AUTO_SAVE_ENABLED);
-        addSetting(Slot.SETTINGS_4, SettingType.AUTO_SAVE_ENABLED);
-        addSetting(Slot.SETTINGS_5, SettingType.AUTO_SAVE_ENABLED);
-        addSetting(Slot.SETTINGS_6, SettingType.AUTO_SAVE_ENABLED);
+        addSetting(Slot.SETTINGS_3, SettingType.JOIN_MESSAGE);
+        addSetting(Slot.SETTINGS_4, SettingType.SHOW_SAVING_MESSAGE);
+        addSetting(Slot.SETTINGS_5, SettingType.EXTRA_PLAYER_DATA);
+        addSetting(Slot.SETTINGS_6, SettingType.ADVANCED_PERMISSIONS);
 
 
         addSetting(Slot.SETTINGS_1, SettingType.AUTO_SAVE_ENABLED);
@@ -48,7 +55,9 @@ public class ConfigSettingsMenu extends MenuBuilder {
         addSetting(Slot.SETTINGS_3, SettingType.AUTO_SAVE_ENABLED);
         addSetting(Slot.SETTINGS_4, SettingType.AUTO_SAVE_ENABLED);
         this.maxPages = settings.size();
+
     }
+
 
     private void addSetting(Slot s, SettingType type) {
         Map.Entry<Slot, SettingType> entry = Map.entry(s, type);
@@ -115,7 +124,7 @@ public class ConfigSettingsMenu extends MenuBuilder {
                 item.setType(Material.RED_DYE);
             }
             name = StringUtils.replace(name, SettingType.CURRENT_VALUE_PLACEHOLDER, b ? "ON" : "OFF");
-            description = StringUtils.replace(description, SettingType.CURRENT_VALUE_PLACEHOLDER, b ? ChatColor.GREEN + "✔ Enabled" : ChatColor.RED + "✖ Disabled");
+            description += "\n\n" + (b ? ChatColor.GREEN + "✔ Enabled" : ChatColor.RED + "✖ Disabled");
         } else if (type.getReturnType() == SettingType.ReturnType.INT || type.getReturnType() == SettingType.ReturnType.DECIMAL) {
             double val = Double.parseDouble(String.valueOf(settingValue));
             if (type.getReturnType() == SettingType.ReturnType.INT) {
@@ -135,6 +144,8 @@ public class ConfigSettingsMenu extends MenuBuilder {
     public MenuType type() {
         return MenuType.ADJUST_SETTINGS;
     }
+
+
 
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
@@ -173,13 +184,14 @@ public class ConfigSettingsMenu extends MenuBuilder {
                 if (entry == null) {
                     return;
                 }
-                if (entry.getValue().getReturnType() == SettingType.ReturnType.BOOLEAN) {
-                    plugin.getSettingsManager().setValue(entry.getValue().getNode(), !(boolean) plugin.getSettingsManager().getGenericSetting(entry.getValue()));
-                    manager.getPlayer().sendMessage("Updated the value of " + entry.getValue().name() + " to " + plugin.getSettingsManager().getGenericSetting(entry.getValue()));
-                    view.reopen();
-                } else {
+                    if (entry.getValue().getReturnType() == SettingType.ReturnType.BOOLEAN) {
+                        plugin.getSettingsManager().setValue(entry.getValue().getNode(), !(boolean) plugin.getSettingsManager().getGenericSetting(entry.getValue()));
+                        manager.getPlayer().sendMessage("Updated the value of " + entry.getValue().name() + " to " + plugin.getSettingsManager().getGenericSetting(entry.getValue()));
+                        view.reopen();
+                    } else {
 
-                }
+                    }
+
             }
             default -> {
                 return;

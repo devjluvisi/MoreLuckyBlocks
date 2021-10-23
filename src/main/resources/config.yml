@@ -10,9 +10,6 @@ lucky-block-warning-threshold: 50000
 # Show the lucky block version message on join.
 join-message: true
 
-# Alert that a new update can be downloaded.
-new-update-message: true
-
 # Show whenever the plugin saves player and block data to config (specified by "data-save-interval")
 # Only shows to players with mlb.admin or mlb.admin.alert permission.
 show-saving-messages: false

@@ -47,6 +47,8 @@ public class UserListMenu extends MenuBuilder {
                     .with(lb.getName())
                     .addLine("&8(&7" + lb.getInternalName() + "&8)")
                     .addLine("&3Possible Drops&7: " + lb.getDroppableItems().size())
+                    .addLine("&3/mlb info " + lb.getInternalName())
+                    .addLine("&7for more information.")
                     .addLine("\n");
             if (manager.getPlayer().hasPermission(lb.getBreakPermission())) {
                 i.addLine("&a✔ You can break this lucky block!");
