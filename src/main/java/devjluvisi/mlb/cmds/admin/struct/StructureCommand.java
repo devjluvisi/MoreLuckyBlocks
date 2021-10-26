@@ -2,11 +2,13 @@ package devjluvisi.mlb.cmds.admin.struct;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
-import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.cmds.CommandResult;
 import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.helper.Util;
+import devjluvisi.mlb.menus.MenuManager;
+import devjluvisi.mlb.menus.MenuResource;
+import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.util.Range;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -52,9 +54,14 @@ public class StructureCommand implements SubCommand {
         return false;
     }
 
+    /*
+    /mlb struct
+    /mlb struct help
+    /mlb struct <name>
+     */
     @Override
     public Range getArgumentRange() {
-        return new Range(1, Integer.MAX_VALUE);
+        return new Range(1, 2);
     }
 
     @Override
@@ -100,105 +107,75 @@ public class StructureCommand implements SubCommand {
             return new CommandResult(ResultType.PASSED);
         }
 
-        if (args.length == 2) {
+        final ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
+        final BookMeta meta = (BookMeta) book.getItemMeta();
+        assert meta != null;
+        meta.setAuthor("MoreLuckyBlocks");
+        meta.setTitle("Struct Tutorial");
 
-            final ItemStack book = new ItemStack(Material.WRITTEN_BOOK, 1);
-            final BookMeta meta = (BookMeta) book.getItemMeta();
-            assert meta != null;
-            meta.setAuthor("MoreLuckyBlocks");
-            meta.setTitle("Struct Tutorial");
-
-            if (args[1].equalsIgnoreCase("help")) {
-                sender.sendMessage("");
-                sender.sendMessage(ChatColor.GRAY + "/mlb struct edit <lucky-block-name> <drop-number>");
-                sender.sendMessage(
-                        ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Edit the structure of a specific drop.");
-                sender.sendMessage(ChatColor.GRAY + "/mlb struct has <lucky-block-name> <drop-number>");
-                sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC
-                        + "Check if a lucky block drop has a structure defined with it.");
-                sender.sendMessage(ChatColor.GRAY + "/mlb struct reset <lucky-block-name> <drop-number>");
-                sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC
-                        + "Delete the structure for a drop if it has one.");
-                sender.sendMessage(ChatColor.GRAY + "/mlb save");
-                sender.sendMessage(
-                        ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Save a structure while editing.");
-                sender.sendMessage(ChatColor.GRAY + "/mlb exit");
-                sender.sendMessage(
-                        ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Leave the structure editing world.");
-                sender.sendMessage("");
-            } else if (args[1].equalsIgnoreCase("h1")) {
-                meta.addPage(Util.toColor(
-                        "&lWhat are structures?\n----------------\n&rIn MoreLuckyBlocks, structures are a way to create physical modifications to the world when a player opens a lucky block. This greatly expands what lucky blocks can do."));
-                meta.addPage(Util.toColor(
-                        "For example, instead of just dropping items, a lucky block could also create blocks around it and spawn mobs.\nEach lucky block can have only a single structure, this structure can be removed and edited later."));
-                meta.addPage(Util.toColor("To view more commands or information you can run &1/mlb struct help"));
-                book.setItemMeta(meta);
-                p.openBook(book);
-            } else if (args[1].equalsIgnoreCase("h2")) {
-                meta.addPage(Util.toColor(
-                        "&lHow do I make one?\n----------------\n&rBy executing the &1/mlb struct edit <block name> <drop>&r you can create a structure for a specific lucky block drop."));
-                meta.addPage(Util.toColor(
-                        "Each lucky block drop can have only one structure.\nWhen you execute this command, you will be teleported into a new world 50x50x128 wide.\nThe lucky block you chose will be centered in the middle and serve as a reference point for the blocks you place."));
-                meta.addPage(Util.toColor(
-                        "Physics, motion, redstone, etc are all disabled in this world, meaning your creations are totally static until a player gets your drop. To check if a drop already has a structure, type &1/mlb struct has <lb-name> <drop #>"));
-                meta.addPage(Util
-                        .toColor("Remember that &lonly&r one player can be in the structure world editing at once."));
-                book.setItemMeta(meta);
-                p.openBook(book);
-            } else if (args[1].equalsIgnoreCase("h3")) {
-                meta.addPage(Util.toColor(
-                        "&lHow can I save and use one?\n----------------\n&rWhen you have finished editing your structure, you can run the &1/mlb save&r command. This will save all of your progress into config."));
-                meta.addPage(Util.toColor(
-                        "You can exit the structure world by typing &1/mlb exit&r. If you have any unsaved changes, you will recieve a warning prior to exit.\nAfter Saving, you can return to view and edit your structure later."));
-                book.setItemMeta(meta);
-                p.openBook(book);
-            } else if (args[1].equalsIgnoreCase("h4")) {
-                meta.addPage(Util.toColor(
-                        "&lHow can I delete one?\n----------------\n&rDelete a structure by typing the &1/mlb struct reset <lb-name> <drop>&r command.\nThis will delete any previous structure for the selected drop."));
-                meta.addPage(Util.toColor(
-                        "If you wish, you may also manually delete the structure by erasing any \"structure:\" tag in the blocks.yml configuration file.\nStructures can be viewed in the data/structures.yml directory but it is not suggested to modify them."));
-                book.setItemMeta(meta);
-                p.openBook(book);
-            } else {
-                p.performCommand("mlb struct help");
-                return new CommandResult(ResultType.PASSED);
-            }
-        }
-        if (args.length == 4) {
-            final String internalName = Util.makeInternal(args[2]);
-            final int dropIndex = (int) Util.toNumber(args[3]);
-            if (!this.plugin.getLuckyBlocks().contains(internalName)) {
-                return new CommandResult(ResultType.INVALID_LUCKY_BLOCK, args[2]);
-            }
-            final LuckyBlock lb = this.plugin.getLuckyBlocks().get(internalName);
-
-            if (!(new Range(0, lb.getDroppableItems().size()).isInRange(dropIndex))) {
-                sender.sendMessage(ChatColor.RED + "Request drop index of " + dropIndex
-                        + " is out of range for lucky block " + lb.getInternalName());
-                return new CommandResult(ResultType.PASSED);
-            }
-            final LuckyBlockDrop selectedDrop = lb.getDroppableItems().get(dropIndex);
-
-            if (args[1].equalsIgnoreCase("edit")) {
-                if (this.plugin.getServerDropStructure().hasEditingPlayer()) {
-                    p.sendMessage(ChatColor.RED + "There is already a player editing a lucky block structure.");
-                    return new CommandResult(ResultType.PASSED);
-                }
-                this.plugin.getServerDropStructure().update(lb, selectedDrop, p);
-            } else if (args[1].equalsIgnoreCase("has")) {
-                if (!selectedDrop.hasStructure()) {
-                    sender.sendMessage(ChatColor.BLUE + "Drop does not have a drop structure.");
-                } else {
-                    sender.sendMessage(ChatColor.BLUE + "Drop has a structure.");
-                }
-            } else if (args[1].equalsIgnoreCase("reset")) {
-
-            } else {
-                p.performCommand("mlb struct help");
-            }
+        if (args[1].equalsIgnoreCase("help")) {
+            sender.sendMessage("");
+            sender.sendMessage(ChatColor.GRAY + "/mlb struct edit <lucky-block-name> <drop-number>");
+            sender.sendMessage(
+                    ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Edit the structure of a specific drop.");
+            sender.sendMessage(ChatColor.GRAY + "/mlb struct has <lucky-block-name> <drop-number>");
+            sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC
+                    + "Check if a lucky block drop has a structure defined with it.");
+            sender.sendMessage(ChatColor.GRAY + "/mlb struct reset <lucky-block-name> <drop-number>");
+            sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC
+                    + "Delete the structure for a drop if it has one.");
+            sender.sendMessage(ChatColor.GRAY + "/mlb save");
+            sender.sendMessage(
+                    ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Save a structure while editing.");
+            sender.sendMessage(ChatColor.GRAY + "/mlb exit");
+            sender.sendMessage(
+                    ChatColor.DARK_GRAY.toString() + ChatColor.ITALIC + "Leave the structure editing world.");
+            sender.sendMessage("");
+        } else if (args[1].equalsIgnoreCase("h1")) {
+            meta.addPage(Util.toColor(
+                    "&lWhat are structures?\n----------------\n&rIn MoreLuckyBlocks, structures are a way to create physical modifications to the world when a player opens a lucky block. This greatly expands what lucky blocks can do."));
+            meta.addPage(Util.toColor(
+                    "For example, instead of just dropping items, a lucky block could also create blocks around it and spawn mobs.\nEach lucky block can have only a single structure, this structure can be removed and edited later."));
+            meta.addPage(Util.toColor("To view more commands or information you can run &1/mlb struct help"));
+            book.setItemMeta(meta);
+            p.openBook(book);
+        } else if (args[1].equalsIgnoreCase("h2")) {
+            meta.addPage(Util.toColor(
+                    "&lHow do I make one?\n----------------\n&rBy executing the &1/mlb struct edit <block name> <drop>&r you can create a structure for a specific lucky block drop."));
+            meta.addPage(Util.toColor(
+                    "Each lucky block drop can have only one structure.\nWhen you execute this command, you will be teleported into a new world 50x50x128 wide.\nThe lucky block you chose will be centered in the middle and serve as a reference point for the blocks you place."));
+            meta.addPage(Util.toColor(
+                    "Physics, motion, redstone, etc are all disabled in this world, meaning your creations are totally static until a player gets your drop. To check if a drop already has a structure, type &1/mlb struct has <lb-name> <drop #>"));
+            meta.addPage(Util
+                    .toColor("Remember that &lonly&r one player can be in the structure world editing at once."));
+            book.setItemMeta(meta);
+            p.openBook(book);
+        } else if (args[1].equalsIgnoreCase("h3")) {
+            meta.addPage(Util.toColor(
+                    "&lHow can I save and use one?\n----------------\n&rWhen you have finished editing your structure, you can run the &1/mlb save&r command. This will save all of your progress into config."));
+            meta.addPage(Util.toColor(
+                    "You can exit the structure world by typing &1/mlb exit&r. If you have any unsaved changes, you will recieve a warning prior to exit.\nAfter Saving, you can return to view and edit your structure later."));
+            book.setItemMeta(meta);
+            p.openBook(book);
+        } else if (args[1].equalsIgnoreCase("h4")) {
+            meta.addPage(Util.toColor(
+                    "&lHow can I delete one?\n----------------\n&rDelete a structure by typing the &1/mlb struct reset <lb-name> <drop>&r command.\nThis will delete any previous structure for the selected drop."));
+            meta.addPage(Util.toColor(
+                    "If you wish, you may also manually delete the structure by erasing any \"structure:\" tag in the blocks.yml configuration file.\nStructures can be viewed in the data/structures.yml directory but it is not suggested to modify them."));
+            book.setItemMeta(meta);
+            p.openBook(book);
         } else {
+            if (!plugin.getLuckyBlocks().contains(args[1])) {
+                return new CommandResult(ResultType.INVALID_LUCKY_BLOCK, args[1]);
+            }
+            LuckyBlock lb = plugin.getLuckyBlocks().get(args[1]);
+            MenuManager manager = new MenuManager(plugin);
+            manager.setMenuData(new MenuResource().with(lb));
+            manager.open(p, MenuType.STRUCTURE);
             return new CommandResult(ResultType.PASSED);
         }
+
+
         return new CommandResult(ResultType.PASSED);
     }
 

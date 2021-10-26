@@ -3,21 +3,20 @@ package devjluvisi.mlb.menus;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.api.gui.MenuView;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import javax.xml.validation.Validator;
-import java.sql.Array;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.EnumSet;
+import java.util.Objects;
 
 // One menu for different parts of every GUI
 public class MenuManager {
 
-    private final MoreLuckyBlocks plugin;
     private static final EnumSet<MenuType> menus = EnumSet.allOf(MenuType.class);
-    private MenuResource menuResource;
+    private final MoreLuckyBlocks plugin;
     private final Deque<MenuType> traverseHistory;
+    private MenuResource menuResource;
     private Player p;
 
 
@@ -32,21 +31,6 @@ public class MenuManager {
         return this;
     }
 
-    public void open(Player p, MenuType type) {
-        this.p = p;
-        Validate.isTrue(type != MenuType.EMPTY && Objects.nonNull(type), "Cannot open invalid MenuType.");
-        open(p, get(type));
-    }
-
-    public void open(Player p, MenuBuilder menu) {
-        this.p = p;
-        Validate.isTrue(menu.type() != MenuType.EMPTY && Objects.nonNull(menu.type()), "Cannot open invalid MenuType.");
-        addTraceback(menu.type());
-        menu.open(p);
-
-        //Bukkit.broadcastMessage(this.traverseHistory.toString());
-    }
-
     public void silentOpen(Player p, MenuType type) {
         this.p = p;
         Validate.isTrue(type != MenuType.EMPTY && Objects.nonNull(type), "Cannot open invalid MenuType.");
@@ -54,39 +38,6 @@ public class MenuManager {
         traverseHistory.removeFirst();
         get(type).open(p);
     }
-
-    public boolean isIndirectMenu() {
-        return this.traverseHistory.size() > 1;
-    }
-
-    private void addTraceback(MenuType type) {
-        if(traverseHistory.contains(type)) {
-            return;
-        }
-        traverseHistory.push(type);
-    }
-
-    public boolean regress() {
-        Validate.notNull(p, "Player was null when regress() function was called.");
-        // Remove the last element.
-        traverseHistory.removeFirst();
-        if(traverseHistory.isEmpty()) {
-            return false;
-        }
-        MenuType type = this.traverseHistory.pop();
-
-        open(p, type);
-        p.sendMessage("Returning to " + type);
-        Bukkit.broadcastMessage(this.traverseHistory.toString());
-        return true;
-    }
-
-    public void regress(MenuView view) {
-        if(!regress()) {
-            view.close();
-        }
-    }
-
 
     public MenuBuilder get(MenuType type) {
         if (type == MenuType.EMPTY) {
@@ -106,6 +57,49 @@ public class MenuManager {
         return null;
     }
 
+    public boolean isIndirectMenu() {
+        return this.traverseHistory.size() > 1;
+    }
+
+    public void regress(MenuView view) {
+        if (!regress()) {
+            view.close();
+        }
+    }
+
+    public boolean regress() {
+        Validate.notNull(p, "Player was null when regress() function was called.");
+        // Remove the last element.
+        traverseHistory.removeFirst();
+        if (traverseHistory.isEmpty()) {
+            return false;
+        }
+        MenuType type = this.traverseHistory.pop();
+        open(p, type);
+        return true;
+    }
+
+    public void open(Player p, MenuType type) {
+        this.p = p;
+        Validate.isTrue(type != MenuType.EMPTY && Objects.nonNull(type), "Cannot open invalid MenuType.");
+        open(p, get(type));
+    }
+
+    public void open(Player p, MenuBuilder menu) {
+        this.p = p;
+        Validate.isTrue(menu.type() != MenuType.EMPTY && Objects.nonNull(menu.type()), "Cannot open invalid MenuType.");
+        addTraceback(menu.type());
+        menu.open(p);
+
+        //Bukkit.broadcastMessage(this.traverseHistory.toString());
+    }
+
+    private void addTraceback(MenuType type) {
+        if (traverseHistory.contains(type)) {
+            return;
+        }
+        traverseHistory.push(type);
+    }
 
     public MenuResource getMenuData() {
         return menuResource;

@@ -10,7 +10,7 @@ import devjluvisi.mlb.util.Range;
  */
 public interface PluginConstants {
 
-    byte SPLIT_LORE_LINE_THRESHOLD = 18;
+    byte SPLIT_LORE_LINE_THRESHOLD = 24;
     Range INTERNAL_NAME_RANGE = new Range(2, 28);
 
     float LUCK_MIN_VALUE = -100.0F;

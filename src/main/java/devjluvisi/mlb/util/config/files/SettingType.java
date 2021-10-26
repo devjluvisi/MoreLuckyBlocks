@@ -1,6 +1,5 @@
 package devjluvisi.mlb.util.config.files;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 
 public enum SettingType {
@@ -40,10 +39,23 @@ public enum SettingType {
     ),
     GET_BLOCK_DATA_INTERVAL(
             "Block Saving Interval",
-            "Update the interval by which player lucky block data is saved persistently. (Ex. tracking breaking/placing lucky blocks).\n\n" + ChatColor.GRAY + "Value: " + ChatColor.GREEN + SettingType.CURRENT_VALUE_PLACEHOLDER,
+            "Update the interval by which player lucky block data is saved persistently. (Ex. tracking breaking/placing lucky blocks)",
             "file-saving.data-save-interval",
             Material.CLOCK,
             ReturnType.INT
+    ),
+    LUCKY_BLOCK_WARNING_THRESHOLD(
+            "Warning Threshold",
+            "Update the maximum amount of unopened lucky blocks on a server before a warning is given.",
+            "lucky-block-warning-threshold",
+            Material.REDSTONE_TORCH,
+            ReturnType.INT
+    ),
+    LOG_EVENTS(
+            "Toggle Event Logging",
+            "Log when players place and break lucky blocks to a configuration file which can be viewed in game as well.",
+            "log-events",
+            ReturnType.BOOLEAN
     );
 
     public static final String CURRENT_VALUE_PLACEHOLDER = "%value%";
@@ -52,6 +64,7 @@ public enum SettingType {
     private final String description;
     private final Material material;
     private final ReturnType returnType;
+
     SettingType(String name, String description, String node, ReturnType returnType) {
         this.node = node;
         this.name = name;

@@ -29,6 +29,7 @@ public class TrackMenu extends MenuBuilder {
     private static final byte PREVIOUS_PAGE = 42;
     private final int maxPage;
     private int currentPage;
+
     public TrackMenu(MenuManager manager) {
         super(manager, "Placed Lucky Blocks (" + "0" + "/" + ((manager.getPlugin().getAudit().getMap().size() / TrackCommand.BLOCKS_PER_PAGE) + (manager.getPlugin().getAudit().getMap().size() % TrackCommand.BLOCKS_PER_PAGE != 0 ? 1 : 0)) + ")", PageType.DOUBLE_CHEST);
         this.currentPage = 1;

@@ -37,9 +37,16 @@ public class SettingsManager extends ConfigManager {
         return getConfig().get(type.getNode());
     }
 
+    public int getWarningThreshold() {
+        return getConfig().getInt(SettingType.LUCKY_BLOCK_WARNING_THRESHOLD.getNode());
+    }
 
     public boolean isAutoSaveEnabled() {
-        return getConfig().getBoolean("file-saving.auto-save-edits");
+        return getConfig().getBoolean(SettingType.AUTO_SAVE_ENABLED.getNode());
+    }
+
+    public boolean isFirstBoot() {
+        return getConfig().getBoolean("first-boot");
     }
 
     public int getBlockDataSaveInterval() {

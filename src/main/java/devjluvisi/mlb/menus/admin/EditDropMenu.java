@@ -7,6 +7,7 @@ import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.blocks.drops.LootProperty;
 import devjluvisi.mlb.blocks.drops.LuckyBlockItem;
+import devjluvisi.mlb.events.custom.DataChangedEvent;
 import devjluvisi.mlb.menus.MenuBuilder;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuResource;
@@ -67,7 +68,12 @@ public class EditDropMenu extends MenuBuilder {
         }
 
         Arrays.fill(content[2], MenuItem.redPlaceholder().asItem());
-        content[2][4] = new MenuItem().of(MenuItem.SpecialItem.SAVE_BUTTON).asItem();
+        if (manager.getPlugin().getSettingsManager().isAutoSaveEnabled()) {
+            content[2][4] = new MenuItem().of(MenuItem.SpecialItem.AUTO_SAVING).asItem();
+        } else {
+            content[2][4] = new MenuItem().of(MenuItem.SpecialItem.SAVE_BUTTON).asItem();
+        }
+
         content[2][5] = new MenuItem().of(MenuItem.SpecialItem.ADD_STRUCTURE).asItem();
         content[2][6] = new MenuItem().of(MenuItem.SpecialItem.ADD_COMMAND).asItem();
         content[2][7] = new MenuItem().of(MenuItem.SpecialItem.ADD_POTION_EFFECT).asItem();
@@ -101,7 +107,8 @@ public class EditDropMenu extends MenuBuilder {
             return;
         }
         if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.SAVE_BUTTON).asItem())) {
-            manager.getPlayer().performCommand("mlb config save");
+            manager.getPlugin().getServer().getPluginManager().callEvent(new DataChangedEvent());
+            manager.getPlayer().sendMessage(ChatColor.DARK_GREEN + "Your edits have been saved to config.");
             return;
         }
         if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.ADD_COMMAND).asItem())) {

@@ -19,12 +19,15 @@ public class JoinEvent implements Listener {
         if (!e.getPlayer().hasPermission("mlb.admin")) {
             return;
         }
+        if (plugin.getSettingsManager().isFirstBoot()) {
+            e.getPlayer().sendMessage("This was first boot!");
+        }
         new BukkitRunnable() {
             @Override
             public void run() {
                 e.getPlayer().sendMessage(ChatColor.GOLD.toString() + ChatColor.ITALIC + "Running MoreLuckyBlocks version " + plugin.getDescription().getVersion());
-                if (plugin.getAudit().getMap().size() > 50000) {
-                    e.getPlayer().sendMessage(ChatColor.RED + "[WARNING] Over 50,000 unopened lucky blocks exist on your server. Lag may be present due to large data requirements. /mlb reset to remove lucky block player data.");
+                if (plugin.getAudit().getMap().size() > plugin.getSettingsManager().getWarningThreshold()) {
+                    e.getPlayer().sendMessage(ChatColor.RED + "[WARNING] Over " + plugin.getSettingsManager().getWarningThreshold() + " unopened lucky blocks exist on your server. Lag may be present due to large data requirements. /mlb reset to remove lucky block player data.");
                 }
             }
         }.runTaskLaterAsynchronously(plugin, 20L);

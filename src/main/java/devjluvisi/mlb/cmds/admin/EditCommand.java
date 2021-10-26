@@ -8,7 +8,6 @@ import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuResource;
 import devjluvisi.mlb.menus.MenuType;
-import devjluvisi.mlb.menus.admin.EditLuckyBlockMenu;
 import devjluvisi.mlb.util.Range;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

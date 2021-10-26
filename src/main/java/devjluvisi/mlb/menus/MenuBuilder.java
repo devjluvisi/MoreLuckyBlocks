@@ -7,8 +7,8 @@ import org.bukkit.inventory.ItemStack;
 
 public abstract class MenuBuilder extends SimpleMenu {
 
-    private PageType pageType;
     protected MenuManager manager;
+    private PageType pageType;
     private String name;
 
     protected MenuBuilder(MenuManager manager) {
@@ -48,13 +48,13 @@ public abstract class MenuBuilder extends SimpleMenu {
         return this.getPageType().flatten(content);
     }
 
-    public void setPageType(PageType pageType) {
-        this.pageType = pageType;
-    }
-
     @Override
     public PageType getPageType() {
         return pageType;
+    }
+
+    public void setPageType(PageType pageType) {
+        this.pageType = pageType;
     }
 
     public abstract ItemStack[][] getContent(ItemStack[][] content);

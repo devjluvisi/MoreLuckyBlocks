@@ -5,14 +5,15 @@ import devjluvisi.mlb.blocks.LuckyBlockManager;
 import devjluvisi.mlb.cmds.CommandManager;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.events.EditDropInChatEvent;
+import devjluvisi.mlb.events.SaveConfigEvent;
 import devjluvisi.mlb.events.luck.JoinLuckEvent;
 import devjluvisi.mlb.events.luckyblocks.BreakEvent;
 import devjluvisi.mlb.events.luckyblocks.PlaceEvent;
 import devjluvisi.mlb.events.player.JoinEvent;
-import devjluvisi.mlb.menus.admin.ConfigSettingsMenu;
 import devjluvisi.mlb.menus.admin.EditDropMenu;
 import devjluvisi.mlb.menus.admin.EditLuckyBlockMenu;
 import devjluvisi.mlb.util.config.ConfigManager;
+import devjluvisi.mlb.util.config.SavingManager;
 import devjluvisi.mlb.util.config.files.ExchangesManager;
 import devjluvisi.mlb.util.config.files.MessagesManager;
 import devjluvisi.mlb.util.config.files.PermissionsManager;
@@ -74,29 +75,21 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - JavaDoc & Comment all methods.
      * - Command to show number of unopened lucky blocks.
      * - GUI for structures.
+     * - Fix bug. Stone blocks in structure editor above 50% height are not counted.
      */
 
-    /**
-     * "blocks.yml" resource file.
-     */
     private ConfigManager blocksYaml;
-    /**
-     * "data/world-data.yml" resource file.
-     */
     private ConfigManager worldDataYaml;
-    /**
-     * "data/players.yml" resource file.
-     */
     private ConfigManager playersYaml;
-    /**
-     * "data/structures.yml" resource file.
-     */
     private ConfigManager structuresYaml;
 
     private SettingsManager settingsManager;
     private PermissionsManager permissionsManager;
     private ExchangesManager exchangesManager;
     private MessagesManager messagesManager;
+
+    private SavingManager savingManager;
+
 
     private LuckyBlockManager lbManager; // Manage all types of lucky blocks and drops.
     private HashMap<UUID, EditDropMenu> playersEditingDrop; // Players editing a drop.
@@ -155,13 +148,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
     }
 
     /**
-     * @return config.yml file.
-     */
-    public SettingsManager getSettingsManager() {
-        return this.settingsManager;
-    }
-
-    /**
      * @return messages.yml file.
      */
     public MessagesManager getMessagesManager() {
@@ -200,6 +186,10 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         return this.permissionsManager;
     }
 
+    public SavingManager getSavingManager() {
+        return this.savingManager;
+    }
+
     /**
      * @return The "structures.yml" file.
      */
@@ -209,6 +199,9 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (getSettingsManager().isFirstBoot()) {
+            getSettingsManager().setValue("first-boot", false);
+        }
         this.audit.writeAll();
         this.playerManager.save();
         this.getServer().getScheduler().cancelTasks(this);
@@ -222,11 +215,25 @@ public final class MoreLuckyBlocks extends JavaPlugin {
     }
 
     /**
+     * @return config.yml file.
+     */
+    public SettingsManager getSettingsManager() {
+        return this.settingsManager;
+    }
+
+    /**
+     * @return String representation of the version.
+     */
+    private String getVersion() {
+        return MessageFormat.format("{0} for Minecraft Version [{1}]", super.getDescription().getVersion(), super.getDescription().getAPIVersion());
+    }
+
+
+    /**
      * --> FEATURE ADDITIONS <--
      * <p>
      * Also: Fix issue where a breaking of a lucky block with a structure might not appear infront of a player.
      * TODO: 10/11/2021
-     * - Implement config.yml file.
      * - With autosave
      * - Implement SettingsCommand
      * - Implement parts of messages.
@@ -236,7 +243,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - Implement multiple players in a structure.
      * - Implement LuckyAPI
      * - Implement a custom pre made template
-     * - Implement /give all command
      * - Implement /mlb reset [name] [amount]
      * - Implement player stats for number of blocks placed, broken, average rarity of drop
      * - Implement /explosion command
@@ -277,6 +283,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
         this.audit = new LuckyAudit(this);
         this.playerManager = new PlayerManager(this);
+        this.savingManager = new SavingManager(this);
 
         // Update all players currently on the server (for reload)
         for (final Player p : Bukkit.getOnlinePlayers()) {
@@ -284,13 +291,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         }
 
         super.onEnable();
-    }
-
-    /**
-     * @return String representation of the version.
-     */
-    private String getVersion() {
-        return MessageFormat.format("{0} for Minecraft Version [{1}]", super.getDescription().getVersion(), super.getDescription().getAPIVersion());
     }
 
     /**
@@ -325,6 +325,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new BreakEvent(this), this);
         this.getServer().getPluginManager().registerEvents(new PlaceEvent(this), this);
         this.getServer().getPluginManager().registerEvents(new JoinEvent(this), this);
+        this.getServer().getPluginManager().registerEvents(new SaveConfigEvent(this), this);
         this.getServer().getPluginManager().registerEvents(new EditLuckyBlockMenu(this), this);
     }
 

@@ -12,8 +12,10 @@ import devjluvisi.mlb.util.config.ConfigManager;
  * @author jacob
  */
 public final class MessagesManager extends ConfigManager {
+
     public MessagesManager(MoreLuckyBlocks plugin) {
         super(plugin, "messages.yml");
     }
+
 
 }

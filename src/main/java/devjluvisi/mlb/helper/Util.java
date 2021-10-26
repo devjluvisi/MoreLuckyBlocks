@@ -18,7 +18,8 @@ import java.util.Objects;
  */
 public final class Util {
 
-    private Util() {}
+    private Util() {
+    }
 
     public static boolean isSameDisplayName(String n1, String n2) {
         return (ChatColor.stripColor(n1).equals(ChatColor.stripColor(n2)));
@@ -103,10 +104,10 @@ public final class Util {
         }
         // Remove underscores at the end of the lucky block name.
         try {
-            for(int i = unformatted.length(); i > 0; i--) {
-                if(unformatted.charAt(i-1) == '_') {
-                    unformatted = unformatted.substring(0, i-1);
-                }else{
+            for (int i = unformatted.length(); i > 0; i--) {
+                if (unformatted.charAt(i - 1) == '_') {
+                    unformatted = unformatted.substring(0, i - 1);
+                } else {
                     break;
                 }
             }
@@ -191,7 +192,7 @@ public final class Util {
      * @return The item as a name.
      */
     public static String getItemAsString(ItemStack item) {
-        if(item.hasItemMeta() && Objects.requireNonNull(item.getItemMeta()).hasDisplayName()) {
+        if (item.hasItemMeta() && Objects.requireNonNull(item.getItemMeta()).hasDisplayName()) {
             return item.getItemMeta().getDisplayName();
         }
         return WordUtils.capitalize(StringUtils.lowerCase(StringUtils.replace(item.getType().name(), "_", " ")));

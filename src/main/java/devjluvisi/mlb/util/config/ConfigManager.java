@@ -34,7 +34,7 @@ public class ConfigManager {
         this.configFile = new File(plugin.getDataFolder(), name);
 
         if (!this.configFile.exists()) {
-            plugin.getLogger().warning("Configuration File could not be located... Generating new.");
+            plugin.getLogger().warning("Configuration File " + name + " could not be located... Generating new.");
             // Save a version of the file with comments.
             plugin.saveResource(name, false);
         }

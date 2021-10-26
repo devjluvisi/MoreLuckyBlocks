@@ -42,9 +42,9 @@ public record TestCommand(MoreLuckyBlocks plugin) implements SubCommand {
     @Override
     public CommandResult perform(CommandSender sender, String[] args) {
         sender.sendMessage("Running Test. Check logger");
-        this.plugin.getServerDropStructure().save();
         this.plugin.getAudit().dumpLogger();
         this.plugin.getLuckyBlocks().dumpLogger();
+        this.plugin.getSavingManager().dumpLogger();
         return new CommandResult(ResultType.PASSED);
     }
 

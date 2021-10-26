@@ -105,7 +105,7 @@ public class DropsMenu extends MenuBuilder {
             manager.open(manager.getPlayer(), new ConfirmMenu(manager).request(ConfirmMenu.ConfirmAction.REMOVE_LUCKY_BLOCK).returnTo(type()));
             return;
         }
-        if(new MenuItem(MenuItem.SpecialItem.EDIT_ATTRIBUTES).equals(itemStack)) {
+        if (new MenuItem(MenuItem.SpecialItem.EDIT_ATTRIBUTES).equals(itemStack)) {
             manager.open(manager.getPlayer(), MenuType.EDIT_LUCKY_BLOCK_ATTRIBUTES);
         }
         // Back Page Button

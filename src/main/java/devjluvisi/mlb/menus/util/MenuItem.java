@@ -11,10 +11,10 @@ import java.util.*;
 
 public class MenuItem {
 
+    private final List<ItemFlag> flags;
     private Material m;
     private String displayName;
     private List<String> lore;
-    private final List<ItemFlag> flags;
 
     public MenuItem() {
         m = Material.AIR;
@@ -82,8 +82,10 @@ public class MenuItem {
             }
             case SAVE_BUTTON -> {
                 m = Material.EMERALD;
-                displayName = "&2&lSave";
+                displayName = "&2Save";
                 lore.add("&7Save this edit to config.");
+                lore.add("&7Use &3/mlb settings&7 to enable");
+                lore.add("&7auto-saving for edits.");
             }
             case CHANGE_RARITY -> {
                 m = Material.EXPERIENCE_BOTTLE;
@@ -205,6 +207,14 @@ public class MenuItem {
                 lore.add("&7lucky block.");
                 lore.add("&f&oEx: Particles, Sounds, Name, Lore, ...");
             }
+            case AUTO_SAVING -> {
+                m = Material.NETHER_STAR;
+                displayName = "&2Auto Save";
+                lore.add("&7Your edits are automatically");
+                lore.add("&7saved to config.");
+                lore.add("&7Use &3/mlb settings&7 to enable or disable");
+                lore.add("&7this feature.");
+            }
         }
         return this;
     }
@@ -294,6 +304,7 @@ public class MenuItem {
         EDIT_ATTRIBUTES,
         ADD_POTION_EFFECT, ADD_COMMAND, SAVE_BUTTON, CANCEL_BUTTON, CONFIRM_BUTTON, INCREASE_RARITY, DECREASE_RARITY,
         DELETE_LUCKY_BLOCK, ADD_STRUCTURE, DELETE_EXCHANGE, SAVE_EXCHANGE, EDIT_NAME, EDIT_LORE, EDIT_MATERIAL, EDIT_BREAK_PERMISSION,
-        EDIT_TOOL, EDIT_PARTICLES, EDIT_SOUND, EDIT_PLACE_COOLDOWN, EDIT_BREAK_COOLDOWN, EDIT_ENCHANTED
+        EDIT_TOOL, EDIT_PARTICLES, EDIT_SOUND, EDIT_PLACE_COOLDOWN, EDIT_BREAK_COOLDOWN, EDIT_ENCHANTED,
+        AUTO_SAVING
     }
 }

@@ -12,14 +12,8 @@ import devjluvisi.mlb.util.config.files.SettingType;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerEditBookEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
@@ -50,10 +44,8 @@ public class ConfigSettingsMenu extends MenuBuilder {
         addSetting(Slot.SETTINGS_6, SettingType.ADVANCED_PERMISSIONS);
 
 
-        addSetting(Slot.SETTINGS_1, SettingType.AUTO_SAVE_ENABLED);
-        addSetting(Slot.SETTINGS_2, SettingType.AUTO_SAVE_ENABLED);
-        addSetting(Slot.SETTINGS_3, SettingType.AUTO_SAVE_ENABLED);
-        addSetting(Slot.SETTINGS_4, SettingType.AUTO_SAVE_ENABLED);
+        addSetting(Slot.SETTINGS_1, SettingType.LUCKY_BLOCK_WARNING_THRESHOLD);
+        addSetting(Slot.SETTINGS_2, SettingType.LOG_EVENTS);
         this.maxPages = settings.size();
 
     }
@@ -101,6 +93,10 @@ public class ConfigSettingsMenu extends MenuBuilder {
             content[4][7] = new MenuItem().with(Material.ARROW).with("&eNext Page").addLine("&7Click to go to page " + (currentPage + 1) + ".").asItem();
         }
         content[5][4] = new MenuItem(MenuItem.SpecialItem.EXIT_BUTTON).asItem();
+        content[5][2] = new MenuItem().with(Material.OAK_SIGN).with("&7Notice")
+                .addLine("&aAll values listed here can")
+                .addLine("&abe adjusted in the config.yml file.")
+                .asItem();
         return content;
     }
 
@@ -131,6 +127,9 @@ public class ConfigSettingsMenu extends MenuBuilder {
                 val = (int) val;
             }
             name = StringUtils.replace(name, SettingType.CURRENT_VALUE_PLACEHOLDER, String.valueOf(val));
+            description += "\n" + ChatColor.DARK_GRAY + "Left-Click to Increase.";
+            description += "\n" + ChatColor.DARK_GRAY + "Right-Click to Decrease.";
+            description += "\n\n" + (ChatColor.GRAY + "Value: " + ChatColor.GREEN + val);
             description = StringUtils.replace(description, SettingType.CURRENT_VALUE_PLACEHOLDER, String.valueOf(val));
         }
         assert meta != null;
@@ -144,7 +143,6 @@ public class ConfigSettingsMenu extends MenuBuilder {
     public MenuType type() {
         return MenuType.ADJUST_SETTINGS;
     }
-
 
 
     @Override
@@ -184,13 +182,42 @@ public class ConfigSettingsMenu extends MenuBuilder {
                 if (entry == null) {
                     return;
                 }
+                try {
                     if (entry.getValue().getReturnType() == SettingType.ReturnType.BOOLEAN) {
                         plugin.getSettingsManager().setValue(entry.getValue().getNode(), !(boolean) plugin.getSettingsManager().getGenericSetting(entry.getValue()));
                         manager.getPlayer().sendMessage("Updated the value of " + entry.getValue().name() + " to " + plugin.getSettingsManager().getGenericSetting(entry.getValue()));
                         view.reopen();
-                    } else {
+                    } else if (entry.getValue().getReturnType() == SettingType.ReturnType.INT) {
+                        int value = (int) plugin.getSettingsManager().getGenericSetting(entry.getValue());
+                        if (clickType.isRightClick()) {
+                            plugin.getSettingsManager().setValue(entry.getValue().getNode(), (int) (value - (value * 0.05)));
+                        } else if (clickType.isLeftClick()) {
+                            plugin.getSettingsManager().setValue(entry.getValue().getNode(), (int) (value + (value * 0.05)));
+                            if ((int) plugin.getSettingsManager().getConfig().get(entry.getValue().getNode()) == value) {
+                                plugin.getSettingsManager().setValue(entry.getValue().getNode(), value + 1);
+                            }
+                        }
 
+                        manager.getPlayer().sendMessage("Updated the value of " + entry.getValue().name() + " to " + plugin.getSettingsManager().getGenericSetting(entry.getValue()));
+                        view.reopen();
+                    } else if (entry.getValue().getReturnType() == SettingType.ReturnType.DECIMAL) {
+                        double value = (double) plugin.getSettingsManager().getGenericSetting(entry.getValue());
+                        if (clickType.isRightClick()) {
+                            plugin.getSettingsManager().setValue(entry.getValue().getNode(), value - (value * 0.05));
+                        } else if (clickType.isLeftClick()) {
+                            plugin.getSettingsManager().setValue(entry.getValue().getNode(), value + (value * 0.05));
+                            if (((double) plugin.getSettingsManager().getConfig().get(entry.getValue().getNode())) == value) {
+                                plugin.getSettingsManager().setValue(entry.getValue().getNode(), value + 1.0D);
+                            }
+                        }
+                        manager.getPlayer().sendMessage("Updated the value of " + entry.getValue().name() + " to " + plugin.getSettingsManager().getGenericSetting(entry.getValue()));
+                        view.reopen();
                     }
+                } catch (Exception e) {
+                    manager.getPlayer().sendMessage(ChatColor.RED + "There was a problem trying to do this. Please ensure that the values you are trying to set are in a reasonable range. If this error still occurs, regenerate the config file -> /mlb config regen");
+                    view.close();
+                    return;
+                }
 
             }
             default -> {

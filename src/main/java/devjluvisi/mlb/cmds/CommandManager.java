@@ -59,6 +59,7 @@ public class CommandManager implements CommandExecutor {
         this.subcommands.addLast(new SaveCommand(plugin));
         this.subcommands.addLast(new ResetCommand(plugin));
         this.subcommands.addLast(new SettingsCommand(plugin));
+        this.subcommands.addLast(new AutoSaveCommand(plugin));
         this.subcommands.addLast(new TrackCommand(plugin));
         this.subcommands.addLast(new TestCommand(plugin));
         this.subcommands.addLast(new HelpCommand(this));
@@ -66,7 +67,7 @@ public class CommandManager implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if(!cmd.getName().equalsIgnoreCase("mlb")) {
+        if (!cmd.getName().equalsIgnoreCase("mlb")) {
             return false;
         }
         if (args.length == 0) {

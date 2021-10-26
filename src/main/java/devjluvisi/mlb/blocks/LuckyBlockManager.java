@@ -153,28 +153,28 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
                     (float) blocksYaml.getConfig().getDouble("lucky-blocks." + internalName + ".default-luck"));
             block.setBlockLuck(block.getDefaultBlockLuck());
             block.setLore(blocksYaml.getConfig().getStringList("lucky-blocks." + internalName + ".item-lore"));
-            block.setItemEnchanted(blocksYaml.getConfig().getBoolean("lucky-blocks."+internalName+".enchanted"));
+            block.setItemEnchanted(blocksYaml.getConfig().getBoolean("lucky-blocks." + internalName + ".enchanted"));
 
-            if(!Objects.isNull(blocksYaml.getConfig().get("lucky-blocks." + internalName + ".required-tool"))) {
-                block.setRequiredTool(blocksYaml.getConfig().getItemStack("lucky-blocks."+internalName+".required-tool"));
+            if (!Objects.isNull(blocksYaml.getConfig().get("lucky-blocks." + internalName + ".required-tool"))) {
+                block.setRequiredTool(blocksYaml.getConfig().getItemStack("lucky-blocks." + internalName + ".required-tool"));
             }
-            if(!Objects.isNull(blocksYaml.getConfig().get("lucky-blocks." + internalName + ".break-sound"))) {
-                block.setBreakSound(Sound.valueOf(blocksYaml.getConfig().getString("lucky-blocks."+internalName+".break-sound")));
+            if (!Objects.isNull(blocksYaml.getConfig().get("lucky-blocks." + internalName + ".break-sound"))) {
+                block.setBreakSound(Sound.valueOf(blocksYaml.getConfig().getString("lucky-blocks." + internalName + ".break-sound")));
             }
-            if(!Objects.isNull(blocksYaml.getConfig().get("lucky-blocks." + internalName + ".place-cooldown"))) {
-                block.setPlaceCooldown(blocksYaml.getConfig().getInt("lucky-blocks."+internalName+".place-cooldown"));
+            if (!Objects.isNull(blocksYaml.getConfig().get("lucky-blocks." + internalName + ".place-cooldown"))) {
+                block.setPlaceCooldown(blocksYaml.getConfig().getInt("lucky-blocks." + internalName + ".place-cooldown"));
             }
-            if(!Objects.isNull(blocksYaml.getConfig().get("lucky-blocks." + internalName + ".break-cooldown"))) {
-                block.setBreakCooldown(blocksYaml.getConfig().getInt("lucky-blocks."+internalName+".break-cooldown"));
+            if (!Objects.isNull(blocksYaml.getConfig().get("lucky-blocks." + internalName + ".break-cooldown"))) {
+                block.setBreakCooldown(blocksYaml.getConfig().getInt("lucky-blocks." + internalName + ".break-cooldown"));
             }
-            if(!Objects.isNull(blocksYaml.getConfig().get("lucky-blocks." + internalName + ".particles"))) {
+            if (!Objects.isNull(blocksYaml.getConfig().get("lucky-blocks." + internalName + ".particles"))) {
                 String serialized = blocksYaml.getConfig().getString("lucky-blocks." + internalName + ".particles");
                 serialized = StringUtils.replace(serialized, "[", StringUtils.EMPTY);
                 serialized = StringUtils.replace(serialized, "]", StringUtils.EMPTY);
                 String[] split = StringUtils.splitByWholeSeparator(serialized, ":");
-                for(String s: split) {
+                for (String s : split) {
                     Particle particle = Particle.valueOf(StringUtils.split(s, ",")[0]);
-                    int amount = NumberUtils.toInt(StringUtils.split(s, ",")[1],0);
+                    int amount = NumberUtils.toInt(StringUtils.split(s, ",")[1], 0);
                     block.getParticleMap().putIfAbsent(particle, amount);
                 }
             }
@@ -247,6 +247,7 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
      * configuration "blocks.yml" file.
      */
     public void save() {
+        plugin.getBlocksYaml().setValue("lucky-blocks", null);
         int savedCount = 0;
         for (final LuckyBlock lb : this) {
             if (savedCount > PluginConstants.MAX_LUCKY_BLOCK_AMOUNT) {
@@ -346,6 +347,19 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
         }
         strBuild.append("#################").append("\n");
         return strBuild.toString();
+    }
+
+    /**
+     * Returns a unique hash code that represents all the lucky blocks.
+     * Can take time to compute in larger quantities.
+     * @return A unique hash code that represents every lucky block on the server.
+     */
+    public int getDetailedHash() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (LuckyBlock lb : this) {
+            stringBuilder.append(lb.toString());
+        }
+        return stringBuilder.toString().hashCode();
     }
 
 }

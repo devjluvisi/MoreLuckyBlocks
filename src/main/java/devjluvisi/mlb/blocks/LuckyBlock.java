@@ -6,6 +6,7 @@ import devjluvisi.mlb.api.items.CustomItemMeta;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.config.ConfigManager;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -109,9 +110,9 @@ public class LuckyBlock {
         meta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
         meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
 
-        if(!itemEnchanted) {
+        if (!itemEnchanted) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        }else{
+        } else {
             luckyBlock.addUnsafeEnchantment(Enchantment.LUCK, 1);
         }
 
@@ -137,7 +138,7 @@ public class LuckyBlock {
     }
 
     public void setInternalName(String internalName) {
-        if(!PluginConstants.INTERNAL_NAME_RANGE.isInRange(internalName.length())) {
+        if (!PluginConstants.INTERNAL_NAME_RANGE.isInRange(internalName.length())) {
             throw new IllegalArgumentException("Argument length for setting an internal name must be 2-28 characters in length.");
         }
         this.internalName = internalName;
@@ -179,8 +180,24 @@ public class LuckyBlock {
         return this.defaultBlockLuck;
     }
 
+    public void setDefaultBlockLuck(float defaultBlockLuck) {
+        if (defaultBlockLuck > 100) {
+            this.defaultBlockLuck = 100.0F;
+            return;
+        }
+        if (defaultBlockLuck < -100) {
+            this.defaultBlockLuck = -100.0F;
+            return;
+        }
+        this.defaultBlockLuck = defaultBlockLuck;
+    }
+
     public ItemStack getRequiredTool() {
         return requiredTool;
+    }
+
+    public void setRequiredTool(ItemStack requiredTool) {
+        this.requiredTool = requiredTool;
     }
 
     public EnumMap<Particle, Integer> getParticleMap() {
@@ -189,10 +206,6 @@ public class LuckyBlock {
 
     public void setParticleMap(EnumMap<Particle, Integer> particleMap) {
         this.particleMap = particleMap;
-    }
-
-    public void setRequiredTool(ItemStack requiredTool) {
-        this.requiredTool = requiredTool;
     }
 
     public Sound getBreakSound() {
@@ -243,18 +256,6 @@ public class LuckyBlock {
         return this.breakCooldown != 0 || this.placeCooldown != 0;
     }
 
-    public void setDefaultBlockLuck(float defaultBlockLuck) {
-        if (defaultBlockLuck > 100) {
-            this.defaultBlockLuck = 100.0F;
-            return;
-        }
-        if (defaultBlockLuck < -100) {
-            this.defaultBlockLuck = -100.0F;
-            return;
-        }
-        this.defaultBlockLuck = defaultBlockLuck;
-    }
-
     public List<LuckyBlockDrop> getDroppableItems() {
         return this.droppableItems;
     }
@@ -291,23 +292,23 @@ public class LuckyBlock {
         blocksYaml.getConfig().set(path + ".item-lore", Util.asNormalColoredString(this.lore));
         blocksYaml.getConfig().set(path + ".permission", this.breakPermission);
         blocksYaml.getConfig().set(path + ".enchanted", this.itemEnchanted);
-        if(!Objects.isNull(requiredTool)) {
+        if (!Objects.isNull(requiredTool)) {
             blocksYaml.getConfig().set(path + ".required-tool", this.requiredTool);
         }
 
-        if(!Objects.isNull(breakSound)) {
+        if (!Objects.isNull(breakSound)) {
             blocksYaml.getConfig().set(path + ".break-sound", this.breakSound.name());
         }
 
-        if(placeCooldown != 0 || breakCooldown != 0) {
+        if (placeCooldown != 0 || breakCooldown != 0) {
             blocksYaml.getConfig().set(path + ".place-cooldown", this.placeCooldown);
             blocksYaml.getConfig().set(path + ".break-cooldown", this.breakCooldown);
         }
 
-        if(!particleMap.isEmpty()) {
+        if (!particleMap.isEmpty()) {
             StringBuilder str = new StringBuilder();
             particleMap.forEach((k, v) -> str.append(k.name()).append(",").append(v).append(":"));
-            str.setLength(str.length()-1); // Remove last ":"
+            str.setLength(str.length() - 1); // Remove last ":"
             blocksYaml.getConfig().set(path + ".particles", "[" + str + "]");
         }
 
@@ -376,9 +377,7 @@ public class LuckyBlock {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof LuckyBlock)) {
-            return false;
-        }
+        Validate.notNull(obj, "Object comparing to LuckyBlock equals() is null.");
         return this.hashCode() == obj.hashCode();
     }
 

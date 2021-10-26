@@ -52,17 +52,17 @@ public class ListMenu extends MenuBuilder {
                     .addLine("&3Break Permission&7: " + lb.getBreakPermission())
                     .addLine("&3Material&7: " + lb.getBlockMaterial().name())
                     .addLine("&3Default Luck&7: " + lb.getDefaultBlockLuck())
-                    .addLine("&3Required Tool&7: " + (lb.hasRequiredTool() ? "None" : Util.getItemAsString(lb.getRequiredTool())))
+                    .addLine("&3Required Tool&7: " + (!lb.hasRequiredTool() ? "None" : Util.getItemAsString(lb.getRequiredTool())))
                     .addLine("&3Cooldowns&7: " + (lb.hasCooldowns() ? "Yes" : "No"))
                     .addLine("&3Particles&7: " + lb.getParticleMap().size())
-                    .addLine("&3Break Sound&7: " + (lb.hasBreakSound() ? "None" : lb.getBreakSound().name()))
+                    .addLine("&3Break Sound&7: " + (!lb.hasBreakSound() ? "None" : lb.getBreakSound().name()))
                     .addLine("&3# of Droppable Items&7: " + lb.getDroppableItems().size())
                     .addLine("&3Lore Length&7: " + lb.getLore().size())
                     .addLine("\n")
                     .addLine("&e&lCLICK TO CONFIGURE");
             ItemStack item = i.asItem();
-            if(lb.isItemEnchanted()) {
-                item.addEnchantment(Enchantment.LUCK, 1);
+            if (lb.isItemEnchanted()) {
+                item.addUnsafeEnchantment(Enchantment.LUCK, 1);
                 ItemMeta meta = item.getItemMeta();
                 assert meta != null;
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);

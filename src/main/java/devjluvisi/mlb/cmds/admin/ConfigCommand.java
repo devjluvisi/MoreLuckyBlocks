@@ -4,6 +4,7 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.cmds.CommandResult;
 import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
+import devjluvisi.mlb.events.custom.DataChangedEvent;
 import devjluvisi.mlb.util.Range;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -56,13 +57,10 @@ public record ConfigCommand(MoreLuckyBlocks plugin) implements SubCommand {
         if (args[1].equalsIgnoreCase("save")) {
             sender.sendMessage(
                     ChatColor.GREEN + "Configuration files have been updated according to unmodified changes.");
-            this.plugin.getBlocksYaml().setValue("lucky-blocks", null);
-            this.plugin.getLuckyBlocks().save();
-            this.plugin.getAudit().writeAll();
-            this.plugin.getPlayerManager().save();
-            this.plugin.getBlocksYaml().save();
+            plugin.getServer().getPluginManager().callEvent(new DataChangedEvent());
         } else if (args[1].equalsIgnoreCase("reload")) {
             sender.sendMessage(ChatColor.BLUE + "Configuration files have been saved and reloaded.");
+
             this.plugin.getBlocksYaml().save();
             this.plugin.getBlocksYaml().reload();
 
@@ -73,6 +71,12 @@ public record ConfigCommand(MoreLuckyBlocks plugin) implements SubCommand {
             this.plugin.getMessagesManager().reload();
 
             this.plugin.getLuckyBlocks().upload();
+
+            this.plugin.getExchangesManager().save();
+            this.plugin.getExchangesManager().reload();
+
+            this.plugin.getStructuresYaml().save();
+            this.plugin.getStructuresYaml().reload();
         } else {
             return new CommandResult(ResultType.BAD_USAGE);
         }

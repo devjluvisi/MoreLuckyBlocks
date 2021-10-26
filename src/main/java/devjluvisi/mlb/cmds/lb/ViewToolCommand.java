@@ -51,16 +51,16 @@ public class ViewToolCommand implements SubCommand {
 
     @Override
     public CommandResult perform(CommandSender sender, String[] args) {
-        if(!plugin.getLuckyBlocks().contains(args[1])) {
+        if (!plugin.getLuckyBlocks().contains(args[1])) {
             return new CommandResult(ResultType.INVALID_LUCKY_BLOCK, args[1]);
         }
-        if(!plugin.getLuckyBlocks().get(args[1]).hasRequiredTool()) {
+        if (!plugin.getLuckyBlocks().get(args[1]).hasRequiredTool()) {
             sender.sendMessage(ChatColor.RED + "This lucky block does not have a required tool to break it.");
             return new CommandResult(ResultType.GENERAL_FAILURE);
         }
         MenuManager manager = new MenuManager(plugin);
         ItemViewMenu menu = new ItemViewMenu(manager, plugin.getLuckyBlocks().get(args[1]).getRequiredTool());
-        manager.open((Player)sender, menu);
+        manager.open((Player) sender, menu);
         return new CommandResult(ResultType.PASSED);
     }
 }

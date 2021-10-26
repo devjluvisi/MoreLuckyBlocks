@@ -11,6 +11,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
 /**
  * - "/mlb give [player] [name] [amount]" - "/mlb give [player] [name] [luck]
  * [amount]"
@@ -31,7 +36,7 @@ public record GiveCommand(MoreLuckyBlocks plugin) implements SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/mlb give <player> <block-name> <[?]block-luck> <amount>";
+        return "/mlb give <player|all> <block-name> <[?]block-luck> <amount>";
     }
 
     @Override
@@ -52,10 +57,18 @@ public record GiveCommand(MoreLuckyBlocks plugin) implements SubCommand {
     @Override
     public CommandResult perform(CommandSender sender, String[] args) {
 
-        final Player p = Bukkit.getPlayerExact(args[1]);
+        final List<UUID> players = new ArrayList<>();
+        if (!args[1].equalsIgnoreCase("all")) {
+            final Player p = Bukkit.getPlayerExact(args[1]);
 
-        if (p == null) {
-            return new CommandResult(ResultType.INVALID_PLAYER, args[1]);
+            if (p == null) {
+                return new CommandResult(ResultType.INVALID_PLAYER, args[1]);
+            }
+            players.add(p.getUniqueId());
+        } else {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                players.add(p.getUniqueId());
+            }
         }
 
         final int index = this.plugin.getLuckyBlocks().indexOf(new LuckyBlock(args[2].toLowerCase()));
@@ -80,7 +93,9 @@ public record GiveCommand(MoreLuckyBlocks plugin) implements SubCommand {
         }
 
         block.setBlockLuck(luck);
-        p.getInventory().addItem(block.asItem(this.plugin, luck, amount));
+        final float finalLuck = luck;
+        final int finalAmount = amount;
+        players.forEach(p -> Objects.requireNonNull(plugin.getServer().getPlayer(p)).getInventory().addItem(block.asItem(this.plugin, finalLuck, finalAmount)));
         sender.sendMessage(ChatColor.GREEN + "Success!");
         return new CommandResult(ResultType.PASSED);
     }

@@ -17,6 +17,7 @@ public enum MenuType {
     TRACK_MENU(TrackMenu.class),
     EDIT_LUCKY_BLOCK_ATTRIBUTES(EditLuckyBlockMenu.class),
     EDIT_PARTICLES_SUB(ParticlesSubMenu.class),
+    STRUCTURE(StructureMenu.class),
     CONFIRM(ConfirmMenu.class),
     // Empty menu
     EMPTY(null),
@@ -27,8 +28,7 @@ public enum MenuType {
     USER_REDEEM(UserRedeemMenu.class),
     USER_REDEEM_LIST(UserRedeemList.class),
     // Shared
-    VIEW_ITEM(ItemViewMenu.class)
-    ;
+    VIEW_ITEM(ItemViewMenu.class);
 
     private final Class<? extends MenuBuilder> classType;
 

@@ -167,10 +167,6 @@ public final class LuckyAudit {
         return this.luckyBlockMap.get(new MapLocation3D(loc)).getBlockLuck();
     }
 
-    public ConcurrentHashMap<MapLocation3D, LuckyValues> getMap() {
-        return this.luckyBlockMap;
-    }
-
     public void put(Location l, LuckyBlock lb) {
         Validate.notNull(l);
         Validate.notNull(lb);
@@ -186,6 +182,12 @@ public final class LuckyAudit {
                 new LuckyValues(lb.getBlockMaterial(), lb.hashCode(), lb.getBlockLuck()));
     }
 
+    public void remove(Location l) {
+        Validate.notNull(l);
+        this.luckyBlockMap.remove(new MapLocation3D(l));
+        // this.writeAll();
+    }
+
 //	public void removeAll(LuckyBlock block) {
 //
 //	}
@@ -193,12 +195,6 @@ public final class LuckyAudit {
 //	public void writeNew(Location loc, LuckyBlock block) {
 //
 //	}
-
-    public void remove(Location l) {
-        Validate.notNull(l);
-        this.luckyBlockMap.remove(new MapLocation3D(l));
-        // this.writeAll();
-    }
 
     public void removeAll(LuckyBlock block) {
         for (Map.Entry<MapLocation3D, LuckyValues> entry : luckyBlockMap.entrySet()) {
@@ -247,6 +243,15 @@ public final class LuckyAudit {
         str.append(value.getLuckyBlockHash());
         str.append("}]");
         return str.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return getMap().hashCode();
+    }
+
+    public ConcurrentHashMap<MapLocation3D, LuckyValues> getMap() {
+        return this.luckyBlockMap;
     }
 
     /**
