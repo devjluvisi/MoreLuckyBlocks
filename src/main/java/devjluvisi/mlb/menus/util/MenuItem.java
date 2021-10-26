@@ -215,6 +215,26 @@ public class MenuItem {
                 lore.add("&7Use &3/mlb settings&7 to enable or disable");
                 lore.add("&7this feature.");
             }
+            case EDIT_STRUCTURE -> {
+                m = Material.FEATHER;
+                displayName = "&eEdit Structure";
+                lore.add("&7Edit the structure");
+                lore.add("&7for this drop.");
+                lore.add("&8Will teleport you to structure world.");
+            }
+            case DELETE_STRUCTURE -> {
+                m = Material.LAVA_BUCKET;
+                displayName = "&eDelete Structure";
+                lore.add("&7Delete the structure for");
+                lore.add("&7for this drop.");
+            }
+            case NEW_STRUCTURE -> {
+                m = Material.FEATHER;
+                displayName = "&eAdd Structure";
+                lore.add("&7Add a new structure");
+                lore.add("&7for this drop.");
+                lore.add("&8Will teleport you to structure world.");
+            }
         }
         return this;
     }
@@ -305,6 +325,6 @@ public class MenuItem {
         ADD_POTION_EFFECT, ADD_COMMAND, SAVE_BUTTON, CANCEL_BUTTON, CONFIRM_BUTTON, INCREASE_RARITY, DECREASE_RARITY,
         DELETE_LUCKY_BLOCK, ADD_STRUCTURE, DELETE_EXCHANGE, SAVE_EXCHANGE, EDIT_NAME, EDIT_LORE, EDIT_MATERIAL, EDIT_BREAK_PERMISSION,
         EDIT_TOOL, EDIT_PARTICLES, EDIT_SOUND, EDIT_PLACE_COOLDOWN, EDIT_BREAK_COOLDOWN, EDIT_ENCHANTED,
-        AUTO_SAVING
+        AUTO_SAVING, NEW_STRUCTURE, EDIT_STRUCTURE, DELETE_STRUCTURE
     }
 }

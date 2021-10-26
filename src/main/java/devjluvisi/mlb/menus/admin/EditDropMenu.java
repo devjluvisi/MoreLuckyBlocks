@@ -150,8 +150,7 @@ public class EditDropMenu extends MenuBuilder {
 
         }
         if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.ADD_STRUCTURE).asItem())) {
-            manager.getPlayer().performCommand("mlb struct");
-            view.close();
+            manager.open(manager.getPlayer(), MenuType.EDIT_STRUCTURE);
         }
         if (itemStack.equals(new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem())) {
             manager.regress(view);

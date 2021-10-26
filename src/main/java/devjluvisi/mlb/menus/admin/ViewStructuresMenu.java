@@ -7,20 +7,24 @@ import devjluvisi.mlb.menus.MenuBuilder;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.menus.util.MenuItem;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
+import java.util.Objects;
 
-public class StructureMenu extends MenuBuilder {
+public class ViewStructuresMenu extends MenuBuilder {
 
     private static final byte DROP_VIEW_AMOUNT = 14;
     private static final byte NEXT_PAGE = 34;
     private static final byte PREVIOUS_PAGE = 33;
     private LuckyBlock lb;
     private int dropIndex;
-    public StructureMenu(MenuManager manager) {
+    public ViewStructuresMenu(MenuManager manager) {
         super(manager, "Edit Structures for: " + manager.getMenuData().getLuckyBlock().getInternalName(), PageType.CHEST_PLUS_PLUS);
         this.dropIndex = 0;
         this.lb = manager.getMenuData().getLuckyBlock();
@@ -83,6 +87,9 @@ public class StructureMenu extends MenuBuilder {
 
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
+        if(itemStack == null) {
+            return;
+        }
         switch (slot) {
             case NEXT_PAGE -> {
                 if (lb.getDroppableItems().size() <= dropIndex + DROP_VIEW_AMOUNT) {
@@ -97,6 +104,19 @@ public class StructureMenu extends MenuBuilder {
                 }
                 dropIndex -= DROP_VIEW_AMOUNT;
                 view.reopen();
+            }
+            default -> {
+                if(!(itemStack.hasItemMeta() && Objects.requireNonNull(itemStack.getItemMeta()).hasDisplayName())) {
+                    return;
+                }
+                String name = ChatColor.stripColor(itemStack.getItemMeta().getDisplayName());
+                int index = NumberUtils.toInt(StringUtils.split(name, "Drop: ")[0], -1);
+                if(index == -1) {
+                    return;
+                }
+                manager.setMenuData(manager.getMenuData().with(lb.getDroppableItems().get(index)));
+
+                manager.open(manager.getPlayer(), MenuType.EDIT_STRUCTURE);
             }
         }
     }

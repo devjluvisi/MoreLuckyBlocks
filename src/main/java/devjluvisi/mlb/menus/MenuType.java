@@ -17,7 +17,8 @@ public enum MenuType {
     TRACK_MENU(TrackMenu.class),
     EDIT_LUCKY_BLOCK_ATTRIBUTES(EditLuckyBlockMenu.class),
     EDIT_PARTICLES_SUB(ParticlesSubMenu.class),
-    STRUCTURE(StructureMenu.class),
+    STRUCTURE(ViewStructuresMenu.class),
+    EDIT_STRUCTURE(EditStructureMenu.class),
     CONFIRM(ConfirmMenu.class),
     // Empty menu
     EMPTY(null),
