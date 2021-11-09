@@ -7,6 +7,7 @@ import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.Range;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -65,56 +66,32 @@ public record InfoCommand(MoreLuckyBlocks plugin) implements SubCommand {
         }
 
         final LuckyBlock lb = this.plugin.getLuckyBlocks().get(Util.makeInternal(args[1]));
-        sender.sendMessage("");
-        sender.sendMessage(ChatColor.DARK_AQUA + "Info for: " + ChatColor.BLUE + lb.getInternalName());
-        sender.sendMessage(ChatColor.WHITE + " ▶" + ChatColor.GRAY + " Item Name " + ChatColor.DARK_GRAY + "→ " + ChatColor.GREEN + lb.getName());
-        sender.sendMessage(ChatColor.WHITE + " ▶" + ChatColor.GRAY + " Block Type " + ChatColor.DARK_GRAY + "→ " + ChatColor.GREEN
-                + lb.getBlockMaterial().name());
-        sender.sendMessage(ChatColor.WHITE + " ▶" + ChatColor.GRAY + " Default Luck " + ChatColor.DARK_GRAY + "→ " + ChatColor.GREEN
-                + lb.getDefaultBlockLuck());
-        sender.sendMessage(ChatColor.WHITE + " ▶" + ChatColor.GRAY + " # of Drops " + ChatColor.DARK_GRAY + "→ " + ChatColor.GREEN
-                + lb.getDroppableItems().size());
-        if (lb.getBreakCooldown() != 0) {
-            sender.sendMessage(ChatColor.WHITE + " ▶" + ChatColor.GRAY + " Break Cooldown " + ChatColor.DARK_GRAY + "→ " + ChatColor.GREEN
-                    + lb.getBreakCooldown());
-        }
-        if (lb.getPlaceCooldown() != 0) {
-            sender.sendMessage(ChatColor.WHITE + " ▶" + ChatColor.GRAY + " Place Cooldown " + ChatColor.DARK_GRAY + "→ " + ChatColor.GREEN
-                    + lb.getPlaceCooldown());
-        }
-
-
         if (sender.hasPermission("mlb.admin")) {
-            sender.sendMessage(ChatColor.RED + " ▶" + ChatColor.GRAY + " Enchanted " + ChatColor.DARK_GRAY + "→ "
-                    + ChatColor.GREEN + lb.isItemEnchanted());
-            sender.sendMessage(ChatColor.RED + " ▶" + ChatColor.GRAY + " Break Permission " + ChatColor.DARK_GRAY + "→ "
-                    + ChatColor.GREEN + lb.getBreakPermission());
-            sender.sendMessage(ChatColor.RED + " ▶" + ChatColor.GRAY + " Lore Lines " + ChatColor.DARK_GRAY + "→ " + ChatColor.GREEN
-                    + lb.getRefreshedLore().size());
+            sender.sendMessage(Message.M38.format(lb.getInternalName(), lb.getName(), lb.getBlockMaterial().name(), lb.getDefaultBlockLuck(), lb.getDroppableItems().size(), lb.getBreakCooldown(), lb.getPlaceCooldown(), lb.isItemEnchanted(), lb.getBreakPermission(), lb.getRefreshedLore().size()));
+        }else{
+            sender.sendMessage(Message.M37.format(lb.getInternalName(), lb.getName(), lb.getBlockMaterial().name(), lb.getDefaultBlockLuck(), lb.getDroppableItems().size(), lb.getBreakCooldown(), lb.getPlaceCooldown(), lb.isItemEnchanted(), lb.getBreakPermission(), lb.getRefreshedLore().size()));
         }
+
         if (lb.hasRequiredTool()) {
-            TextComponent txtComp = new TextComponent("  ⛏ Requires Special Tool ");
-            txtComp.setColor(ChatColor.RED);
-            txtComp.addExtra(ChatColor.DARK_GRAY + "(" + ChatColor.YELLOW.toString() + ChatColor.BOLD + "?" + ChatColor.DARK_GRAY + ")");
+            TextComponent txtComp = new TextComponent(TextComponent.fromLegacyText(Message.M39.get()));
             txtComp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to view item.")));
             txtComp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mlb tool " + lb.getInternalName()));
             sender.spigot().sendMessage(txtComp);
         }
         if (lb.hasParticles()) {
-            sender.sendMessage(ChatColor.GREEN + "  ✔ Has Particles");
+            sender.sendMessage(Message.M40.get());
         }
         if (lb.hasBreakSound()) {
-            sender.sendMessage(ChatColor.GREEN + "  ✔ Plays sound when broken");
+            sender.sendMessage(Message.M41.get());
         }
-        sender.sendMessage(ChatColor.ITALIC + "-- Drops --");
+
+
+        sender.sendMessage(Message.M44.get());
         ArrayList<TextComponent> drops = new ArrayList<>();
 
         for (int i = 0; i < lb.getDroppableItems().size() && i < MAX_DROPS_IN_CHAT; i++) {
             TextComponent txtComponent = new TextComponent();
-            txtComponent.addExtra("[");
-            txtComponent.addExtra(String.valueOf(i));
-            txtComponent.addExtra("]");
-            txtComponent.setColor(ChatColor.BLUE);
+            txtComponent.addExtra(Message.M45.format(String.valueOf(i)));
             txtComponent.addExtra(" ");
             txtComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Click to view drop #" + i)));
             txtComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mlb drops " + lb.getInternalName() + " " + i));
@@ -128,9 +105,9 @@ public record InfoCommand(MoreLuckyBlocks plugin) implements SubCommand {
         sender.spigot().sendMessage(finalComponent);
 
         if (sender.hasPermission(lb.getBreakPermission())) {
-            sender.sendMessage(ChatColor.DARK_GREEN + "You have permission to break this lucky block.");
+            sender.sendMessage(Message.M42.get());
         } else {
-            sender.sendMessage(ChatColor.DARK_RED + "You do not have permission to break this lucky block.");
+            sender.sendMessage(Message.M43.get());
         }
 
         return new CommandResult(ResultType.PASSED);

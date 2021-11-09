@@ -1,6 +1,7 @@
 package devjluvisi.mlb.util.config;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -70,7 +71,7 @@ public class SavingManager {
                 if (plugin.getSettingsManager().isSavingMessagesEnabled()) {
                     plugin.getServer().getOnlinePlayers().forEach((Player p) -> {
                         if (p.hasPermission("mlb.admin.alert")) {
-                            p.sendMessage(ChatColor.GRAY + "[MoreLuckyBlocks: " + ChatColor.ITALIC + "Changes Saved" + ChatColor.RESET + ChatColor.GRAY + "]");
+                            p.sendMessage(Message.M9.get());
                         }
                     });
                 }

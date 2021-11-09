@@ -3,6 +3,7 @@ package devjluvisi.mlb.util.structs;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
@@ -97,7 +98,7 @@ public class DropStructure implements Listener {
             for (final Player p : this.structWorld.getPlayers()) {
                 // get(0) just represents the first world, usually the main one "world".
                 p.teleport(plugin.getServer().getWorlds().get(0).getSpawnLocation());
-                p.kickPlayer(ChatColor.RED + "You were in a structure world on a server reload/restart.");
+                p.kickPlayer(Message.M4.get());
             }
             for (LivingEntity e : structWorld.getLivingEntities()) {
                 e.setHealth(0.0F);
@@ -213,17 +214,9 @@ public class DropStructure implements Listener {
         if (!(this.structWorld.getPlayers().size() > 0)) {
 
             p.teleport(new Location(this.structWorld, 0.0D, this.structWorld.getHighestBlockYAt(0, 0) + 1, 0.0D));
-            p.sendMessage("");
-            p.sendMessage(ChatColor.DARK_GRAY + "[!] " + ChatColor.LIGHT_PURPLE + ChatColor.BOLD
-                    + "You have entered structure editing mode.");
-            p.sendMessage("");
-            p.sendMessage(ChatColor.GRAY + "Place blocks and spawn mobs to edit this structure.\nWhen finished, type "
-                    + ChatColor.GOLD + "/mlb save" + ChatColor.GRAY + " to save the structure to the block.\nType "
-                    + ChatColor.GOLD + "/mlb exit" + ChatColor.GRAY + " to exit this creator world.");
-            p.sendMessage("");
+            p.sendMessage(Message.M4.get());
             if (this.drop.hasStructure()) {
-                p.sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.ITALIC
-                        + "Loaded your previously saved structure.");
+                p.sendMessage(Message.M5.get());
             }
             p.getInventory().clear();
 
@@ -289,7 +282,7 @@ public class DropStructure implements Listener {
         double x = e.getClickedBlock().getLocation().getX();
         double y = e.getClickedBlock().getLocation().getY();
         double z = e.getClickedBlock().getLocation().getZ();
-        e.getPlayer().sendMessage(ChatColor.LIGHT_PURPLE + "You have placed a '" + entityType + "' to spawn at (" + x + ", " + y + ", " + z + ")");
+        e.getPlayer().sendMessage(Message.M6.format(entityType, x, y, z));
         this.spawnableEntities.put(e.getClickedBlock().getLocation(), entityType);
     }
 
@@ -301,7 +294,7 @@ public class DropStructure implements Listener {
             return;
         }
         if (e.getBlock().getLocation().getY() > BUILD_LIMIT) {
-            e.getPlayer().sendMessage(ChatColor.RED + "Build limit reached >> " + BUILD_LIMIT);
+            e.getPlayer().sendMessage(Message.M7.format(BUILD_LIMIT));
             e.setCancelled(true);
             return;
         }
@@ -372,7 +365,7 @@ public class DropStructure implements Listener {
         }
 
         if (e.getBlock().getLocation().equals(new Location(this.structWorld, 0, BUILD_LIMIT / 2, 0)) && structWorld.getBlockAt(0, BUILD_LIMIT / 2, 0).getType() == lb.getBlockMaterial()) {
-            e.getPlayer().sendMessage(ChatColor.YELLOW + "You broke the reference lucky block. Particles will spawn to indicate where the reference block is.");
+            e.getPlayer().sendMessage(Message.M8.get());
             return;
         }
 
@@ -402,7 +395,7 @@ public class DropStructure implements Listener {
         for (final PotionEffect effect : this.lastKnownPotionEffects) {
             p.addPotionEffect(effect);
         }
-        p.sendMessage(ChatColor.GRAY + "You have left the structure modification world.");
+        p.sendMessage(Message.M2.get());
         this.reset();
     }
 
@@ -525,8 +518,7 @@ class EditingStructureTask extends BukkitRunnable {
         struct.getWorld().spawnParticle(Particle.GLOW, 0.5, BUILD_LIMIT / 2, 0.75, 50);
         this.p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
                 TextComponent
-                        .fromLegacyText(ChatColor.DARK_RED + "Editing block \"" + this.struct.getLb().getInternalName()
-                                + "\" drop #" + this.struct.getLb().indexOf(this.struct.getDrop())));
+                        .fromLegacyText(Message.M1.format(this.struct.getLb().getInternalName(), this.struct.getLb().indexOf(this.struct.getDrop()))));
 
     }
 

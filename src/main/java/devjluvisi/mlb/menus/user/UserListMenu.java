@@ -3,11 +3,13 @@ package devjluvisi.mlb.menus.user;
 import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.api.gui.pages.PageType;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.menus.MenuBuilder;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuResource;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.menus.util.MenuItem;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +24,7 @@ public class UserListMenu extends MenuBuilder {
     private final Random rand;
 
     public UserListMenu(MenuManager manager) {
-        super(manager, "Lucky Block List", PageType.DOUBLE_CHEST);
+        super(manager, Message.M12.get(), PageType.DOUBLE_CHEST);
         rand = new Random();
     }
 
@@ -45,18 +47,15 @@ public class UserListMenu extends MenuBuilder {
             i = new MenuItem()
                     .with(lb.getBlockMaterial())
                     .with(lb.getName())
-                    .addLine("&8(&7" + lb.getInternalName() + "&8)")
-                    .addLine("&3Possible Drops&7: " + lb.getDroppableItems().size())
-                    .addLine("&3/mlb info " + lb.getInternalName())
-                    .addLine("&7for more information.")
-                    .addLine("\n");
+                    .addAllLine(Util.descriptionToLore(Message.M13.format(lb.getInternalName(), lb.getDroppableItems().size())).toArray(String[]::new));
+
             if (manager.getPlayer().hasPermission(lb.getBreakPermission())) {
-                i.addLine("&a✔ You can break this lucky block!");
+                i.addLine(Message.M14.get());
             } else {
-                i.addLine("&c✖ You cannot break this lucky block.");
+                i.addLine(Message.M15.get());
             }
             i.addLine("\n");
-            i.addLine("&7Click to view contents.");
+            i.addLine(Message.LB_VIEW_CONTENTS.get());
             content[yCoord][xCoord] = i.asItem();
             // Move on to the next index
             xCoord = xCoord + 1 < 9 ? (xCoord + 1) : 1;

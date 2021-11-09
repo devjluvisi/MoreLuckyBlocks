@@ -7,6 +7,7 @@ import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.shared.ItemViewMenu;
 import devjluvisi.mlb.util.Range;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public class ViewToolCommand implements SubCommand {
 
     @Override
     public String getDescription() {
-        return "View a required tool of a lucky block..";
+        return "View a required tool of a lucky block.";
     }
 
     @Override
@@ -55,7 +56,7 @@ public class ViewToolCommand implements SubCommand {
             return new CommandResult(ResultType.INVALID_LUCKY_BLOCK, args[1]);
         }
         if (!plugin.getLuckyBlocks().get(args[1]).hasRequiredTool()) {
-            sender.sendMessage(ChatColor.RED + "This lucky block does not have a required tool to break it.");
+            sender.sendMessage(Message.M33.get());
             return new CommandResult(ResultType.GENERAL_FAILURE);
         }
         MenuManager manager = new MenuManager(plugin);

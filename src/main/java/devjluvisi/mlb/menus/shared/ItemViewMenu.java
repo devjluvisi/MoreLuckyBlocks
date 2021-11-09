@@ -8,6 +8,7 @@ import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.menus.exceptions.MenuInvalidException;
 import devjluvisi.mlb.menus.util.MenuItem;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,7 +25,7 @@ public class ItemViewMenu extends MenuBuilder {
     }
 
     public ItemViewMenu(MenuManager manager, ItemStack item) {
-        super(manager, "Viewing Item: " + Util.getItemAsString(item), PageType.DISPENSER);
+        super(manager, Message.M32.format(Util.getItemAsString(item)), PageType.DISPENSER);
         this.item = item;
     }
 

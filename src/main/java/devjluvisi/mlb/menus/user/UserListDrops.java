@@ -6,6 +6,7 @@ import devjluvisi.mlb.menus.MenuBuilder;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.menus.util.MenuItem;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -31,9 +32,9 @@ public class UserListDrops extends MenuBuilder {
     @Override
     public ItemStack[][] getContent(ItemStack[][] content) {
         this.lb = manager.getMenuData().getLuckyBlock();
-        setMenuName("Viewing: " + lb.getInternalName());
+        setMenuName(Message.VIEWING_GUI_TITLE.format(lb.getInternalName()));
 
-        ItemStack emptyItem = new MenuItem().with(Material.GRAY_STAINED_GLASS_PANE).with("&7Empty").asItem();
+        ItemStack emptyItem = new MenuItem().with(Material.GRAY_STAINED_GLASS_PANE).with(Message.EMPTY.get()).asItem();
         Arrays.fill(content[0], emptyItem);
         Arrays.fill(content[1], emptyItem);
 
@@ -45,11 +46,11 @@ public class UserListDrops extends MenuBuilder {
                 col = 0;
                 row++;
             }
-            content[row][col] = new MenuItem().with(Material.GREEN_STAINED_GLASS_PANE).with("&aDrop: " + i)
-                    .addLine("&7&lTotal Drops: &d" + lb.getDroppableItems().get(i).getLoot().size())
-                    .addLine("&7&lRarity: &d" + lb.getDroppableItems().get(i).getRarity())
+            content[row][col] = new MenuItem().with(Material.GREEN_STAINED_GLASS_PANE).with(Message.DROP_TITLE.get() + i)
+                    .addLine(Message.LB_TOTAL_LOOT.format(lb.getDroppableItems().get(i).getLoot().size()))
+                    .addLine(Message.LB_DROP_RARITY.format(lb.getDroppableItems().get(i).getRarity()))
                     .addLine("\n")
-                    .addLine("&7&oClick to view drop contents.").asItem();
+                    .addLine(Message.LB_VIEW_CONTENTS.get()).asItem();
 
             if (row == 2) break;
 
@@ -64,8 +65,8 @@ public class UserListDrops extends MenuBuilder {
 
         final int currPage = (this.beginIndex / CHEST_ROW_SIZE) + 1;
 
-        content[2][7] = new MenuItem().with(Material.FEATHER).with("&ePrevious Page &8(&6" + currPage + "&e/&6" + maxPages + "&8)").addLine("&7Go back to the previous page.").asItem();
-        content[2][8] = new MenuItem().with(Material.ARROW).with("&eNext Page &8(&6" + currPage + "&e/&6" + maxPages + "&8)").addLine("&7Go back to the next page.").asItem();
+        content[2][7] = new MenuItem().with(Material.FEATHER).with(Message.PREVIOUS_PAGE_TITLE.format(currPage, maxPages)).addLine(Message.PREVIOUS_PAGE_LORE.get()).asItem();
+        content[2][8] = new MenuItem().with(Material.ARROW).with(Message.NEXT_PAGE_TITLE.format(currPage, maxPages)).addLine(Message.NEXT_PAGE_LORE.get()).asItem();
         return content;
     }
 
@@ -77,9 +78,9 @@ public class UserListDrops extends MenuBuilder {
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
         if (itemStack == null) return;
-        if (ChatColor.stripColor(Objects.requireNonNull(itemStack.getItemMeta()).getDisplayName()).startsWith("Drop: ")) {
+        if (ChatColor.stripColor(Objects.requireNonNull(itemStack.getItemMeta()).getDisplayName()).startsWith(ChatColor.stripColor(Message.DROP_TITLE.get()))) {
             final int dropIndex = Integer
-                    .parseInt(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()).split(": ")[1]);
+                    .parseInt((itemStack.getItemMeta().getDisplayName()).split(Message.DROP_TITLE.get())[1]);
             manager.setMenuData(manager.getMenuData().with(lb.getDroppableItems().get(dropIndex)));
             manager.open(view.getPlayer(), MenuType.USER_LIST_LOOT);
             return;

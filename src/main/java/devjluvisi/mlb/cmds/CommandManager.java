@@ -8,6 +8,7 @@ import devjluvisi.mlb.cmds.admin.struct.SaveCommand;
 import devjluvisi.mlb.cmds.admin.struct.StructureCommand;
 import devjluvisi.mlb.cmds.general.*;
 import devjluvisi.mlb.cmds.lb.*;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -71,8 +72,7 @@ public class CommandManager implements CommandExecutor {
             return false;
         }
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.GOLD + "[MoreLuckyBlocks] " + ChatColor.RED
-                    + "Unknown Command.\nType /mlb help to view a list of commands.");
+            sender.sendMessage(Message.UNKNOWN_COMMAND.get());
             return true;
         }
 
@@ -80,20 +80,19 @@ public class CommandManager implements CommandExecutor {
         for (final SubCommand sub : this.subcommands) {
             if (args[0].equalsIgnoreCase(sub.getName())) {
                 if (!(sender instanceof Player) && !sub.isAllowConsole()) {
-                    sender.sendMessage(ChatColor.RED + "You must be a player to execute this command.");
+                    sender.sendMessage(Message.MUST_BE_PLAYER.get());
                     return true;
                 }
 
                 if ((!sub.getPermission().isBlank()) && !sender.hasPermission(sub.getPermission())) {
-                    sender.sendMessage(ChatColor.RED + "You do not have permission to do this.");
+                    sender.sendMessage(Message.NO_PERMISSION.get());
                     return true;
                 }
 
                 // If the arguments provided in the command match the exact range of the
                 // subcommand.
                 if (!sub.getArgumentRange().isInRange(args.length)) {
-                    sender.sendMessage(ChatColor.RED + "Incorrect Usage.");
-                    sender.sendMessage(ChatColor.RED + sub.getSyntax());
+                    sender.sendMessage(Message.BAD_COMMAND_USAGE.format(sub.getSyntax()));
                     return true;
                 }
                 // Get the result that comes out after the subcommand is performed.
@@ -104,34 +103,32 @@ public class CommandManager implements CommandExecutor {
                 } else if (result.getResult() == ResultType.GENERAL_FAILURE) {
                     return true;
                 }
-                sender.sendMessage(ChatColor.RED + "There was a problem executing your command.");
+                sender.sendMessage(Message.GENERAL_COMMAND_ERROR.get());
                 switch (result.getResult()) {
                     case INVALID_PLAYER -> {
-                        sender.sendMessage(MessageFormat.format("{0}Could not find specified player {1}\"{2}\"" + ChatColor.RED + ".", ChatColor.RED, ChatColor.YELLOW, result.getBadArg()));
+                        sender.sendMessage(Message.UNKNOWN_PLAYER.format(result.getBadArg()));
                     }
                     case BAD_ARGUMENT_TYPE -> {
                         if (!result.hasDetail()) {
-                            sender.sendMessage("Invalid argument specified.");
+                            sender.sendMessage(Message.BAD_ARGUMENT_1.get());
                             break;
                         }
-                        sender.sendMessage(ChatColor.RED + "Invalid argument type: \"" + result.getBadArg() + "\"" + ChatColor.RED + ".");
-                        sender.sendMessage(ChatColor.RED + sub.getSyntax());
+                        sender.sendMessage(Message.BAD_ARGUMENT_2.format(result.getBadArg()));
                     }
                     case BAD_USAGE -> {
-                        sender.sendMessage(ChatColor.RED + "Invalid Usage.");
-                        sender.sendMessage(ChatColor.RED + cmd.getUsage());
+                        sender.sendMessage(Message.BAD_COMMAND_USAGE.format(sub.getSyntax()));
                     }
                     case BAD_REQUEST -> {
-                        sender.sendMessage(ChatColor.RED + "You cannot execute this command right now.");
+                        sender.sendMessage(Message.BAD_REQUEST.get());
                     }
                     case INVALID_PERMISSION -> {
-                        sender.sendMessage(ChatColor.RED + "You do not have permission to do this.");
+                        sender.sendMessage(Message.NO_PERMISSION.get());
                     }
                     case INVALID_LUCKY_BLOCK -> {
-                        sender.sendMessage(ChatColor.RED + "Could not find lucky block \"" + result.getBadArg() + "\"" + ChatColor.RED + ".");
+                        sender.sendMessage(Message.UNKNOWN_LUCKY_BLOCK.format(result.getBadArg()));
                     }
                     case INVALID_MATERIAL -> {
-                        sender.sendMessage(ChatColor.RED + "Invalid material specified: \"" + result.getBadArg() + "\"" + ChatColor.RED + ".");
+                        sender.sendMessage(Message.BAD_MATERIAL.format(result.getBadArg()));
                     }
                     default -> {
                         return true;
@@ -143,7 +140,7 @@ public class CommandManager implements CommandExecutor {
 
         // This executes if the user attempted to enter a subcommand using /mlb but the
         // subcommand does not exist.
-        sender.sendMessage(ChatColor.RED + "Unknown Command.\nmlb help for a list of commands.");
+        sender.sendMessage(Message.UNKNOWN_COMMAND.get());
         return true;
     }
 

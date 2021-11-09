@@ -133,7 +133,6 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
         if (this.plugin.getBlocksYaml().getConfig().getConfigurationSection("lucky-blocks") == null) {
             this.loadExampleBlocks();
             this.save();
-            this.upload();
             return;
         }
         // Go through all lucky blocks and add them.

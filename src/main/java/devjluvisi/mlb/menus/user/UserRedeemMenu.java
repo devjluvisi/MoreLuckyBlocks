@@ -3,10 +3,12 @@ package devjluvisi.mlb.menus.user;
 import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.api.gui.pages.PageType;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.menus.MenuBuilder;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.menus.util.MenuItem;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
@@ -29,14 +31,14 @@ public class UserRedeemMenu extends MenuBuilder {
 
 
     public UserRedeemMenu(MenuManager manager) {
-        super(manager, "Redeem Menu", PageType.DOUBLE_CHEST);
+        super(manager, Message.M17.get(), PageType.DOUBLE_CHEST);
         this.lbRequestAmount = 1;
     }
 
     @Override
     public ItemStack[][] getContent(ItemStack[][] content) {
         lb = manager.getMenuData().getLuckyBlock();
-        setMenuName("Redeem for: " + lb.getInternalName());
+        setMenuName(Message.M18.format(lb.getInternalName()));
         for (int i = 0; i < 6; i++) {
             Arrays.fill(content[i], MenuItem.blackPlaceholder().asItem());
         }
@@ -52,13 +54,11 @@ public class UserRedeemMenu extends MenuBuilder {
             }
         }
 
-        content[0][7] = new MenuItem().with(Material.RED_DYE).with("&c-1 Quantity")
-                .addLine("&7Decrease the amount of")
-                .addLine("&7requested lucky blocks to: &6" + (lbRequestAmount - 1) + "&7.").asItem();
+        content[0][7] = new MenuItem().with(Material.RED_DYE).with(Message.M19.get())
+                .addAllLine(Util.descriptionToLore(Message.M21.format((lbRequestAmount - 1))).toArray(String[]::new)).asItem();
         content[0][6] = new MenuItem(Material.WHITE_STAINED_GLASS_PANE).asItem();
-        content[0][5] = new MenuItem().with(Material.LIME_DYE).with("&a+1 Quantity")
-                .addLine("&7Increase the amount of")
-                .addLine("&7requested lucky blocks to: &6" + (lbRequestAmount + 1) + "&7.").asItem();
+        content[0][5] = new MenuItem().with(Material.LIME_DYE).with(Message.M20.get())
+                .addAllLine(Util.descriptionToLore(Message.M22.format((lbRequestAmount + 1))).toArray(String[]::new)).asItem();
         content[1][5] = new MenuItem(Material.WHITE_STAINED_GLASS_PANE).asItem();
         content[1][6] = lb.asItem(manager.getPlugin(), lbRequestAmount);
         content[1][7] = new MenuItem(Material.WHITE_STAINED_GLASS_PANE).asItem();
@@ -67,14 +67,12 @@ public class UserRedeemMenu extends MenuBuilder {
         content[4][6] = new MenuItem(Material.WHITE_STAINED_GLASS_PANE).asItem();
         content[4][5] = new MenuItem(Material.WHITE_STAINED_GLASS_PANE).asItem();
         content[5][5] = new MenuItem().with(Material.GREEN_TERRACOTTA)
-                .with("&2&lConfirm")
-                .addLine("&7Confirm your transaction.")
-                .addLine("&7to buy &fx" + lbRequestAmount + " &7of")
-                .addLine(lb.getName()).asItem();
+                .with(Message.M23.get())
+                .addAllLine(Util.descriptionToLore(Message.M24.format(lbRequestAmount, lb.getInternalName())).toArray(String[]::new)).asItem();
         content[5][6] = new MenuItem(Material.WHITE_STAINED_GLASS_PANE).asItem();
         content[5][7] = new MenuItem().with(Material.RED_TERRACOTTA)
-                .with("&c&lDecline")
-                .addLine("&7Decline the transaction.").asItem();
+                .with(Message.M25.get())
+                .addLine(Message.M26.get()).asItem();
 
         return content;
     }
@@ -113,10 +111,8 @@ public class UserRedeemMenu extends MenuBuilder {
                 for (ItemStack i : requiredItems) {
                     int amt = (i.getAmount() * requiredItems.stream().filter(e -> e.equals(i)).toList().size() * lbRequestAmount);
                     if (!playerInventory.containsAtLeast(i, amt)) {
-                        manager.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Could not complete transaction.");
-                        TextComponent textComponent = new TextComponent("You are missing an item: \"" + ChatColor.RESET + ChatColor.WHITE + "x" + amt + " " + (i.hasItemMeta() && Objects.requireNonNull(i.getItemMeta()).hasDisplayName() ? i.getItemMeta().getDisplayName() : i.getType().name()) + ChatColor.GRAY + "\".");
-                        textComponent.addExtra("\nHover over item to view information.");
-                        textComponent.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+                        manager.getPlayer().sendMessage(Message.M27.get());
+                        TextComponent textComponent = new TextComponent(Message.M28.format(amt, (i.hasItemMeta() && Objects.requireNonNull(i.getItemMeta()).hasDisplayName() ? i.getItemMeta().getDisplayName() : i.getType().name())));
                         ItemStack clone = i.clone();
                         clone.setAmount(amt);
                         textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(getItemInfo(clone))));
@@ -127,7 +123,7 @@ public class UserRedeemMenu extends MenuBuilder {
                 }
 
                 if (Arrays.stream(playerInventory.getStorageContents()).noneMatch(Objects::isNull)) {
-                    manager.getPlayer().sendMessage(ChatColor.RED + "Please have at least one open slot in your inventory to exchange!");
+                    manager.getPlayer().sendMessage(Message.M29.get());
                     return;
                 }
                 //TODO: Play Chime, Particles maybe?
@@ -135,11 +131,10 @@ public class UserRedeemMenu extends MenuBuilder {
                     requiredItems.forEach(playerInventory::removeItem);
                 }
                 playerInventory.addItem(lb.asItem(manager.getPlugin(), lbRequestAmount));
-                manager.getPlayer().sendMessage(ChatColor.DARK_GREEN + "Success!");
-                manager.getPlayer().sendMessage("You purchased " + lbRequestAmount + "x " + lb.getName() + ChatColor.RESET + " lucky blocks!");
+                manager.getPlayer().sendMessage(Message.M30.format(lbRequestAmount, lb.getName()));
             }
             case 52 -> {
-                manager.getPlayer().sendMessage(ChatColor.RED + "Cancelled transaction.");
+                manager.getPlayer().sendMessage(Message.M31.get());
                 view.close();
             }
 

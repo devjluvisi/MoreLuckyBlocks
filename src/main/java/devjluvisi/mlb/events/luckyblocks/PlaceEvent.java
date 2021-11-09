@@ -4,7 +4,9 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.api.items.CustomItemMeta;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -36,15 +38,15 @@ public record PlaceEvent(MoreLuckyBlocks plugin) implements Listener {
             return;
         }
 
-        if (blockPlaced.getDroppableItems().size() == 0) {
-            e.getPlayer().sendMessage(
-                    ChatColor.RED + "This lucky block cannot be placed because there have been no drops set for it.");
+        if (blockPlaced.getDroppableItems().isEmpty()) {
+            e.getPlayer().sendMessage(Message.CANT_PLACE.get());
             e.setCancelled(true);
             return;
         }
         blockPlaced.setBlockLuck(specialMeta.getFloat(PluginConstants.BlockLuckIdentifier));
         this.plugin.getAudit().put(e.getBlock().getLocation(), blockPlaced);
-        e.getPlayer().sendMessage("You placed a lucky block (" + blockPlaced.getInternalName() + ").");
+        Location loc = e.getBlockPlaced().getLocation();
+        e.getPlayer().sendMessage(Message.PLACED_BLOCK.format(blockPlaced.getInternalName(), Objects.requireNonNull(loc.getWorld()).getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), blockPlaced.getBlockLuck()));
     }
 
 }

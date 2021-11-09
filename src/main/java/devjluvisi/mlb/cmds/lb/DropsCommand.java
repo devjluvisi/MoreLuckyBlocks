@@ -11,6 +11,7 @@ import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuResource;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.util.Range;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -65,7 +66,7 @@ public record DropsCommand(MoreLuckyBlocks plugin) implements SubCommand {
 
         if (args.length == 1) {
             if (item.getItemMeta() == null || !plugin.getLuckyBlocks().contains(plugin.getMetaFactory().createCustomMeta(item.getItemMeta()).getString(PluginConstants.LuckyIdentifier))) {
-                p.sendMessage(ChatColor.RED + "You must hold a valid lucky block in your hand.\nOr use: /mlb drops <name>");
+                p.sendMessage(Message.M35.get());
                 return new CommandResult(ResultType.PASSED);
             }
             String name = plugin.getMetaFactory().createCustomMeta(item.getItemMeta()).getString(PluginConstants.LuckyIdentifier);
@@ -88,7 +89,7 @@ public record DropsCommand(MoreLuckyBlocks plugin) implements SubCommand {
                 return new CommandResult(ResultType.BAD_ARGUMENT_TYPE, args[2]);
             }
             if (!new Range(0, plugin.getLuckyBlocks().get(args[1]).getDroppableItems().size() - 1).isInRange(Util.toNumber(args[2]))) {
-                sender.sendMessage(ChatColor.RED + "Lucky block " + args[1] + " only has " + (plugin.getLuckyBlocks().get(args[1]).getDroppableItems().size()) + " drops (including drop zero).");
+                sender.sendMessage(Message.M36.format(args[1], plugin.getLuckyBlocks().get(args[1]).getDroppableItems().size()));
                 return new CommandResult(ResultType.PASSED);
             }
             lb = plugin.getLuckyBlocks().get(Util.makeInternal(args[1]));

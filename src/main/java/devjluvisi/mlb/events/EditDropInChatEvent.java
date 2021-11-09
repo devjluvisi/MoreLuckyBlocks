@@ -8,6 +8,7 @@ import devjluvisi.mlb.blocks.drops.LuckyBlockPotionEffect;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.menus.admin.EditDropMenu;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -46,16 +47,16 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
                 manager.open(p, MenuType.EDIT_LOOT);
 
                 this.plugin.getPlayersEditingDrop().remove(p.getUniqueId());
-                e.getPlayer().sendMessage(ChatColor.GREEN + "You have cancelled your command action.");
+                e.getPlayer().sendMessage(Message.CANCELLED.get());
                 return;
             }
             if (!command.startsWith("/")) {
-                p.sendMessage(ChatColor.RED + "Command to add must start with a \"/\"");
+                p.sendMessage(Message.A1.get());
                 return;
             }
 
-            p.sendMessage(ChatColor.GREEN + "Added command " + ChatColor.YELLOW + command + ChatColor.GREEN
-                    + " to the lucky block you selected.");
+
+            p.sendMessage(Message.A2.format(command, plugin.getLuckyBlocks().get(b.getBlockIndex()).getInternalName()));
             this.plugin.getLuckyBlocks().get(b.getBlockIndex()).getDroppableItems().get(b.getDropIndex()).getCommands()
                     .add(new LuckyBlockCommand(command));
             manager.setMenuData(b.getResource());
@@ -88,7 +89,7 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
             if ((luckyBlockDrop.getPotionEffects().size() != 0) && (b.getAddPotionEffectStage() != 1)) {
                 luckyBlockDrop.getPotionEffects().remove(luckyBlockDrop.getPotionEffects().size() - 1);
             }
-            p.sendMessage(ChatColor.GRAY + "You have stopped adding a potion effect.");
+            p.sendMessage(Message.A3.get());
 
             for (final LuckyBlock lb : this.plugin.getLuckyBlocks()) {
                 lb.clean();
@@ -108,19 +109,16 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
 
         if (b.getAddPotionEffectStage() == 1) {
             if (PotionEffectType.getByName(message.toUpperCase()) == null) {
-                p.sendMessage(ChatColor.DARK_RED + "Unknown potion effect type. Try again.");
-                p.sendMessage(ChatColor.GRAY + "Type \"exit\" to exit.");
+                p.sendMessage(Message.A4.format(message.toUpperCase()));
+                p.sendMessage(Message.TYPE_EXIT.get());
                 return;
             }
             luckyBlockDrop.getPotionEffects()
                     .add(new LuckyBlockPotionEffect(PotionEffectType.getByName(message), -1, -1));
 
-            p.sendMessage(ChatColor.GRAY + "Potion Effect Type: " + ChatColor.YELLOW + message.toUpperCase());
-            p.sendMessage(ChatColor.GRAY + "Amplifier: " + ChatColor.YELLOW + "Unset");
-            p.sendMessage(ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + "Unset");
+            p.sendMessage(Message.A5.format(message.toUpperCase(), "Unset", "Unset"));
             b.setAddPotionEffectStage(2);
-            p.sendMessage(ChatColor.GOLD + "(2/3) > " + ChatColor.YELLOW
-                    + "Please enter the amplifier of the potion. (0-255)");
+            p.sendMessage(Message.A6.get());
             return;
         } else if (b.getAddPotionEffectStage() == 2) {
 
@@ -132,18 +130,16 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
                 }
 
             } catch (final NumberFormatException exc) {
-                p.sendMessage(ChatColor.RED + "Please enter a positive integer (0-255) for potion effect duration.");
+                p.sendMessage(Message.A8.get());
                 return;
             }
             luckyBlockDrop.getPotionEffects().get(luckyBlockDrop.getPotionEffects().size() - 1).setAmplifier(amplifier);
 
-            p.sendMessage(ChatColor.GRAY + "Potion Effect Type: " + ChatColor.YELLOW + luckyBlockDrop.getPotionEffects()
-                    .get(luckyBlockDrop.getPotionEffects().size() - 1).getType().getName());
-            p.sendMessage(ChatColor.GRAY + "Amplifier: " + ChatColor.YELLOW + amplifier);
-            p.sendMessage(ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + "Unset");
+            p.sendMessage(Message.A5.format(luckyBlockDrop.getPotionEffects()
+                    .get(luckyBlockDrop.getPotionEffects().size() - 1).getType().getName(), amplifier, "Unset"));
+
             b.setAddPotionEffectStage(3);
-            p.sendMessage(ChatColor.GOLD + "(3/3) > " + ChatColor.YELLOW
-                    + "Please enter the duration of the potion. (0-32768)");
+            p.sendMessage(Message.A7.get());
 
             return;
         } else if (b.getAddPotionEffectStage() == 3) {
@@ -156,19 +152,17 @@ public record EditDropInChatEvent(MoreLuckyBlocks plugin) implements Listener {
                     throw new NumberFormatException();
                 }
             } catch (final NumberFormatException exc) {
-                p.sendMessage(ChatColor.RED + "Please enter a positive integer (0-32768) for potion effect duration.");
+                p.sendMessage(Message.A9.get());
                 return;
             }
             luckyBlockDrop.getPotionEffects().get(luckyBlockDrop.getPotionEffects().size() - 1).setDuration(duration);
 
-            p.sendMessage(ChatColor.GRAY + "Potion Effect Type: " + ChatColor.YELLOW + luckyBlockDrop.getPotionEffects()
-                    .get(luckyBlockDrop.getPotionEffects().size() - 1).getType().getName());
-            p.sendMessage(ChatColor.GRAY + "Amplifier: " + ChatColor.YELLOW + luckyBlockDrop.getPotionEffects()
-                    .get(luckyBlockDrop.getPotionEffects().size() - 1).getAmplifier());
-            p.sendMessage(ChatColor.GRAY + "Duration: " + ChatColor.YELLOW + duration);
+            p.sendMessage(Message.A5.format(luckyBlockDrop.getPotionEffects()
+                    .get(luckyBlockDrop.getPotionEffects().size() - 1).getType().getName(), luckyBlockDrop.getPotionEffects()
+                    .get(luckyBlockDrop.getPotionEffects().size() - 1).getAmplifier(), duration));
 
             p.sendMessage("");
-            p.sendMessage(ChatColor.GREEN + "You successfully added a potion effect to this drop!");
+            p.sendMessage(Message.A10.get());
             Bukkit.getScheduler().runTask(this.plugin, () -> {
                 manager.setMenuData(
                         b.getResource()

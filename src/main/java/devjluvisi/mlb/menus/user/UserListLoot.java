@@ -5,10 +5,12 @@ import devjluvisi.mlb.api.gui.pages.PageType;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.blocks.drops.LootProperty;
+import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.menus.MenuBuilder;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.menus.util.MenuItem;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.ClickType;
@@ -30,7 +32,7 @@ public class UserListLoot extends MenuBuilder {
 
     @Override
     public ItemStack[][] getContent(ItemStack[][] content) {
-        setMenuName("Viewing Loot: #" + manager.getMenuData().getLuckyBlock().indexOf(manager.getMenuData().getDrop()));
+        setMenuName(Message.VIEWING_LOOT_GUI_TITLE.format(manager.getMenuData().getLuckyBlock().indexOf(manager.getMenuData().getDrop())));
         this.lb = manager.getMenuData().getLuckyBlock();
         this.lbDrop = manager.getMenuData().getDrop();
         Arrays.fill(content[0], MenuItem.blackPlaceholder().asItem());
@@ -53,14 +55,14 @@ public class UserListLoot extends MenuBuilder {
 
         ItemStack dropInfo = new MenuItem()
                 .with(Material.BOOK)
-                .with("&7Drop: " + manager.getMenuData().getLuckyBlock().indexOf(manager.getMenuData().getDrop()))
-                .addLine("&7You are currently viewing drop &8#&e" + manager.getMenuData().getLuckyBlock().indexOf(manager.getMenuData().getDrop()))
-                .addLine("&8- &7Rarity: &d" + lbDrop.getRarity())
-                .addLine("&8- &7Total Drops: &d" + lbDrop.getLoot().size())
-                .addLine("&8- &7Items: &d" + lbDrop.getItems().size())
-                .addLine("&8- &7Commands: &d" + lbDrop.getCommands().size())
-                .addLine("&8- &7Potions: &d" + lbDrop.getPotionEffects().size())
-                .addLine("&8- &7Has Structure: &d" + lbDrop.hasStructure())
+                .with(Message.DROP_TITLE.get() + manager.getMenuData().getLuckyBlock().indexOf(manager.getMenuData().getDrop()))
+                .addLine(Message.M10.format(manager.getMenuData().getLuckyBlock().indexOf(manager.getMenuData().getDrop())))
+                .addLine(Message.LABEL_RARITY.format(lbDrop.getRarity()))
+                .addLine(Message.LABEL_TOTAL_LOOT.format(lbDrop.getLoot().size()))
+                .addLine(Message.LABEL_ITEMS.format(lbDrop.getItems().size()))
+                .addLine(Message.LABEL_COMMANDS.format(lbDrop.getCommands().size()))
+                .addLine(Message.LABEL_POTIONS.format(lbDrop.getPotionEffects().size()))
+                .addLine(Message.LABEL_STRUCTURE.format(lbDrop.hasStructure() ? "Yes" : "No"))
                 .asItem();
         dropInfo.addUnsafeEnchantment(Enchantment.THORNS, 1);
         ItemMeta meta = dropInfo.getItemMeta();
@@ -70,10 +72,8 @@ public class UserListLoot extends MenuBuilder {
 
         content[3][3] = dropInfo;
         content[3][4] = new MenuItem().of(MenuItem.SpecialItem.EXIT_BUTTON).asItem();
-        content[3][5] = new MenuItem().with(Material.PAPER).with("&e&lStructures")
-                .addLine("&7Structures are blocks/mobs which are")
-                .addLine("&7created when you break a lucky block.")
-                .addLine("&7Structures are &cnot&7 shown here.").asItem();
+        content[3][5] = new MenuItem().with(Material.PAPER).with(Message.STRUCTURES_TITLE.get())
+                .addAllLine(Util.descriptionToLore(Message.M11.get()).toArray(String[]::new)).asItem();
 
         return content;
     }

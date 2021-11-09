@@ -3,6 +3,7 @@ package devjluvisi.mlb.events.luckyblocks;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import devjluvisi.mlb.util.structs.RelativeObject;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
@@ -26,12 +27,12 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
             return;
         }
         if (lb.getDroppableItems().isEmpty()) {
-            e.getPlayer().sendMessage(ChatColor.RED
-                    + "This was a lucky block but it did not drop anything because no drops were available.");
+            e.getPlayer().sendMessage(Message.NO_DROPS.get());
             e.setCancelled(true);
             return;
         }
-        e.getPlayer().sendMessage(ChatColor.YELLOW + "You broke a lucky block!");
+        Location l = e.getBlock().getLocation();
+        e.getPlayer().sendMessage(Message.BREAK_LUCKY.format(lb.getInternalName(), Objects.requireNonNull(l.getWorld()).getName(), l.getBlock(), l.getBlockY(), l.getBlockZ(), lb.getBlockLuck()));
         final LuckyBlockDrop drop = lb
                 .generateDrop(this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()).getLuck());
         drop.applyTo(e.getBlock().getLocation(), e.getPlayer());

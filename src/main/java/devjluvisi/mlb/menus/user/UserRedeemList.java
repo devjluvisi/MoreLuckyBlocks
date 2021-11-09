@@ -8,6 +8,7 @@ import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuResource;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.menus.util.MenuItem;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,7 +18,7 @@ import java.util.Objects;
 public class UserRedeemList extends MenuBuilder {
 
     public UserRedeemList(MenuManager manager) {
-        super(manager, "Redeem List", PageType.CHEST_PLUS);
+        super(manager, Message.M16.get(), PageType.CHEST_PLUS);
     }
 
     @Override

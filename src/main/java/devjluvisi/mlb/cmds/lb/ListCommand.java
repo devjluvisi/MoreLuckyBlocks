@@ -7,6 +7,7 @@ import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.util.Range;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -46,8 +47,13 @@ public record ListCommand(MoreLuckyBlocks plugin) implements SubCommand {
     @Override
     public CommandResult perform(CommandSender sender, String[] args) {
         if (plugin.getLuckyBlocks().size() == 0) {
-            sender.sendMessage(ChatColor.RED + "Could not run this command because you have no lucky blocks on this server.");
-            sender.sendMessage(ChatColor.GRAY + "Try /mlb create to create a new lucky block.");
+            if(sender.hasPermission("mlb.admin")) {
+                sender.sendMessage(ChatColor.RED + "Could not run this command because you have no lucky blocks on this server.");
+                sender.sendMessage(ChatColor.GRAY + "Try /mlb create to create a new lucky block.");
+            }else{
+                sender.sendMessage(Message.M34.get());
+            }
+
             return new CommandResult(ResultType.PASSED);
         }
         MenuType type = MenuType.USER_LIST_LUCKY_BLOCKS;
