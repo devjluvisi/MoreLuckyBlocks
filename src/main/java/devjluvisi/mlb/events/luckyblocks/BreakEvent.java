@@ -3,14 +3,16 @@ package devjluvisi.mlb.events.luckyblocks;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.blocks.LuckyBlock;
 import devjluvisi.mlb.blocks.LuckyBlockDrop;
+import devjluvisi.mlb.events.custom.LogDataEvent;
 import devjluvisi.mlb.util.config.files.messages.Message;
 import devjluvisi.mlb.util.structs.RelativeObject;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
 
@@ -22,7 +24,7 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
             return;
         }
         final LuckyBlock lb = this.plugin.getAudit().find(e.getBlock().getLocation());
-
+        final ItemStack item = e.getPlayer().getItemInUse();
         if (Objects.isNull(lb)) {
             return;
         }
@@ -31,6 +33,19 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
             e.setCancelled(true);
             return;
         }
+
+
+        // Cancel event if silk touch pickaxe.
+        if(item != null && item.hasItemMeta()) {
+            if(Objects.requireNonNull(item.getItemMeta()).hasEnchants()) {
+                if(item.getItemMeta().getEnchants().containsKey(Enchantment.SILK_TOUCH)) {
+                    e.getPlayer().sendMessage(Message.M46.get());
+                    e.setCancelled(true);
+                    return;
+                }
+            }
+        }
+
         Location l = e.getBlock().getLocation();
         e.getPlayer().sendMessage(Message.BREAK_LUCKY.format(lb.getInternalName(), Objects.requireNonNull(l.getWorld()).getName(), l.getBlock(), l.getBlockY(), l.getBlockZ(), lb.getBlockLuck()));
         final LuckyBlockDrop drop = lb
@@ -48,6 +63,7 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
             }
         }
         this.plugin.getAudit().remove(e.getBlock().getLocation());
+        plugin.getServer().getPluginManager().callEvent(new LogDataEvent(e.getPlayer().getName() + " broke a lucky block [" + lb.getInternalName() + "," + lb.getBlockLuck() + "]"));
     }
 
 }

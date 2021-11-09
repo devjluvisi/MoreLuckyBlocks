@@ -8,7 +8,6 @@ import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.Range;
 import devjluvisi.mlb.util.config.files.messages.Message;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -68,7 +67,7 @@ public record InfoCommand(MoreLuckyBlocks plugin) implements SubCommand {
         final LuckyBlock lb = this.plugin.getLuckyBlocks().get(Util.makeInternal(args[1]));
         if (sender.hasPermission("mlb.admin")) {
             sender.sendMessage(Message.M38.format(lb.getInternalName(), lb.getName(), lb.getBlockMaterial().name(), lb.getDefaultBlockLuck(), lb.getDroppableItems().size(), lb.getBreakCooldown(), lb.getPlaceCooldown(), lb.isItemEnchanted(), lb.getBreakPermission(), lb.getRefreshedLore().size()));
-        }else{
+        } else {
             sender.sendMessage(Message.M37.format(lb.getInternalName(), lb.getName(), lb.getBlockMaterial().name(), lb.getDefaultBlockLuck(), lb.getDroppableItems().size(), lb.getBreakCooldown(), lb.getPlaceCooldown(), lb.isItemEnchanted(), lb.getBreakPermission(), lb.getRefreshedLore().size()));
         }
 

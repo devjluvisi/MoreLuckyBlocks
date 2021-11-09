@@ -41,7 +41,7 @@ advanced-permissions: false
 # By default, only "player luck" is tracked.
 use-extra-player-data: false
 
-# Log when players break lucky blocks to a special log.yml file.
+# Log when players execute commands, place/break lucky blocks to a special log.yml file.
 log-events: false
 
 # Players banned from breaking/placing lucky blocks.

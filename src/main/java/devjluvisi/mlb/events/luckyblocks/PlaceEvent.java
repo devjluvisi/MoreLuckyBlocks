@@ -4,8 +4,8 @@ import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.api.items.CustomItemMeta;
 import devjluvisi.mlb.blocks.LuckyBlock;
+import devjluvisi.mlb.events.custom.LogDataEvent;
 import devjluvisi.mlb.util.config.files.messages.Message;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -47,6 +47,7 @@ public record PlaceEvent(MoreLuckyBlocks plugin) implements Listener {
         this.plugin.getAudit().put(e.getBlock().getLocation(), blockPlaced);
         Location loc = e.getBlockPlaced().getLocation();
         e.getPlayer().sendMessage(Message.PLACED_BLOCK.format(blockPlaced.getInternalName(), Objects.requireNonNull(loc.getWorld()).getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), blockPlaced.getBlockLuck()));
+        plugin.getServer().getPluginManager().callEvent(new LogDataEvent(e.getPlayer().getName() + " placed a lucky block [" + blockPlaced.getInternalName() + "," + blockPlaced.getBlockLuck() + "]"));
     }
 
 }

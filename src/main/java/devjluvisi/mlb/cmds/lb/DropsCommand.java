@@ -12,7 +12,6 @@ import devjluvisi.mlb.menus.MenuResource;
 import devjluvisi.mlb.menus.MenuType;
 import devjluvisi.mlb.util.Range;
 import devjluvisi.mlb.util.config.files.messages.Message;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

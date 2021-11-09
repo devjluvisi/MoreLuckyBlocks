@@ -5,13 +5,12 @@ import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.api.items.CustomItemMeta;
 import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.config.ConfigManager;
+import devjluvisi.mlb.util.config.files.SettingsManager;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -260,12 +259,37 @@ public class LuckyBlock {
         return this.droppableItems;
     }
 
-    public void setDroppableItems(LinkedList<LuckyBlockDrop> arrayList) {
+    public void setDroppableItems(List<LuckyBlockDrop> arrayList) {
         this.droppableItems = arrayList;
     }
 
     public float getBlockLuck() {
         return this.blockLuck;
+    }
+
+    public String getViewPermission() {
+        return "mlb.lb." + internalName + ".view";
+    }
+
+    public String getExchangePermission() {
+        return "mlb.lb." + internalName + ".exchange";
+    }
+
+    public boolean isAllowedToBreak(SettingsManager manager, Location loc, Player p) {
+        if(manager.getDisabledLuckyBlocks().contains(internalName)) {
+            return false;
+        }
+        if(StringUtils.isNotEmpty(breakPermission) && !p.hasPermission(breakPermission)) {
+            return false;
+        }
+        if(manager.getBannedPlayers().contains(p.getName()) || manager.getBannedPlayers().contains(p.getUniqueId())) {
+            return false;
+        }
+        if(manager.getDisabledWorlds().contains(Objects.requireNonNull(loc.getWorld()).getName())) {
+            return false;
+        }
+        // TODO: Add checks for break/place cooldowns
+        return true;
     }
 
     public void setBlockLuck(float blockLuck) {

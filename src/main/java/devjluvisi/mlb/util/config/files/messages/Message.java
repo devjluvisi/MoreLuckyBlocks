@@ -3,10 +3,8 @@ package devjluvisi.mlb.util.config.files.messages;
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.helper.Util;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
 
@@ -127,16 +125,26 @@ public enum Message {
     M42("&2You have permission to break this lucky block."),
     M43("&cYou do not have permission to break this lucky block."),
     M44("&o-- Drops --"),
-    M45("&9[{0}]")
+    M45("&9[{0}]"),
+    M46("&cYou cannot break a lucky block with a silk touch pickaxe!")
     //TODO FOR LATER: START ON USAGE COMMAND AND GO UP.
 
 
-;
+    ;
 
 
     // Singleton Accessprivate static MoreLuckyBlocks plugin;
 
     private static MoreLuckyBlocks plugin;
+
+    static {
+        int index = 1;
+        for (Message m : EnumSet.allOf(Message.class)) {
+            m.id = index;
+            index++;
+        }
+    }
+
     private final String defaultValue;
     private int id;
 
@@ -144,20 +152,46 @@ public enum Message {
         this.defaultValue = defaultValue;
     }
 
-    static {
-        int index = 1;
-        for(Message m: EnumSet.allOf(Message.class)) {
-            m.id = index;
-            index++;
+    public static String get(int id) {
+        return plugin.getMessagesManager().getPrefix() + Util.toColor((String) Objects.requireNonNull(plugin.getMessagesManager().getConfig().get(String.valueOf(id))));
+    }
+
+    public static void loadDefaults(YamlConfiguration cfg) {
+        EnumSet<Message> messages = EnumSet.allOf(Message.class);
+        for (Message m : messages) {
+            if (cfg.get(String.valueOf(m.id)) != null) {
+                continue;
+            }
+            cfg.set(String.valueOf(m.id), m.defaultValue);
         }
+    }
+
+    public static void register(MoreLuckyBlocks pl) {
+        if (plugin != null) {
+            return;
+        }
+        plugin = pl;
     }
 
     public String getDefaultValue() {
         return defaultValue;
     }
 
-    public static String get(int id) {
-        return plugin.getMessagesManager().getPrefix() + Util.toColor((String) Objects.requireNonNull(plugin.getMessagesManager().getConfig().get(String.valueOf(id))));
+    public String format(Object... args) {
+        String raw = get();
+        int index = 0;
+
+        String[] argList = new String[args.length];
+
+        for (int i = 0; i < args.length; i++) {
+            argList[i] = args[i].toString();
+        }
+
+        for (String s : argList) {
+            raw = StringUtils.replace(raw, "{" + index + "}", s);
+            index++;
+        }
+        return raw;
     }
 
     public String get() {
@@ -173,42 +207,8 @@ public enum Message {
                 .replaceAll("%small_arrow%", "→");
     }
 
-    public String format(Object... args) {
-        String raw = get();
-        int index = 0;
-
-        String[] argList = new String[args.length];
-
-        for(int i = 0; i < args.length; i++) {
-            argList[i] = args[i].toString();
-        }
-
-        for(String s: argList) {
-            raw = StringUtils.replace(raw,"{" + index + "}", s);
-            index++;
-        }
-        return raw;
-    }
-
-    public static void loadDefaults(YamlConfiguration cfg) {
-        EnumSet<Message> messages = EnumSet.allOf(Message.class);
-        for(Message m : messages) {
-            if(cfg.get(String.valueOf(m.id)) != null) {
-                continue;
-            }
-            cfg.set(String.valueOf(m.id), m.defaultValue);
-        }
-    }
-
     public int getId() {
         return this.id;
-    }
-
-    public static void register(MoreLuckyBlocks pl) {
-        if(plugin != null) {
-            return;
-        }
-        plugin = pl;
     }
 
     public void setId(int num) {

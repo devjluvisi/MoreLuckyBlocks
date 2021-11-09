@@ -47,10 +47,10 @@ public record ListCommand(MoreLuckyBlocks plugin) implements SubCommand {
     @Override
     public CommandResult perform(CommandSender sender, String[] args) {
         if (plugin.getLuckyBlocks().size() == 0) {
-            if(sender.hasPermission("mlb.admin")) {
+            if (sender.hasPermission("mlb.admin")) {
                 sender.sendMessage(ChatColor.RED + "Could not run this command because you have no lucky blocks on this server.");
                 sender.sendMessage(ChatColor.GRAY + "Try /mlb create to create a new lucky block.");
-            }else{
+            } else {
                 sender.sendMessage(Message.M34.get());
             }
 

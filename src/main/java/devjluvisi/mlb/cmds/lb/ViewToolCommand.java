@@ -8,7 +8,6 @@ import devjluvisi.mlb.menus.MenuManager;
 import devjluvisi.mlb.menus.shared.ItemViewMenu;
 import devjluvisi.mlb.util.Range;
 import devjluvisi.mlb.util.config.files.messages.Message;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

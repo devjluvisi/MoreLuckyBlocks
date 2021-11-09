@@ -8,14 +8,13 @@ import devjluvisi.mlb.cmds.admin.struct.SaveCommand;
 import devjluvisi.mlb.cmds.admin.struct.StructureCommand;
 import devjluvisi.mlb.cmds.general.*;
 import devjluvisi.mlb.cmds.lb.*;
+import devjluvisi.mlb.events.custom.LogDataEvent;
 import devjluvisi.mlb.util.config.files.messages.Message;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,6 +30,7 @@ import java.util.List;
  */
 public class CommandManager implements CommandExecutor {
 
+    private final MoreLuckyBlocks plugin;
     private final LinkedList<SubCommand> subcommands;
 
     public CommandManager(MoreLuckyBlocks plugin) {
@@ -64,6 +64,7 @@ public class CommandManager implements CommandExecutor {
         this.subcommands.addLast(new TrackCommand(plugin));
         this.subcommands.addLast(new TestCommand(plugin));
         this.subcommands.addLast(new HelpCommand(this));
+        this.plugin = plugin;
     }
 
     @Override
@@ -97,13 +98,12 @@ public class CommandManager implements CommandExecutor {
                 }
                 // Get the result that comes out after the subcommand is performed.
                 final CommandResult result = sub.perform(sender, args);
-                if (result.getResult() == ResultType.PASSED) {
-                    // Play particles or sound.
-                    return true;
-                } else if (result.getResult() == ResultType.GENERAL_FAILURE) {
+                if (result.getResult() == ResultType.GENERAL_FAILURE) {
                     return true;
                 }
-                sender.sendMessage(Message.GENERAL_COMMAND_ERROR.get());
+                if(result.getResult() != ResultType.PASSED) {
+                    sender.sendMessage(Message.GENERAL_COMMAND_ERROR.get());
+                }
                 switch (result.getResult()) {
                     case INVALID_PLAYER -> {
                         sender.sendMessage(Message.UNKNOWN_PLAYER.format(result.getBadArg()));
@@ -131,6 +131,11 @@ public class CommandManager implements CommandExecutor {
                         sender.sendMessage(Message.BAD_MATERIAL.format(result.getBadArg()));
                     }
                     default -> {
+                        StringBuilder linkedArgs = new StringBuilder();
+                        for(String s : args) {
+                            linkedArgs.append(s).append(" ");
+                        }
+                        plugin.getServer().getPluginManager().callEvent(new LogDataEvent(sender.getName() + " executed command /" + cmd.getName() + " " + linkedArgs));
                         return true;
                     }
                 }

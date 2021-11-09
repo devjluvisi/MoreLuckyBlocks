@@ -2,7 +2,6 @@ package devjluvisi.mlb.util.config;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.util.config.files.messages.Message;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 

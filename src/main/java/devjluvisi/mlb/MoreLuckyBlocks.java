@@ -6,6 +6,8 @@ import devjluvisi.mlb.cmds.CommandManager;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.events.EditDropInChatEvent;
 import devjluvisi.mlb.events.SaveConfigEvent;
+import devjluvisi.mlb.events.UpdateLogEvent;
+import devjluvisi.mlb.events.custom.LogDataEvent;
 import devjluvisi.mlb.events.luck.JoinLuckEvent;
 import devjluvisi.mlb.events.luckyblocks.BreakEvent;
 import devjluvisi.mlb.events.luckyblocks.PlaceEvent;
@@ -15,21 +17,21 @@ import devjluvisi.mlb.menus.admin.EditLuckyBlockMenu;
 import devjluvisi.mlb.util.config.ConfigManager;
 import devjluvisi.mlb.util.config.SavingManager;
 import devjluvisi.mlb.util.config.files.ExchangesManager;
+import devjluvisi.mlb.util.config.files.SettingsManager;
 import devjluvisi.mlb.util.config.files.messages.Message;
 import devjluvisi.mlb.util.config.files.messages.MessagesManager;
-import devjluvisi.mlb.util.config.files.SettingsManager;
 import devjluvisi.mlb.util.luckyblocks.LuckyAudit;
 import devjluvisi.mlb.util.players.PlayerManager;
 import devjluvisi.mlb.util.structs.DropStructure;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.*;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.time.Instant;
+import java.util.*;
 
 /**
  * MoreLuckyBlocks
@@ -92,6 +94,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
     private LuckyBlockManager lbManager; // Manage all types of lucky blocks and drops.
     private HashMap<UUID, EditDropMenu> playersEditingDrop; // Players editing a drop.
+    private LinkedList<String> loggingMessages;
 
     private DropStructure lbStructure; // An object to manage structure editing for lucky blocks.
 
@@ -185,6 +188,10 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         return this.savingManager;
     }
 
+    public LinkedList<String> getLoggingMessages() {
+        return this.loggingMessages;
+    }
+
     /**
      * @return The "structures.yml" file.
      */
@@ -194,6 +201,8 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        getServer().getPluginManager().callEvent(new LogDataEvent("Server Shutdown."));
+        saveLog();
         if (getSettingsManager().isFirstBoot()) {
             getSettingsManager().setValue("first-boot", false);
         }
@@ -256,7 +265,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
         this.getLogger().info("*-----------------------------------------*");
         this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has started!");
         this.getLogger().info(MessageFormat.format("Server Version -> {0}", super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('('))));
@@ -269,9 +277,11 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         this.registerCommands();
         this.registerEvents();
 
+
         this.metaFactory = new CustomMetaFactory(this);
         this.lbManager = new LuckyBlockManager(this);
         this.playersEditingDrop = new HashMap<>();
+        this.loggingMessages = new LinkedList<>();
 
         this.lbStructure = new DropStructure(this);
         this.getServer().getPluginManager().registerEvents(this.lbStructure, this);
@@ -286,8 +296,59 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         }
 
         Message.register(this);
+        getServer().getPluginManager().callEvent(new LogDataEvent("Server Start."));
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                saveLog();
+            }
+        }.runTaskTimerAsynchronously(this, 20L, 240L); // Every 12 Seconds
 
         super.onEnable();
+    }
+
+    private void saveLog() {
+        if(!settingsManager.isLoggingEvents()) {
+            return;
+        }
+        Bukkit.broadcastMessage("Saving logs.");
+        File logDir = new File(getDataFolder().getAbsolutePath() + "/logs");
+        if(!logDir.exists()) {
+            logDir.mkdir();
+        }
+
+        File file = new File(getDataFolder().getAbsolutePath() + "/logs", "log-" + Instant.now().toString().split("T")[0] + ".txt");
+
+        try {
+            if(!file.exists()) {
+                file.createNewFile();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        BufferedWriter out = null;
+        try {
+
+            out = new BufferedWriter(new FileWriter(file, true));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert out != null;
+        PrintWriter printWriter = new PrintWriter(out, false);
+        for(String s: loggingMessages) {
+            printWriter.println(s);
+        }
+        printWriter.close();
+        loggingMessages.clear();
+        try {
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -324,6 +385,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new JoinEvent(this), this);
         this.getServer().getPluginManager().registerEvents(new SaveConfigEvent(this), this);
         this.getServer().getPluginManager().registerEvents(new EditLuckyBlockMenu(this), this);
+        this.getServer().getPluginManager().registerEvents(new UpdateLogEvent(this), this);
     }
 
 }

@@ -27,5 +27,4 @@ public final class MessagesManager extends ConfigManager {
     }
 
 
-
 }
