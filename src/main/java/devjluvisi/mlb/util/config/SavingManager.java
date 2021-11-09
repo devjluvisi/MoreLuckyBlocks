@@ -1,7 +1,8 @@
 package devjluvisi.mlb.util.config;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,7 +67,13 @@ public class SavingManager {
                 }
                 // Files have been saved.
                 // Run the following code.
-                Bukkit.broadcastMessage("MLB -> Saved unsaved changes.");
+                if (plugin.getSettingsManager().isSavingMessagesEnabled()) {
+                    plugin.getServer().getOnlinePlayers().forEach((Player p) -> {
+                        if (p.hasPermission("mlb.admin.alert")) {
+                            p.sendMessage(ChatColor.GRAY + "[MoreLuckyBlocks: " + ChatColor.ITALIC + "Changes Saved" + ChatColor.RESET + ChatColor.GRAY + "]");
+                        }
+                    });
+                }
                 saveResources();
                 iterationsRun.getAndIncrement();
             }

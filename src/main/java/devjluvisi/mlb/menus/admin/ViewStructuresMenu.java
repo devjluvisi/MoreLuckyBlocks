@@ -24,6 +24,7 @@ public class ViewStructuresMenu extends MenuBuilder {
     private static final byte PREVIOUS_PAGE = 33;
     private LuckyBlock lb;
     private int dropIndex;
+
     public ViewStructuresMenu(MenuManager manager) {
         super(manager, "Edit Structures for: " + manager.getMenuData().getLuckyBlock().getInternalName(), PageType.CHEST_PLUS_PLUS);
         this.dropIndex = 0;
@@ -87,7 +88,7 @@ public class ViewStructuresMenu extends MenuBuilder {
 
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-        if(itemStack == null) {
+        if (itemStack == null) {
             return;
         }
         switch (slot) {
@@ -106,12 +107,12 @@ public class ViewStructuresMenu extends MenuBuilder {
                 view.reopen();
             }
             default -> {
-                if(!(itemStack.hasItemMeta() && Objects.requireNonNull(itemStack.getItemMeta()).hasDisplayName())) {
+                if (!(itemStack.hasItemMeta() && Objects.requireNonNull(itemStack.getItemMeta()).hasDisplayName())) {
                     return;
                 }
                 String name = ChatColor.stripColor(itemStack.getItemMeta().getDisplayName());
                 int index = NumberUtils.toInt(StringUtils.split(name, "Drop: ")[0], -1);
-                if(index == -1) {
+                if (index == -1) {
                     return;
                 }
                 manager.setMenuData(manager.getMenuData().with(lb.getDroppableItems().get(index)));

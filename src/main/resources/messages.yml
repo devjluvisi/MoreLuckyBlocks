@@ -1,24 +1,12 @@
-# MoreLuckyBlocks v1.0 Messages File
-general:
-  no-permission: ""
-  unknown-command: ""
-
-commands:
-  ex:
-menus:
-  menu1:
-    ex:
-  menu2:
-    ex:
-lucky-blocks:
-  no-permission: "" # No permission to break.
-  disabled-lucky-block: ""
-  bad-world: ""
-  banned-from-breaking: ""
-  placed-block: ""
-  destroyed-block: ""
-
-brief-command:
-  - "Hello"
-  - "This is the second page"
-  - "A new page will be automatically added if a line is too long."
+# MESSAGES.YML
+# ------------
+# This file is composed of every possible message in MoreLuckyBlocks.
+# The individual messages in the plugin are NOT labeled, do NOT edit the numbers with the colons
+# next to the messages.
+# Instead, search for the message you want to edit (ctrl+f on many editors) and then edit that text.
+# Notepad++ is the reccomended editor.
+# If you ever mess up your messages.yml file, you can download a fresh copy at:
+# https://github.com/devjluvisi/MoreLuckyBlocks/blob/main/src/main/resources/messages.yml
+prefix:
+  enabled: false
+  value: '&c[MoreLuckyBlocks] &7'

@@ -1,6 +1,5 @@
 package devjluvisi.mlb.menus.admin;
 
-import devjluvisi.mlb.api.gui.Menu;
 import devjluvisi.mlb.api.gui.MenuView;
 import devjluvisi.mlb.api.gui.pages.PageType;
 import devjluvisi.mlb.blocks.LuckyBlock;
@@ -19,6 +18,9 @@ import java.util.Arrays;
 
 public class EditStructureMenu extends MenuBuilder {
 
+    private static final byte EXIT_BUTTON = 16;
+    private static final byte ADD_EDIT_STRUCTURE = 12;
+    private static final byte DELETE_STRUCTURE = 14;
     private LuckyBlock lb;
     private LuckyBlockDrop lbDrop;
 
@@ -30,22 +32,22 @@ public class EditStructureMenu extends MenuBuilder {
 
     @Override
     public ItemStack[][] getContent(ItemStack[][] content) {
-        for(int i = 0; i < getPageType().getRow(); i++) {
+        for (int i = 0; i < getPageType().getRow(); i++) {
             Arrays.fill(content[i], MenuItem.whitePlaceholder().asItem());
         }
 
         content[1][1] = new MenuItem().with(Material.OAK_SIGN).with("&3Structure &7#" + lb.getDroppableItems().indexOf(lbDrop))
                 .addAllLine(Util.descriptionToLore(ChatColor.GRAY + "Click on a GUI option to configure the structure for this drop. Editing a structure will teleport you to the structure world.").toArray(String[]::new)).asItem();
 
-        if(lbDrop.hasStructure()) {
+        if (lbDrop.hasStructure()) {
             content[1][3] = new MenuItem(MenuItem.SpecialItem.EDIT_STRUCTURE).asItem();
-        }else{
+        } else {
             content[1][3] = new MenuItem(MenuItem.SpecialItem.NEW_STRUCTURE).asItem();
         }
 
-        if(lbDrop.hasStructure()) {
+        if (lbDrop.hasStructure()) {
             content[1][5] = new MenuItem(MenuItem.SpecialItem.DELETE_STRUCTURE).asItem();
-        }else{
+        } else {
             content[1][5] = new MenuItem(MenuItem.SpecialItem.DELETE_STRUCTURE)
                     .addLine("\n")
                     .addLine("&cAdd a structure before deleting one.").asItem();
@@ -55,14 +57,31 @@ public class EditStructureMenu extends MenuBuilder {
     }
 
     @Override
-    public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-        if(itemStack.equals(new MenuItem(MenuItem.SpecialItem.EXIT_BUTTON).asItem())) {
-            manager.regress(view);
-        }
+    public MenuType type() {
+        return MenuType.EDIT_STRUCTURE;
     }
 
     @Override
-    public MenuType type() {
-        return MenuType.EDIT_STRUCTURE;
+    public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
+        switch (slot) {
+            //TODO: Add to confirm menu.
+            case EXIT_BUTTON -> {
+                manager.regress(view);
+            }
+            case ADD_EDIT_STRUCTURE -> {
+                if (manager.getPlugin().getServerDropStructure().hasEditingPlayer()) {
+                    manager.getPlayer().sendMessage(ChatColor.RED + "There is currently a player editing a structure.");
+                    return;
+                }
+                view.close();
+                manager.getPlugin().getServerDropStructure().update(lb, lbDrop, manager.getPlayer());
+            }
+            case DELETE_STRUCTURE -> {
+                if (!lbDrop.hasStructure()) {
+                    return;
+                }
+                lbDrop.setStructure(null);
+            }
+        }
     }
 }

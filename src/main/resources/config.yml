@@ -60,16 +60,6 @@ disabled-commands:
 disabled-lucky-blocks:
   - test
 
-# Which commands should play sounds when executed successfully?
-play-command-sounds:
-  - 'mlb test'
-  - 'mlb test2'
-
-# Which commands should play particles?
-show-command-particles:
-  - 'mlb test'
-  - 'mlb test2'
-
 # File Saving Config
 file-saving:
   # Auto save edits to lucky blocks in game.

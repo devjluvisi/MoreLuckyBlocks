@@ -1,7 +1,9 @@
-package devjluvisi.mlb.util.config.files;
+package devjluvisi.mlb.util.config.files.messages;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
+import devjluvisi.mlb.helper.Util;
 import devjluvisi.mlb.util.config.ConfigManager;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Manages all possible data which is accessed through the "messages.yml" file.
@@ -15,7 +17,15 @@ public final class MessagesManager extends ConfigManager {
 
     public MessagesManager(MoreLuckyBlocks plugin) {
         super(plugin, "messages.yml");
+        Message.loadDefaults(super.getConfig());
+        super.save();
+        super.reload();
     }
+
+    public String getPrefix() {
+        return (getConfig().getBoolean("prefix.enabled") ? Util.toColor(getConfig().getString("prefix.value")) : StringUtils.EMPTY);
+    }
+
 
 
 }

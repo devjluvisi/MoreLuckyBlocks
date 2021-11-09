@@ -15,8 +15,8 @@ import devjluvisi.mlb.menus.admin.EditLuckyBlockMenu;
 import devjluvisi.mlb.util.config.ConfigManager;
 import devjluvisi.mlb.util.config.SavingManager;
 import devjluvisi.mlb.util.config.files.ExchangesManager;
-import devjluvisi.mlb.util.config.files.MessagesManager;
-import devjluvisi.mlb.util.config.files.PermissionsManager;
+import devjluvisi.mlb.util.config.files.messages.Message;
+import devjluvisi.mlb.util.config.files.messages.MessagesManager;
 import devjluvisi.mlb.util.config.files.SettingsManager;
 import devjluvisi.mlb.util.luckyblocks.LuckyAudit;
 import devjluvisi.mlb.util.players.PlayerManager;
@@ -73,9 +73,9 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - Follow sonar lint standards.
      * - Use modern (Java11+) tech when possible
      * - JavaDoc & Comment all methods.
-     * - Command to show number of unopened lucky blocks.
      * - GUI for structures.
      * - Fix bug. Stone blocks in structure editor above 50% height are not counted.
+     * - Allow structures to have placed fireworks
      */
 
     private ConfigManager blocksYaml;
@@ -84,7 +84,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
     private ConfigManager structuresYaml;
 
     private SettingsManager settingsManager;
-    private PermissionsManager permissionsManager;
     private ExchangesManager exchangesManager;
     private MessagesManager messagesManager;
 
@@ -182,10 +181,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         return this.exchangesManager;
     }
 
-    public PermissionsManager getPermissionsManager() {
-        return this.permissionsManager;
-    }
-
     public SavingManager getSavingManager() {
         return this.savingManager;
     }
@@ -243,7 +238,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - Implement multiple players in a structure.
      * - Implement LuckyAPI
      * - Implement a custom pre made template
-     * - Implement /mlb reset [name] [amount]
      * - Implement player stats for number of blocks placed, broken, average rarity of drop
      * - Implement /explosion command
      * - Implement /particles command
@@ -270,6 +264,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         this.getLogger().info("https://github.com/devjluvisi/MoreLuckyBlocks");
         this.getLogger().info("*-----------------------------------------*");
 
+
         this.setupConfig();
         this.registerCommands();
         this.registerEvents();
@@ -289,6 +284,8 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         for (final Player p : Bukkit.getOnlinePlayers()) {
             this.playerManager.update(p.getUniqueId(), this.playerManager.getPlayer(p.getName()).getLuck());
         }
+
+        Message.register(this);
 
         super.onEnable();
     }
