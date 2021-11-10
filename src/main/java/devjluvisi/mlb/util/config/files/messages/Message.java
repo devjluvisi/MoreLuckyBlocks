@@ -46,6 +46,7 @@ public enum Message {
     LABEL_POTIONS("&8- &7Potions: &d{0}"),
     LABEL_COMMANDS("&8- &7Commands: &d{0}"),
     LABEL_STRUCTURE("&8- &7Has Structure: &d{0}"),
+    DISABLED_COMMAND("&cThis command has been disabled by server administrators."),
 
     /*
      MISC_MESSAGES

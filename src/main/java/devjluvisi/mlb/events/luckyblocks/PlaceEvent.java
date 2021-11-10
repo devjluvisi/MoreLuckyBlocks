@@ -46,6 +46,7 @@ public record PlaceEvent(MoreLuckyBlocks plugin) implements Listener {
         blockPlaced.setBlockLuck(specialMeta.getFloat(PluginConstants.BlockLuckIdentifier));
         this.plugin.getAudit().put(e.getBlock().getLocation(), blockPlaced);
         Location loc = e.getBlockPlaced().getLocation();
+        plugin.getPlayerManager().incrementBlockPlaced(e.getPlayer().getUniqueId());
         e.getPlayer().sendMessage(Message.PLACED_BLOCK.format(blockPlaced.getInternalName(), Objects.requireNonNull(loc.getWorld()).getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), blockPlaced.getBlockLuck()));
         plugin.getServer().getPluginManager().callEvent(new LogDataEvent(e.getPlayer().getName() + " placed a lucky block [" + blockPlaced.getInternalName() + "," + blockPlaced.getBlockLuck() + "]"));
     }

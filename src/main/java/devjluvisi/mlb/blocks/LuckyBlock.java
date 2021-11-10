@@ -267,31 +267,6 @@ public class LuckyBlock {
         return this.blockLuck;
     }
 
-    public String getViewPermission() {
-        return "mlb.lb." + internalName + ".view";
-    }
-
-    public String getExchangePermission() {
-        return "mlb.lb." + internalName + ".exchange";
-    }
-
-    public boolean isAllowedToBreak(SettingsManager manager, Location loc, Player p) {
-        if(manager.getDisabledLuckyBlocks().contains(internalName)) {
-            return false;
-        }
-        if(StringUtils.isNotEmpty(breakPermission) && !p.hasPermission(breakPermission)) {
-            return false;
-        }
-        if(manager.getBannedPlayers().contains(p.getName()) || manager.getBannedPlayers().contains(p.getUniqueId())) {
-            return false;
-        }
-        if(manager.getDisabledWorlds().contains(Objects.requireNonNull(loc.getWorld()).getName())) {
-            return false;
-        }
-        // TODO: Add checks for break/place cooldowns
-        return true;
-    }
-
     public void setBlockLuck(float blockLuck) {
         if (blockLuck > 100) {
             this.blockLuck = 100.0F;
@@ -302,6 +277,31 @@ public class LuckyBlock {
             return;
         }
         this.blockLuck = blockLuck;
+    }
+
+    public String getViewPermission() {
+        return "mlb.lb." + internalName + ".view";
+    }
+
+    public String getExchangePermission() {
+        return "mlb.lb." + internalName + ".exchange";
+    }
+
+    public boolean isAllowedToBreak(SettingsManager manager, Location loc, Player p) {
+        if (manager.getDisabledLuckyBlocks().contains(internalName)) {
+            return false;
+        }
+        if (StringUtils.isNotEmpty(breakPermission) && !p.hasPermission(breakPermission)) {
+            return false;
+        }
+        if (manager.getBannedPlayers().contains(p.getName()) || manager.getBannedPlayers().contains(p.getUniqueId().toString())) {
+            return false;
+        }
+        if (manager.getDisabledWorlds().contains(Objects.requireNonNull(loc.getWorld()).getName())) {
+            return false;
+        }
+        // TODO: Add checks for break/place cooldowns
+        return true;
     }
 
     /**

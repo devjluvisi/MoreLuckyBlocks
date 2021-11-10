@@ -92,7 +92,9 @@ public class ListMenu extends MenuBuilder {
 
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-        if (itemStack == null) return;
+        if (itemStack == null || itemStack.getType() == Material.HOPPER || !itemStack.hasItemMeta()) {
+            return;
+        }
         manager.setMenuData(new MenuResource().with(manager.getPlugin().getLuckyBlocks().get(Objects.requireNonNull(itemStack.getItemMeta()).getDisplayName())));
         manager.open(view.getPlayer(), MenuType.LIST_DROPS);
     }

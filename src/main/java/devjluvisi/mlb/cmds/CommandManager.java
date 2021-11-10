@@ -64,6 +64,7 @@ public class CommandManager implements CommandExecutor {
         this.subcommands.addLast(new TrackCommand(plugin));
         this.subcommands.addLast(new TestCommand(plugin));
         this.subcommands.addLast(new HelpCommand(this));
+        this.subcommands.removeIf(sub -> plugin.getSettingsManager().getDisabledCommands().contains(sub.getName()));
         this.plugin = plugin;
     }
 
@@ -96,12 +97,19 @@ public class CommandManager implements CommandExecutor {
                     sender.sendMessage(Message.BAD_COMMAND_USAGE.format(sub.getSyntax()));
                     return true;
                 }
+
+                // If the command is disabled.
+                if(plugin.getSettingsManager().getDisabledCommands().contains(sub.getName())) {
+                    sender.sendMessage(Message.DISABLED_COMMAND.get());
+                    return true;
+                }
+
                 // Get the result that comes out after the subcommand is performed.
                 final CommandResult result = sub.perform(sender, args);
                 if (result.getResult() == ResultType.GENERAL_FAILURE) {
                     return true;
                 }
-                if(result.getResult() != ResultType.PASSED) {
+                if (result.getResult() != ResultType.PASSED) {
                     sender.sendMessage(Message.GENERAL_COMMAND_ERROR.get());
                 }
                 switch (result.getResult()) {
@@ -132,7 +140,7 @@ public class CommandManager implements CommandExecutor {
                     }
                     default -> {
                         StringBuilder linkedArgs = new StringBuilder();
-                        for(String s : args) {
+                        for (String s : args) {
                             linkedArgs.append(s).append(" ");
                         }
                         plugin.getServer().getPluginManager().callEvent(new LogDataEvent(sender.getName() + " executed command /" + cmd.getName() + " " + linkedArgs));

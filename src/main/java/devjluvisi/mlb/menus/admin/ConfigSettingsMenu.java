@@ -41,11 +41,9 @@ public class ConfigSettingsMenu extends MenuBuilder {
         addSetting(Slot.SETTINGS_3, SettingType.JOIN_MESSAGE);
         addSetting(Slot.SETTINGS_4, SettingType.SHOW_SAVING_MESSAGE);
         addSetting(Slot.SETTINGS_5, SettingType.EXTRA_PLAYER_DATA);
-        addSetting(Slot.SETTINGS_6, SettingType.ADVANCED_PERMISSIONS);
-
+        addSetting(Slot.SETTINGS_6, SettingType.LOG_EVENTS);
 
         addSetting(Slot.SETTINGS_1, SettingType.LUCKY_BLOCK_WARNING_THRESHOLD);
-        addSetting(Slot.SETTINGS_2, SettingType.LOG_EVENTS);
         this.maxPages = settings.size();
 
     }

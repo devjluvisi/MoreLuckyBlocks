@@ -1,5 +1,6 @@
 package devjluvisi.mlb.util.players;
 
+import devjluvisi.mlb.MoreLuckyBlocks;
 import devjluvisi.mlb.PluginConstants;
 import devjluvisi.mlb.util.config.ConfigManager;
 import org.bukkit.Bukkit;
@@ -20,6 +21,9 @@ public class PlayerData {
 
     private UUID UUID;
     private float luck;
+    private int luckyBlocksBroken;
+    private int luckyBlocksPlaced;
+    private float averageDropRarity;
 
     public PlayerData() {
         this.UUID = null;
@@ -50,6 +54,15 @@ public class PlayerData {
         return this;
     }
 
+    public PlayerData fill(MoreLuckyBlocks plugin) {
+        PlayerData p = plugin.getPlayerManager().getPlayer(Objects.requireNonNull(plugin.getServer().getPlayer(UUID)).getName());
+        this.luck = p.luck;
+        this.averageDropRarity = p.averageDropRarity;
+        this.luckyBlocksBroken = p.luckyBlocksBroken;
+        this.luckyBlocksPlaced = p.luckyBlocksPlaced;
+        return this;
+    }
+
     public final float getLuck() {
         return this.luck;
     }
@@ -64,6 +77,30 @@ public class PlayerData {
 
     public final void setUUID(UUID uUID) {
         this.UUID = uUID;
+    }
+
+    public int getLuckyBlocksBroken() {
+        return luckyBlocksBroken;
+    }
+
+    public void setLuckyBlocksBroken(int luckyBlocksBroken) {
+        this.luckyBlocksBroken = luckyBlocksBroken;
+    }
+
+    public int getLuckyBlocksPlaced() {
+        return luckyBlocksPlaced;
+    }
+
+    public void setLuckyBlocksPlaced(int luckyBlocksPlaced) {
+        this.luckyBlocksPlaced = luckyBlocksPlaced;
+    }
+
+    public float getAverageDropRarity() {
+        return averageDropRarity;
+    }
+
+    public void setAverageDropRarity(float averageDropRarity) {
+        this.averageDropRarity = averageDropRarity;
     }
 
     public OfflinePlayer getOfflinePlayer() {
@@ -89,20 +126,25 @@ public class PlayerData {
      *
      * @param playersYaml The config file to save to.
      */
-    public void save(ConfigManager playersYaml) {
+    public void save(ConfigManager playersYaml, boolean advancedData) {
         if (this.isNull()) {
             Bukkit.getLogger().severe("Could not set luck of this player as their UUID is not present.");
             return;
         }
+
+        playersYaml.getConfig().set("players." + this.UUID + ".luck", String.valueOf(this.luck));
         if (this.isOnline()) {
             playersYaml.getConfig().set("players." + this.UUID + ".name", this.getPlayer().getName());
-            playersYaml.getConfig().set("players." + this.UUID + ".luck", String.valueOf(this.luck));
-            playersYaml.save();
-            playersYaml.reload();
-            return;
+        }else{
+            playersYaml.getConfig().set("players." + this.UUID + ".name", Bukkit.getOfflinePlayer(this.UUID).getName());
         }
-        playersYaml.getConfig().set("players." + this.UUID + ".name", Bukkit.getOfflinePlayer(this.UUID).getName());
-        playersYaml.getConfig().set("players." + this.UUID + ".luck", String.valueOf(this.luck));
+        if(advancedData) {
+            playersYaml.getConfig().set("players." + this.UUID + ".blocks-broken", String.valueOf(this.luckyBlocksBroken));
+            playersYaml.getConfig().set("players." + this.UUID + ".blocks-placed", String.valueOf(this.luckyBlocksPlaced));
+            playersYaml.getConfig().set("players." + this.UUID + ".average-drop-rarity", String.valueOf(this.averageDropRarity));
+        }
+
+
         playersYaml.save();
         playersYaml.reload();
     }
@@ -130,4 +172,15 @@ public class PlayerData {
         return obj.hashCode() == this.hashCode();
     }
 
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("PlayerData{");
+        sb.append("UUID=").append(UUID);
+        sb.append(", luck=").append(luck);
+        sb.append(", luckyBlocksBroken=").append(luckyBlocksBroken);
+        sb.append(", luckyBlocksPlaced=").append(luckyBlocksPlaced);
+        sb.append(", averageDropRarity=").append(averageDropRarity);
+        sb.append('}');
+        return sb.toString();
+    }
 }

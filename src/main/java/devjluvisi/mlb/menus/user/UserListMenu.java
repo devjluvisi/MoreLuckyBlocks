@@ -80,9 +80,13 @@ public class UserListMenu extends MenuBuilder {
 
     @Override
     public void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack) {
-        if (itemStack == null) return;
+        if(itemStack == null || itemStack.getType() == Material.HOPPER || !itemStack.hasItemMeta()) {
+            return;
+        }
         LuckyBlock lb = manager.getPlugin().getLuckyBlocks().stream().filter(e -> e.getName().equals(Objects.requireNonNull(itemStack.getItemMeta()).getDisplayName())).findFirst().orElse(null);
-        if (lb == null) return;
+        if (lb == null) {
+            return;
+        }
         manager.setMenuData(new MenuResource().with(lb));
         manager.open(view.getPlayer(), MenuType.USER_LIST_DROPS);
     }

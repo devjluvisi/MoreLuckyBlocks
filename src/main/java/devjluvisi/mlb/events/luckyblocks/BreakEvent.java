@@ -6,6 +6,7 @@ import devjluvisi.mlb.blocks.LuckyBlockDrop;
 import devjluvisi.mlb.events.custom.LogDataEvent;
 import devjluvisi.mlb.util.config.files.messages.Message;
 import devjluvisi.mlb.util.structs.RelativeObject;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
@@ -14,6 +15,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
@@ -36,9 +39,9 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
 
 
         // Cancel event if silk touch pickaxe.
-        if(item != null && item.hasItemMeta()) {
-            if(Objects.requireNonNull(item.getItemMeta()).hasEnchants()) {
-                if(item.getItemMeta().getEnchants().containsKey(Enchantment.SILK_TOUCH)) {
+        if (item != null && item.hasItemMeta()) {
+            if (Objects.requireNonNull(item.getItemMeta()).hasEnchants()) {
+                if (item.getItemMeta().getEnchants().containsKey(Enchantment.SILK_TOUCH)) {
                     e.getPlayer().sendMessage(Message.M46.get());
                     e.setCancelled(true);
                     return;
@@ -62,7 +65,11 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
                 r.place(loc.getWorld());
             }
         }
+        Bukkit.broadcastMessage("Broken");
         this.plugin.getAudit().remove(e.getBlock().getLocation());
+        plugin.getPlayerManager().incrementBlockBreak(e.getPlayer().getUniqueId());
+        plugin.getPlayerManager().getPlayerLuckMap().putIfAbsent(e.getPlayer().getUniqueId(), new ArrayList<>());
+        plugin.getPlayerManager().getPlayerLuckMap().get(e.getPlayer().getUniqueId()).add(drop.getRarity());
         plugin.getServer().getPluginManager().callEvent(new LogDataEvent(e.getPlayer().getName() + " broke a lucky block [" + lb.getInternalName() + "," + lb.getBlockLuck() + "]"));
     }
 

@@ -79,6 +79,8 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - Fix bug. Stone blocks in structure editor above 50% height are not counted.
      * - Allow structures to have placed fireworks
      */
+    private static final long INITIAL_LOG_DELAY = 40L;
+    private static final long LOG_INTERVAL = 240L;
 
     private ConfigManager blocksYaml;
     private ConfigManager worldDataYaml;
@@ -201,13 +203,17 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        getServer().getPluginManager().callEvent(new LogDataEvent("Server Shutdown."));
-        saveLog();
         if (getSettingsManager().isFirstBoot()) {
             getSettingsManager().setValue("first-boot", false);
         }
-        this.audit.writeAll();
-        this.playerManager.save();
+
+        try {
+            this.audit.writeAll();
+            this.playerManager.save();
+        } catch(NullPointerException e) {
+            getLogger().severe("Could not save resource files due to plugin error.");
+        }
+
         this.getServer().getScheduler().cancelTasks(this);
         this.getLogger().info("*-----------------------------------------*");
         this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has been disabled!");
@@ -217,21 +223,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         this.getLogger().info("*-----------------------------------------*");
         super.onDisable();
     }
-
-    /**
-     * @return config.yml file.
-     */
-    public SettingsManager getSettingsManager() {
-        return this.settingsManager;
-    }
-
-    /**
-     * @return String representation of the version.
-     */
-    private String getVersion() {
-        return MessageFormat.format("{0} for Minecraft Version [{1}]", super.getDescription().getVersion(), super.getDescription().getAPIVersion());
-    }
-
 
     /**
      * --> FEATURE ADDITIONS <--
@@ -303,52 +294,9 @@ public final class MoreLuckyBlocks extends JavaPlugin {
             public void run() {
                 saveLog();
             }
-        }.runTaskTimerAsynchronously(this, 20L, 240L); // Every 12 Seconds
+        }.runTaskTimerAsynchronously(this, INITIAL_LOG_DELAY, LOG_INTERVAL); // Every 12 Seconds
 
         super.onEnable();
-    }
-
-    private void saveLog() {
-        if(!settingsManager.isLoggingEvents()) {
-            return;
-        }
-        Bukkit.broadcastMessage("Saving logs.");
-        File logDir = new File(getDataFolder().getAbsolutePath() + "/logs");
-        if(!logDir.exists()) {
-            logDir.mkdir();
-        }
-
-        File file = new File(getDataFolder().getAbsolutePath() + "/logs", "log-" + Instant.now().toString().split("T")[0] + ".txt");
-
-        try {
-            if(!file.exists()) {
-                file.createNewFile();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        BufferedWriter out = null;
-        try {
-
-            out = new BufferedWriter(new FileWriter(file, true));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert out != null;
-        PrintWriter printWriter = new PrintWriter(out, false);
-        for(String s: loggingMessages) {
-            printWriter.println(s);
-        }
-        printWriter.close();
-        loggingMessages.clear();
-        try {
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -386,6 +334,63 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new SaveConfigEvent(this), this);
         this.getServer().getPluginManager().registerEvents(new EditLuckyBlockMenu(this), this);
         this.getServer().getPluginManager().registerEvents(new UpdateLogEvent(this), this);
+    }
+
+    private void saveLog() {
+        if (!settingsManager.isLoggingEvents()) {
+            return;
+        }
+
+        File logDir = new File(getDataFolder().getAbsolutePath() + "/logs");
+        if (!logDir.exists()) {
+            logDir.mkdir();
+        }
+
+        File file = new File(getDataFolder().getAbsolutePath() + "/logs", "log-" + Instant.now().toString().split("T")[0] + ".txt");
+
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        BufferedWriter out = null;
+        try {
+
+            out = new BufferedWriter(new FileWriter(file, true));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert out != null;
+        PrintWriter printWriter = new PrintWriter(out, false);
+        for (String s : loggingMessages) {
+            printWriter.println(s);
+        }
+        printWriter.close();
+        loggingMessages.clear();
+        try {
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @return config.yml file.
+     */
+    public SettingsManager getSettingsManager() {
+        return this.settingsManager;
+    }
+
+    /**
+     * @return String representation of the version.
+     */
+    private String getVersion() {
+        return MessageFormat.format("{0} for Minecraft Version [{1}]", super.getDescription().getVersion(), super.getDescription().getAPIVersion());
     }
 
 }

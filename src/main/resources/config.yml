@@ -26,18 +26,12 @@ join-message: true
 # Only shows to players with mlb.admin or mlb.admin.alert permission.
 show-saving-messages: false
 
-# Enable advanced permissions.
-# Advanced permissions are extended permission nodes for every command in MoreLuckyBlocks.
-# Ex: Instead of mlb.admin being the permission node for /mlb give and /mlb purge, the permission nodes would be mlb.admin.give and mlb.admin.purge (need both to do both commands)
-# With advanced permissions enabled, mlb.admin.* will allow all permissions for admin.
-advanced-permissions: false
-
 # Enable extra player data.
 # This will make the plugin track:
 # - The luck of the player.
 # - How many lucky blocks a player has broken
 # - How many they have placed.
-# - How "lucky" they are in the rarity of the drops they get.
+# - The average rarity of drops the player recieves.
 # By default, only "player luck" is tracked.
 use-extra-player-data: false
 

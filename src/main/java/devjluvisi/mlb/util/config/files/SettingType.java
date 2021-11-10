@@ -25,12 +25,6 @@ public enum SettingType {
             "show-saving-messages",
             ReturnType.BOOLEAN
     ),
-    ADVANCED_PERMISSIONS(
-            "Toggle Advanced Permissions",
-            "Toggle whether or not to use advanced permissions. Check out Spigot page for info.",
-            "advanced-permissions",
-            ReturnType.BOOLEAN
-    ),
     EXTRA_PLAYER_DATA(
             "Toggle Extra Player Data",
             "Toggle whether or not additional data about players should be saved into config.",

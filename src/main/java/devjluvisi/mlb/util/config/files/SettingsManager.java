@@ -47,10 +47,6 @@ public class SettingsManager extends ConfigManager {
         return getConfig().getBoolean(SettingType.SHOW_SAVING_MESSAGE.getNode());
     }
 
-    public boolean isAdvancedPermissions() {
-        return getConfig().getBoolean(SettingType.ADVANCED_PERMISSIONS.getNode());
-    }
-
     public List<String> getBannedPlayers() {
         return getConfig().getStringList("banned-players");
     }

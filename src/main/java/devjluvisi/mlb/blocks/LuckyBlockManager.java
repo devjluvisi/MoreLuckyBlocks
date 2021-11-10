@@ -22,10 +22,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.io.Serial;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Class which manages the lucky blocks on the server. This class can be thought
@@ -43,11 +40,17 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
     private static final int TEST_CASES = 250;
     private final MoreLuckyBlocks plugin;
 
+    /* COOLDOWN MANAGEMENT */
+    private final HashMap<UUID, LuckyBlock> placeCooldownMap;
+    private final HashMap<UUID, LuckyBlock> breakCooldownMap;
+
     public LuckyBlockManager(MoreLuckyBlocks plugin) {
         super(); // Call the parent ArrayList
         this.plugin = plugin;
         // this.loadExampleBlocks();
         this.upload();
+        this.placeCooldownMap = new HashMap<>();
+        this.breakCooldownMap = new HashMap<>();
     }
 
     /**
