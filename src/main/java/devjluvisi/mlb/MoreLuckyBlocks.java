@@ -77,7 +77,6 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - Use modern (Java11+) tech when possible
      * - JavaDoc & Comment all methods.
      * - GUI for structures.
-     * - Fix bug. Stone blocks in structure editor above 50% height are not counted.
      * - Allow structures to have placed fireworks
      */
     private static final long INITIAL_LOG_DELAY = 40L;
@@ -260,7 +259,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getLogger().info(WebUtil.getLatestVersion(this));
+        getLogger().info(""+WebUtil.getLatestVersionAsBuildInteger(this));
         this.getLogger().info("*-----------------------------------------*");
         this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has started!");
         this.getLogger().info(MessageFormat.format("Server Version -> {0}", super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('('))));

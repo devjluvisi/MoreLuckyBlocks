@@ -18,11 +18,13 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 import static devjluvisi.mlb.util.structs.DropStructure.BUILD_LIMIT;
@@ -88,7 +90,7 @@ public class DropStructure implements Listener {
         // If the world does not exist, create one.
         if (plugin.getServer().getWorld(defaultName) == null) {
             this.structWorld = plugin.getServer()
-                    .createWorld(new WorldCreator(defaultName).type(WorldType.FLAT).generateStructures(false));
+                    .createWorld(new WorldCreator(defaultName).type(WorldType.FLAT).generateStructures(false).generator(new EmptyChunkGenerator()));
         } else {
             // If the world does exist, kick everyone because then the plugin has been reloaded.
             this.structWorld = plugin.getServer().getWorld(defaultName);
@@ -443,9 +445,15 @@ public class DropStructure implements Listener {
                         continue;
                     }
                     final Material m = this.structWorld.getBlockAt(x, y, z).getType();
-                    if (!(m.isAir() && (y < (BUILD_LIMIT / 2)))
-                            && (this.structWorld.getBlockAt(x, y, z).isEmpty() || (m == Material.STONE))) {
-                        continue;
+
+                    if(y < BUILD_LIMIT / 2) {
+                        if(m == Material.STONE) {
+                            continue;
+                        }
+                    }else{
+                        if(structWorld.getBlockAt(x, y, z).isEmpty()) {
+                            continue;
+                        }
                     }
                     final RelativeObject block = new RelativeObject(m, x, y, z);
                     itemList.add(block.serialize());
@@ -521,6 +529,15 @@ class EditingStructureTask extends BukkitRunnable {
                 TextComponent
                         .fromLegacyText(Message.M1.format(this.struct.getLb().getInternalName(), this.struct.getLb().indexOf(this.struct.getDrop()))));
 
+    }
+
+}
+class EmptyChunkGenerator extends ChunkGenerator {
+
+    @Override
+    @Nonnull
+    public ChunkData generateChunkData(@Nonnull World world, @Nonnull Random random, int x, int z, @Nonnull BiomeGrid biome) {
+        return createChunkData(world);
     }
 
 }

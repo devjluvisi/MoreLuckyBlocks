@@ -127,7 +127,19 @@ public enum Message {
     M43("&cYou do not have permission to break this lucky block."),
     M44("&o-- Drops --"),
     M45("&9[{0}]"),
-    M46("&cYou cannot break a lucky block with a silk touch pickaxe!")
+    M46("&cYou cannot break a lucky block with a silk touch pickaxe!"),
+    M47("""
+            &7Your Luck:&a {0} 
+            """),
+    M48("""
+    &cPlayer {0} has never logged on before so they have no luck value.
+    """),
+    M49("""
+    &7{0}'s Luck: &a{1}
+    """),
+    M50("Some information about lucky blocks.")
+
+
 
     //TODO FOR LATER: START ON USAGE COMMAND AND GO UP.
 

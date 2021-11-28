@@ -5,6 +5,7 @@ import devjluvisi.mlb.cmds.CommandResult;
 import devjluvisi.mlb.cmds.ResultType;
 import devjluvisi.mlb.cmds.SubCommand;
 import devjluvisi.mlb.util.Range;
+import devjluvisi.mlb.util.config.files.messages.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -48,22 +49,16 @@ public record LuckCommand(MoreLuckyBlocks plugin) implements SubCommand {
             if (!(sender instanceof Player)) {
                 return new CommandResult(ResultType.BAD_REQUEST);
             }
-            sender.sendMessage("");
-            sender.sendMessage("Your Luck: " + this.plugin.getPlayerManager()
-                    .getPlayer(Objects.requireNonNull(this.plugin.getServer().getPlayerExact(sender.getName())).getName()).getLuck());
-            sender.sendMessage("");
+            sender.sendMessage(Message.M47.format(this.plugin.getPlayerManager()
+                    .getPlayer(Objects.requireNonNull(this.plugin.getServer().getPlayerExact(sender.getName())).getName()).getLuck()));
             return new CommandResult(ResultType.PASSED);
         }
         if (args.length == 2) {
             if (this.plugin.getPlayerManager().getPlayer(args[1]).isNull()) {
-                sender.sendMessage("");
-                sender.sendMessage("Player \"" + args[1] + "\" has never logged in before so they have no luck value.");
-                sender.sendMessage("");
+                sender.sendMessage(Message.M48.format(args[1]));
                 return new CommandResult(ResultType.PASSED);
             }
-            sender.sendMessage("");
-            sender.sendMessage(args[1] + "'s Luck: " + this.plugin.getPlayerManager().getPlayer(args[1]).getLuck());
-            sender.sendMessage("");
+            sender.sendMessage(Message.M49.format(args[1], this.plugin.getPlayerManager().getPlayer(args[1]).getLuck()));
         }
         return new CommandResult(ResultType.PASSED);
     }

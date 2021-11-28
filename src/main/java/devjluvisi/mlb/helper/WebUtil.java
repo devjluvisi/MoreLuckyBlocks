@@ -2,6 +2,8 @@ package devjluvisi.mlb.helper;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberRange;
+import org.apache.commons.lang.math.NumberUtils;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
@@ -29,37 +31,34 @@ public final class WebUtil {
             }
             br.close();
         } catch (MalformedURLException e) {
+            plugin.getLogger().warning("Could not grab latest version for MoreLuckyBlocks. MalformedUrlException");
         } catch (IOException e) {
+            plugin.getLogger().warning("Could not grab latest version for MoreLuckyBlocks. IOException");
         }
-        return result.toString();
+            return result.toString();
+
     }
+
+    private static final String SEARCH_STRING = "id=\"ver\"";
 
     public static String getLatestVersion(MoreLuckyBlocks plugin) {
         String input = getHTMLAsString(plugin);
-        int index = StringUtils.indexOf(input, "id=\"ver\"");
-        index++;
+        int index = StringUtils.indexOf(input, SEARCH_STRING);
+        index += SEARCH_STRING.length() + 1; // +1 for ending '>'
         StringBuilder version = new StringBuilder();
         while(input.charAt(index) != '<') {
             version.append(input.charAt(index));
             index++;
         }
-        return version.toString();
+        return version.toString().trim();
     }
 
-        /*
-        Document doc = null;
-        try {
-            doc = Jsoup.connect("https://devjluvisi.github.io/MoreLuckyBlocks/").get();
-
-        } catch (IOException e) {
-            plugin.getLogger().info(e.getMessage());
-        }
-        if(doc == null) {
-            return "Could not parse.";
-        }
-        return doc.title();
-
-         */
+    public static int getLatestVersionAsBuildInteger(MoreLuckyBlocks plugin) {
+        String input = getLatestVersion(plugin);
+        input = StringUtils.substring(input, 0, input.indexOf("-"));
+        input = StringUtils.replace(input, ".", StringUtils.EMPTY);
+        return NumberUtils.toInt(input, -1);
+    }
 
 
 }

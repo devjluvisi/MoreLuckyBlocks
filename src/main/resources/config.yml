@@ -8,17 +8,6 @@ first-boot: true
 # The max number of unopened lucky blocks before warning server administrators. (-1 for no warning)
 lucky-block-warning-threshold: 50000
 
-# Enable mySQL data storage.
-# This will INVALIDATE "exchanges.yml, blocks.yml, players.yml, structures.yml, world-data.yml" because the data will now be saved to a
-# online SQL database instead.
-my-sql:
-  enabled: false
-  host: "127.0.0.1"
-  database: "mydb"
-  user: "admin"
-  password: "password"
-
-
 # Show the lucky block version message on join.
 join-message: true
 
@@ -31,7 +20,7 @@ show-saving-messages: false
 # - The luck of the player.
 # - How many lucky blocks a player has broken
 # - How many they have placed.
-# - The average rarity of drops the player recieves.
+# - The average rarity of drops the player receives.
 # By default, only "player luck" is tracked.
 use-extra-player-data: false
 
