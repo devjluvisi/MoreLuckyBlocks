@@ -179,16 +179,16 @@ public class LuckyBlockDrop implements Comparable<LuckyBlockDrop> {
         return this.potionEffects;
     }
 
+    public void setPotionEffects(ArrayList<LuckyBlockPotionEffect> potionEffects) {
+        this.potionEffects = potionEffects;
+    }
+
     public ArrayList<LuckyBlockCommand> getCommands() {
         return this.commands;
     }
 
     public void setCommands(ArrayList<LuckyBlockCommand> commands) {
         this.commands = commands;
-    }
-
-    public void setPotionEffects(ArrayList<LuckyBlockPotionEffect> potionEffects) {
-        this.potionEffects = potionEffects;
     }
 
     /**

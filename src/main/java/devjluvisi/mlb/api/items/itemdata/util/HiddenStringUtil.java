@@ -91,6 +91,19 @@ public class HiddenStringUtil {
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
+    private static byte hexToByte(char hex1, char hex0) {
+        return (byte) (((hexToUnsignedInt(hex1) << 4) | hexToUnsignedInt(hex0)) + Byte.MIN_VALUE);
+    }
+
+    private static int hexToUnsignedInt(char c) {
+        if ((c >= '0') && (c <= '9')) {
+            return c - 48;
+        } else if ((c >= 'a') && (c <= 'f')) {
+            return c - 87;
+        }
+        throw new IllegalArgumentException("Invalid hex char: out of range");
+    }
+
     private static String extract(String input) {
         if (input == null) {
             return null;
@@ -104,19 +117,6 @@ public class HiddenStringUtil {
         }
 
         return input.substring(start + SEQUENCE_HEADER.length(), end);
-    }
-
-    private static byte hexToByte(char hex1, char hex0) {
-        return (byte) (((hexToUnsignedInt(hex1) << 4) | hexToUnsignedInt(hex0)) + Byte.MIN_VALUE);
-    }
-
-    private static int hexToUnsignedInt(char c) {
-        if ((c >= '0') && (c <= '9')) {
-            return c - 48;
-        } else if ((c >= 'a') && (c <= 'f')) {
-            return c - 87;
-        }
-        throw new IllegalArgumentException("Invalid hex char: out of range");
     }
 
     public static String replaceHiddenString(String input, String hiddenString) {
@@ -138,4 +138,5 @@ public class HiddenStringUtil {
     public static String removeHiddenString(String input) {
         return input.replaceAll(SEQUENCE_HEADER + ".*" + SEQUENCE_FOOTER, "");
     }
+
 }

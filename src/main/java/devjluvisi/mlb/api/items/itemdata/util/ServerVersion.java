@@ -56,4 +56,5 @@ public class ServerVersion implements Comparable<ServerVersion> {
     private Double doubleValue() {
         return Double.parseDouble(this.nmsVersion.replaceFirst("_", ".").replace("_R", "").substring(1));
     }
+
 }

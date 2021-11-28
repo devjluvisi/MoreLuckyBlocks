@@ -128,6 +128,7 @@ public enum Message {
     M44("&o-- Drops --"),
     M45("&9[{0}]"),
     M46("&cYou cannot break a lucky block with a silk touch pickaxe!")
+
     //TODO FOR LATER: START ON USAGE COMMAND AND GO UP.
 
 

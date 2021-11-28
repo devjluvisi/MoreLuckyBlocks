@@ -494,6 +494,7 @@ public class DropStructure implements Listener {
  * while they are editing in the structure world.
  */
 class EditingStructureTask extends BukkitRunnable {
+
     private final DropStructure struct;
     private final MoreLuckyBlocks plugin;
     private final Player p;

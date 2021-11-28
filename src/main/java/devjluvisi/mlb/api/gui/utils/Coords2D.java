@@ -28,4 +28,5 @@ public class Coords2D {
     public void setY(int y) {
         this.y = y;
     }
+
 }

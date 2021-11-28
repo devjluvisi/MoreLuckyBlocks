@@ -59,4 +59,5 @@ public class UserRedeemList extends MenuBuilder {
         manager.setMenuData(new MenuResource().with(lb));
         manager.open(manager.getPlayer(), MenuType.USER_REDEEM);
     }
+
 }

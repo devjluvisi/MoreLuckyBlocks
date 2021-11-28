@@ -38,4 +38,5 @@ public class CustomMetaFactory {
     public CustomItemMeta createCustomMeta(ItemMeta meta) {
         return this.biFunction.apply(this, meta);
     }
+
 }

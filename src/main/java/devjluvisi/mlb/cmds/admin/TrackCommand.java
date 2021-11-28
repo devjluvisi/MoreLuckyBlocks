@@ -92,4 +92,5 @@ public class TrackCommand implements SubCommand {
 
         return new CommandResult(ResultType.PASSED);
     }
+
 }

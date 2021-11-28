@@ -86,4 +86,5 @@ public class ChangeRarityMenu extends MenuBuilder {
         }
 
     }
+
 }

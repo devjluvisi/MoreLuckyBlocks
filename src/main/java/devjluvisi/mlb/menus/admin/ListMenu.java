@@ -98,4 +98,5 @@ public class ListMenu extends MenuBuilder {
         manager.setMenuData(new MenuResource().with(manager.getPlugin().getLuckyBlocks().get(Objects.requireNonNull(itemStack.getItemMeta()).getDisplayName())));
         manager.open(view.getPlayer(), MenuType.LIST_DROPS);
     }
+
 }

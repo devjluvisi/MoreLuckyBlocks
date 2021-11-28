@@ -66,4 +66,5 @@ public class SetExchangeCommand implements SubCommand, Listener {
 
         return new CommandResult(ResultType.PASSED);
     }
+
 }

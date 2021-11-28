@@ -35,4 +35,5 @@ public final class CommandResult {
     public String toString() {
         return MessageFormat.format("commandResult [type={0}, arg={1}]", commandResultType.name(), badArg);
     }
+
 }

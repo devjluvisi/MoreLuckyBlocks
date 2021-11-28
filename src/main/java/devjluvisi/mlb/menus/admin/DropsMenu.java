@@ -136,4 +136,5 @@ public class DropsMenu extends MenuBuilder {
             manager.regress(view);
         }
     }
+
 }

@@ -191,70 +191,6 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
         lb.saveConfig(this.plugin);
     }
 
-    /**
-     * Saves the current edits that have been made to the cached-LuckyBlocks to the
-     * configuration "blocks.yml" file.
-     */
-    public void save() {
-        plugin.getBlocksYaml().setValue("lucky-blocks", null);
-        int savedCount = 0;
-        for (final LuckyBlock lb : this) {
-            if (savedCount > PluginConstants.MAX_LUCKY_BLOCK_AMOUNT) {
-                this.plugin.getServer().getLogger().warning(
-                        "The number of LuckyBlocks you have set exceeds the maximum amount allowed by the plugin ("
-                                + PluginConstants.MAX_LUCKY_BLOCK_AMOUNT
-                                + "). Lucky Blocks saved beyond this amount will not be read from.");
-                return;
-            }
-            lb.saveConfig(this.plugin);
-            savedCount++;
-        }
-    }
-
-    /**
-     * Adds a new LuckyBlock to the LuckyBlockManager. Returns "false" if the lucky
-     * block cannot be added due to a similar name to a previously existing lucky
-     * block. O(N) Complexity
-     *
-     * @return If the lucky block was added successfully.
-     */
-    @Override
-    public boolean add(LuckyBlock lb) {
-        if (this.contains(lb)) {
-            return false;
-        }
-        // Run the base method.
-        return super.add(lb);
-    }
-
-    /**
-     * Checks through the current set of lucky blocks and checks to see if any of
-     * them are "invalid". Invalid lucky blocks can occur from a LuckyBlock having a
-     * bad item, bad attributes, etc.
-     *
-     * @return
-     */
-    private boolean isValid() {
-        for (final LuckyBlock lb : this) {
-            if (lb.getInternalName().contains(" ") || (lb.getBlockMaterial() == null)
-                    || !lb.getBlockMaterial().isBlock()) {
-                return false;
-            }
-
-            for (final LuckyBlockDrop drop : lb.getDroppableItems()) {
-                if ((drop.getLoot().size() > PluginConstants.MAX_LOOT_AMOUNT)) {
-                    return false;
-                }
-                for (final LootProperty loot : drop.getLoot()) {
-                    if (!loot.isValid()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
     private LuckyBlockDrop randomDrop() {
 
         LuckyBlockDrop d = new LuckyBlockDrop();
@@ -308,10 +244,74 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
         return d;
     }
 
+    /**
+     * Saves the current edits that have been made to the cached-LuckyBlocks to the
+     * configuration "blocks.yml" file.
+     */
+    public void save() {
+        plugin.getBlocksYaml().setValue("lucky-blocks", null);
+        int savedCount = 0;
+        for (final LuckyBlock lb : this) {
+            if (savedCount > PluginConstants.MAX_LUCKY_BLOCK_AMOUNT) {
+                this.plugin.getServer().getLogger().warning(
+                        "The number of LuckyBlocks you have set exceeds the maximum amount allowed by the plugin ("
+                                + PluginConstants.MAX_LUCKY_BLOCK_AMOUNT
+                                + "). Lucky Blocks saved beyond this amount will not be read from.");
+                return;
+            }
+            lb.saveConfig(this.plugin);
+            savedCount++;
+        }
+    }
+
+    /**
+     * Adds a new LuckyBlock to the LuckyBlockManager. Returns "false" if the lucky
+     * block cannot be added due to a similar name to a previously existing lucky
+     * block. O(N) Complexity
+     *
+     * @return If the lucky block was added successfully.
+     */
+    @Override
+    public boolean add(LuckyBlock lb) {
+        if (this.contains(lb)) {
+            return false;
+        }
+        // Run the base method.
+        return super.add(lb);
+    }
+
     @Override
     public void add(int index, LuckyBlock element) {
         throw new NotImplementedException(
                 "This method is not implemented and should not be used. Used add(LuckyBlock obj) instead.");
+    }
+
+    /**
+     * Checks through the current set of lucky blocks and checks to see if any of
+     * them are "invalid". Invalid lucky blocks can occur from a LuckyBlock having a
+     * bad item, bad attributes, etc.
+     *
+     * @return
+     */
+    private boolean isValid() {
+        for (final LuckyBlock lb : this) {
+            if (lb.getInternalName().contains(" ") || (lb.getBlockMaterial() == null)
+                    || !lb.getBlockMaterial().isBlock()) {
+                return false;
+            }
+
+            for (final LuckyBlockDrop drop : lb.getDroppableItems()) {
+                if ((drop.getLoot().size() > PluginConstants.MAX_LOOT_AMOUNT)) {
+                    return false;
+                }
+                for (final LootProperty loot : drop.getLoot()) {
+                    if (!loot.isValid()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public boolean contains(String internalName) {

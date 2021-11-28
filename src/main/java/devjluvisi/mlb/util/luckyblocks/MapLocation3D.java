@@ -100,4 +100,5 @@ public final class MapLocation3D {
     public String toString() {
         return "[" + this.x + ", " + this.y + ", " + this.z + ", " + this.getBukkitWorld().getName() + "]";
     }
+
 }

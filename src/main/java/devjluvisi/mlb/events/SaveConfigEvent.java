@@ -23,4 +23,5 @@ public class SaveConfigEvent implements Listener {
     public void callSave(DataChangedEvent e) {
         plugin.getSavingManager().saveResources();
     }
+
 }

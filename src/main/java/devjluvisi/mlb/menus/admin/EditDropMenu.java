@@ -180,4 +180,5 @@ public class EditDropMenu extends MenuBuilder {
     public void setAddPotionEffectStage(int addPotionEffectStage) {
         this.addPotionEffectStage = addPotionEffectStage;
     }
+
 }

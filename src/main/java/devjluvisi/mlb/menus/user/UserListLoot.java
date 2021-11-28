@@ -89,4 +89,5 @@ public class UserListLoot extends MenuBuilder {
             manager.open(manager.getPlayer(), MenuType.USER_LIST_DROPS);
         }
     }
+
 }

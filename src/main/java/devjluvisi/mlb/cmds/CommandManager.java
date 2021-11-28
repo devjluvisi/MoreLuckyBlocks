@@ -99,7 +99,7 @@ public class CommandManager implements CommandExecutor {
                 }
 
                 // If the command is disabled.
-                if(plugin.getSettingsManager().getDisabledCommands().contains(sub.getName())) {
+                if (plugin.getSettingsManager().getDisabledCommands().contains(sub.getName())) {
                     sender.sendMessage(Message.DISABLED_COMMAND.get());
                     return true;
                 }

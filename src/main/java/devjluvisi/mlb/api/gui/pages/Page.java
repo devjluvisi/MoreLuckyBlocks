@@ -27,4 +27,5 @@ public interface Page {
     PageType getPageType();
 
     void onClick(MenuView view, ClickType clickType, int slot, ItemStack itemStack);
+
 }

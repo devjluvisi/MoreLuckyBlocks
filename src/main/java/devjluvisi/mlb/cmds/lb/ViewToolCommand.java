@@ -63,4 +63,5 @@ public class ViewToolCommand implements SubCommand {
         manager.open((Player) sender, menu);
         return new CommandResult(ResultType.PASSED);
     }
+
 }

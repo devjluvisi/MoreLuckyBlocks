@@ -52,4 +52,5 @@ public class ItemViewMenu extends MenuBuilder {
             manager.regress();
         }
     }
+
 }

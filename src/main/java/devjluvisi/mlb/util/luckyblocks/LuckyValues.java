@@ -10,6 +10,7 @@ import java.util.Objects;
  * Values include: block material, hash code, and block luck at the time of placement.
  */
 public class LuckyValues {
+
     // Ensure that the block material is the same
     private Material blockMaterial;
     private int luckyBlockHash;

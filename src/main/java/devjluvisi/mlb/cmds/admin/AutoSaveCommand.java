@@ -64,4 +64,5 @@ public class AutoSaveCommand implements SubCommand {
         sender.sendMessage(ChatColor.GRAY + "Use \"/mlb settings\" to adjust the values of auto saving on the server.");
         return new CommandResult(ResultType.PASSED);
     }
+
 }

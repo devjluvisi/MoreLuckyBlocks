@@ -94,15 +94,15 @@ public final class MoreLuckyBlocks extends JavaPlugin {
     private SavingManager savingManager;
 
 
-    private LuckyBlockManager lbManager; // Manage all types of lucky blocks and drops.
-    private HashMap<UUID, EditDropMenu> playersEditingDrop; // Players editing a drop.
+    private LuckyBlockManager lbManager;
+    private HashMap<UUID, EditDropMenu> playersEditingDrop;
     private LinkedList<String> loggingMessages;
 
-    private DropStructure lbStructure; // An object to manage structure editing for lucky blocks.
+    private DropStructure lbStructure;
 
-    private PlayerManager playerManager; // Manage players.
-    private LuckyAudit audit; // Manage lucky block locations.
-    private CustomMetaFactory metaFactory; // Special items.
+    private PlayerManager playerManager;
+    private LuckyAudit audit;
+    private CustomMetaFactory metaFactory;
 
     /**
      * @return The current server drop structure object.
@@ -210,7 +210,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
         try {
             this.audit.writeAll();
             this.playerManager.save();
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             getLogger().severe("Could not save resource files due to plugin error.");
         }
 

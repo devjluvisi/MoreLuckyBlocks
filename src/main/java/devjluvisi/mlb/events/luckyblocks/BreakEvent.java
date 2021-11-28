@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -36,7 +35,6 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
             e.setCancelled(true);
             return;
         }
-
 
         // Cancel event if silk touch pickaxe.
         if (item != null && item.hasItemMeta()) {

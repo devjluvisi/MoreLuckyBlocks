@@ -113,4 +113,5 @@ public class UserListDrops extends MenuBuilder {
             manager.open(view.getPlayer(), MenuType.USER_LIST_LUCKY_BLOCKS);
         }
     }
+
 }

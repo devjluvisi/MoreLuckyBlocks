@@ -37,4 +37,5 @@ public abstract class SimpleMenu extends Menu implements Page {
     public MenuView open(Player player) {
         return super.open(player, 0);
     }
+
 }

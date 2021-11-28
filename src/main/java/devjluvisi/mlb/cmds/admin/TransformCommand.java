@@ -170,4 +170,5 @@ public class TransformCommand implements SubCommand {
 
         return new CommandResult(ResultType.PASSED);
     }
+
 }

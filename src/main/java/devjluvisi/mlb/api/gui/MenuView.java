@@ -182,4 +182,5 @@ public class MenuView implements Listener {
     public InventoryView getInventoryView() {
         return this.view;
     }
+
 }

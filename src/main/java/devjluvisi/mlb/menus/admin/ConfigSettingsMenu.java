@@ -248,4 +248,5 @@ public class ConfigSettingsMenu extends MenuBuilder {
             return this.val;
         }
     }
+
 }

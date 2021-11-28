@@ -64,4 +64,5 @@ public class SaveCommand implements SubCommand {
         this.plugin.getServerDropStructure().save();
         return new CommandResult(ResultType.PASSED);
     }
+
 }

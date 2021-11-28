@@ -135,10 +135,10 @@ public class PlayerData {
         playersYaml.getConfig().set("players." + this.UUID + ".luck", String.valueOf(this.luck));
         if (this.isOnline()) {
             playersYaml.getConfig().set("players." + this.UUID + ".name", this.getPlayer().getName());
-        }else{
+        } else {
             playersYaml.getConfig().set("players." + this.UUID + ".name", Bukkit.getOfflinePlayer(this.UUID).getName());
         }
-        if(advancedData) {
+        if (advancedData) {
             playersYaml.getConfig().set("players." + this.UUID + ".blocks-broken", String.valueOf(this.luckyBlocksBroken));
             playersYaml.getConfig().set("players." + this.UUID + ".blocks-placed", String.valueOf(this.luckyBlocksPlaced));
             playersYaml.getConfig().set("players." + this.UUID + ".average-drop-rarity", String.valueOf(this.averageDropRarity));
@@ -183,4 +183,5 @@ public class PlayerData {
         sb.append('}');
         return sb.toString();
     }
+
 }

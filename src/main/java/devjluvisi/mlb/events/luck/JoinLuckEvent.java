@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class JoinLuckEvent implements Listener {
+
     private final MoreLuckyBlocks plugin;
 
     public JoinLuckEvent(MoreLuckyBlocks plugin) {
@@ -36,4 +37,5 @@ public class JoinLuckEvent implements Listener {
         }
         this.plugin.getPlayerManager().save();
     }
+
 }

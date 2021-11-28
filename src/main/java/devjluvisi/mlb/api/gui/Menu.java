@@ -50,4 +50,5 @@ public abstract class Menu {
     public MenuView open(Player player, int page) {
         return new MenuView(this, player, page);
     }
+
 }

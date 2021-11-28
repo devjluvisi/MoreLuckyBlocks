@@ -2,8 +2,6 @@ package devjluvisi.mlb.util.players;
 
 import devjluvisi.mlb.MoreLuckyBlocks;
 import org.bukkit.Bukkit;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.*;
 
@@ -15,8 +13,8 @@ import java.util.*;
 public class PlayerManager {
 
 
-    private MoreLuckyBlocks plugin;
     private final HashMap<UUID, ArrayList<Float>> playerLuckMap;
+    private MoreLuckyBlocks plugin;
 
 
     public PlayerManager(MoreLuckyBlocks plugin) {
@@ -41,25 +39,6 @@ public class PlayerManager {
         this.save();
     }
 
-    public void incrementBlockBreak(UUID u) {
-        if(!plugin.getSettingsManager().isExtraPlayerData()) {
-            return;
-        }
-        PlayerData player = new PlayerData(u).fill(plugin);
-        player.setLuckyBlocksBroken(player.getLuckyBlocksBroken()+1);
-        player.save(plugin.getPlayersYaml(), true);
-        Bukkit.getPlayer(u).sendMessage("finished: " + player.toString());
-    }
-
-    public void incrementBlockPlaced(UUID u) {
-        if(!plugin.getSettingsManager().isExtraPlayerData()) {
-            return;
-        }
-        PlayerData player = new PlayerData(u).fill(plugin);
-        player.setLuckyBlocksPlaced(player.getLuckyBlocksPlaced()+1);
-        player.save(plugin.getPlayersYaml(), true);
-    }
-
     /**
      * Update a player offline.
      *
@@ -75,20 +54,20 @@ public class PlayerManager {
      * Save config and reload it.
      */
     public void save() {
-        if(plugin.getSettingsManager().isExtraPlayerData()) {
-            for(UUID u: playerLuckMap.keySet()) {
-                if(!playerLuckMap.containsKey(u)) {
+        if (plugin.getSettingsManager().isExtraPlayerData()) {
+            for (UUID u : playerLuckMap.keySet()) {
+                if (!playerLuckMap.containsKey(u)) {
                     continue;
                 }
                 PlayerData player = new PlayerData(u).fill(plugin);
                 float average = 0.0F;
-                for(float i: playerLuckMap.get(u)) {
+                for (float i : playerLuckMap.get(u)) {
                     average += i;
                 }
                 average /= playerLuckMap.get(u).size();
-                if(player.getAverageDropRarity() == 0) {
+                if (player.getAverageDropRarity() == 0) {
                     player.setAverageDropRarity(average);
-                }else{
+                } else {
                     player.setAverageDropRarity((player.getAverageDropRarity() + average) / 2);
                 }
 
@@ -98,6 +77,25 @@ public class PlayerManager {
 
         this.plugin.getPlayersYaml().save();
         this.plugin.getPlayersYaml().reload();
+    }
+
+    public void incrementBlockBreak(UUID u) {
+        if (!plugin.getSettingsManager().isExtraPlayerData()) {
+            return;
+        }
+        PlayerData player = new PlayerData(u).fill(plugin);
+        player.setLuckyBlocksBroken(player.getLuckyBlocksBroken() + 1);
+        player.save(plugin.getPlayersYaml(), true);
+        Bukkit.getPlayer(u).sendMessage("finished: " + player.toString());
+    }
+
+    public void incrementBlockPlaced(UUID u) {
+        if (!plugin.getSettingsManager().isExtraPlayerData()) {
+            return;
+        }
+        PlayerData player = new PlayerData(u).fill(plugin);
+        player.setLuckyBlocksPlaced(player.getLuckyBlocksPlaced() + 1);
+        player.save(plugin.getPlayersYaml(), true);
     }
 
     /**
@@ -122,7 +120,7 @@ public class PlayerManager {
                 player.setUUID(UUID.fromString(playerUUIDs));
                 player.setLuck(Float.parseFloat(String
                         .valueOf(this.plugin.getPlayersYaml().getConfig().get("players." + playerUUIDs + ".luck"))));
-                if(plugin.getSettingsManager().isExtraPlayerData()) {
+                if (plugin.getSettingsManager().isExtraPlayerData()) {
                     player.setAverageDropRarity(Float.parseFloat(String
                             .valueOf(this.plugin.getPlayersYaml().getConfig().get("players." + playerUUIDs + ".average-drop-rarity"))));
                     player.setLuckyBlocksBroken(Integer.parseInt(String

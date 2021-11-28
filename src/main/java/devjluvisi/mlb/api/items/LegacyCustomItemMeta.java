@@ -177,4 +177,5 @@ public class LegacyCustomItemMeta implements CustomItemMeta {
     public String getOldLabel() {
         return this.label;
     }
+
 }

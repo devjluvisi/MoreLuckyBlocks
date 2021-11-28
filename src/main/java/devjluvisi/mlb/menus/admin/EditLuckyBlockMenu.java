@@ -317,4 +317,5 @@ public class EditLuckyBlockMenu extends MenuBuilder implements Listener {
         //future additions
         EVENT_BREAK_COMMAND, EVENT_PLACE_COMMAND, EVENT_BREAK_MESSAGE, EVENT_PLACE_MESSAGE, NONE
     }
+
 }

@@ -27,4 +27,5 @@ public class DataChangedEvent extends Event implements Cancellable {
     public void setCancelled(boolean cancel) {
         this.isCancelled = cancel;
     }
+
 }
