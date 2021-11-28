@@ -12,6 +12,7 @@ import devjluvisi.mlb.events.luck.JoinLuckEvent;
 import devjluvisi.mlb.events.luckyblocks.BreakEvent;
 import devjluvisi.mlb.events.luckyblocks.PlaceEvent;
 import devjluvisi.mlb.events.player.JoinEvent;
+import devjluvisi.mlb.helper.WebUtil;
 import devjluvisi.mlb.menus.admin.EditDropMenu;
 import devjluvisi.mlb.menus.admin.EditLuckyBlockMenu;
 import devjluvisi.mlb.util.config.ConfigManager;
@@ -252,10 +253,14 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * <p>
      * TODO: Future (after first release)
      * - Implement option for SQL
+     * - Add broadcast message on LuckyBlock break
+     * - Add custom message to user on lucky block break
+     * - Add ability to run command on lucky block break.
      */
 
     @Override
     public void onEnable() {
+        getLogger().info(WebUtil.getLatestVersion(this));
         this.getLogger().info("*-----------------------------------------*");
         this.getLogger().info("MoreLuckyBlocks v" + this.getVersion() + " has started!");
         this.getLogger().info(MessageFormat.format("Server Version -> {0}", super.getServer().getVersion().substring(super.getServer().getVersion().indexOf('('))));
