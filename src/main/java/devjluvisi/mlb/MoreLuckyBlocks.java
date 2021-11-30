@@ -232,7 +232,7 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - With autosave
      * - Implement SettingsCommand
      * - Implement parts of messages.
-     * <p>
+     *
      * TODO: 10/12/2021 (+)
      * - Implement particle effects for lucky blocks.
      * - Implement multiple players in a structure.
@@ -249,12 +249,16 @@ public final class MoreLuckyBlocks extends JavaPlugin {
      * - Implement numerous Validate.(...) functions to verify parts of the program.
      * - Implement try-catch for config to ward off errors.
      * - Finish optimizations
-     * <p>
+     *
+     * Bugs:
+     * - Error if you reload in a struct world.
+     *
      * TODO: Future (after first release)
      * - Implement option for SQL
      * - Add broadcast message on LuckyBlock break
      * - Add custom message to user on lucky block break
      * - Add ability to run command on lucky block break.
+     * - Allow mobs in custom structures to have armor, etc.
      */
 
     @Override

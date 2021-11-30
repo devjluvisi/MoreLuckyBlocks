@@ -47,7 +47,6 @@ public final class LuckyBlockManager extends ArrayList<LuckyBlock> {
     public LuckyBlockManager(MoreLuckyBlocks plugin) {
         super(); // Call the parent ArrayList
         this.plugin = plugin;
-        this.loadExampleBlocks();
         this.upload();
         this.placeCooldownMap = new HashMap<>();
         this.breakCooldownMap = new HashMap<>();

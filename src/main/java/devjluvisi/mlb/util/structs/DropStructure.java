@@ -7,6 +7,7 @@ import devjluvisi.mlb.util.config.files.messages.Message;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,16 +16,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nonnull;
+import java.time.LocalDate;
 import java.util.*;
 
 import static devjluvisi.mlb.util.structs.DropStructure.BUILD_LIMIT;
@@ -102,11 +104,6 @@ public class DropStructure implements Listener {
                 p.teleport(plugin.getServer().getWorlds().get(0).getSpawnLocation());
                 p.kickPlayer(Message.M4.get());
             }
-            for (LivingEntity e : structWorld.getLivingEntities()) {
-                e.setHealth(0.0F);
-                e.remove();
-            }
-
         }
         // Set the spawn location at the origin.
         assert this.structWorld != null;
@@ -182,6 +179,9 @@ public class DropStructure implements Listener {
             for (final String s : blockList) {
                 final RelativeObject r = new RelativeObject().deserialize(s);
                 r.place(this.structWorld);
+                if(r.getEntity() != null) {
+                    this.spawnableEntities.put(new Location(structWorld, r.getX(), r.getY(), r.getZ()), r.getEntity());
+                }
             }
         }
         if (structWorld.getBlockAt(0, BUILD_LIMIT / 2, 0).isEmpty()) {
@@ -192,16 +192,6 @@ public class DropStructure implements Listener {
         this.lastKnownInventory = p.getInventory().getContents();
         this.lastKnownLocation = p.getLocation();
         this.lastKnownPotionEffects = p.getActivePotionEffects();
-
-        // Pause all entities.
-        for (LivingEntity e : structWorld.getLivingEntities()) {
-            e.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30000, 127));
-            e.setInvulnerable(true);
-            e.setSilent(true);
-            e.setRotation(0, 0);
-            e.setAI(false);
-        }
-
         // Finally teleport the player to the world.
         this.teleport(p);
     }
@@ -232,6 +222,29 @@ public class DropStructure implements Listener {
             p.setInvulnerable(true);
             // Hotbar message.
             new EditingStructureTask(this).runTaskTimerAsynchronously(this.plugin, 10, 20);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for(LivingEntity e: structWorld.getLivingEntities()) {
+                        if(e.getType() == EntityType.PLAYER) {
+                            continue;
+                        }
+                        e.remove();
+                    }
+                    spawnableEntities.forEach((loc, entity) -> {
+
+                                Entity wEntity = Objects.requireNonNull(loc.getWorld()).spawnEntity(loc, entity);
+                                wEntity.setSilent(true);
+                                wEntity.setCustomNameVisible(true);
+                                wEntity.setInvulnerable(true);
+                                wEntity.setFireTicks(0);
+                                wEntity.setFreezeTicks(0);
+                                wEntity.setCustomName(wEntity.getName());
+
+
+                    });
+                }
+            }.runTaskTimer(plugin, 0L, 8L);
             p.sendTitle(ChatColor.GREEN + "Editing", "Now editing structure for drop.", 10, 70, 20);
         }
     }
@@ -273,19 +286,31 @@ public class DropStructure implements Listener {
     @EventHandler
     public void interact(PlayerInteractEvent e) {
         // Manage spawn egg placing.
-
-        if (!(Objects.requireNonNull(e.getPlayer().getLocation().getWorld()).getUID().equals(this.structWorld.getUID()))) {
-            return;
-        }
-        if (e.getClickedBlock() == null || e.getClickedBlock().getType().isAir() || !Objects.requireNonNull(e.getItem()).getType().name().contains("_SPAWN_EGG")) {
+        if(e.getItem() == null || e.getClickedBlock() == null || e.getClickedBlock().isEmpty() || e.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
         EntityType entityType = EntityType.valueOf(e.getItem().getType().name().split("_SPAWN_EGG")[0]);
         double x = e.getClickedBlock().getLocation().getX();
-        double y = e.getClickedBlock().getLocation().getY();
+        double y = e.getClickedBlock().getLocation().getY()+1;
         double z = e.getClickedBlock().getLocation().getZ();
+
         e.getPlayer().sendMessage(Message.M6.format(entityType, x, y, z));
-        this.spawnableEntities.put(e.getClickedBlock().getLocation(), entityType);
+        this.spawnableEntities.put(e.getClickedBlock().getRelative(0,1,0).getLocation(), entityType);
+        this.unsavedChanges = true;
+        this.confirmExit = false;
+    }
+    
+    @EventHandler
+    public void deleteEntity(PlayerInteractAtEntityEvent e) {
+        int castX = e.getRightClicked().getLocation().getBlockX();
+        int castY = e.getRightClicked().getLocation().getBlockY();
+        int castZ = e.getRightClicked().getLocation().getBlockZ();
+        Location clicked = new Location(structWorld, castX, castY,castZ );
+        EntityType entity = spawnableEntities.get(clicked);
+        e.getPlayer().sendMessage(Message.M6_2.format(entity, clicked.getX(), clicked.getY(), clicked.getZ()));
+        spawnableEntities.remove(clicked);
+        this.unsavedChanges = true;
+        this.confirmExit = false;
     }
 
     @EventHandler
@@ -455,7 +480,7 @@ public class DropStructure implements Listener {
                             continue;
                         }
                     }
-                    final RelativeObject block = new RelativeObject(m, x, y, z);
+                    final RelativeObject block = new RelativeObject(m.name(), x, y, z);
                     itemList.add(block.serialize());
                 }
             }
@@ -463,7 +488,7 @@ public class DropStructure implements Listener {
 
         // Create relative objects for each entity.
         for (Map.Entry<Location, EntityType> entry : this.spawnableEntities.entrySet()) {
-            itemList.add(new RelativeObject(entry.getValue(), (int) entry.getKey().getX(), (int) entry.getKey().getY(), (int) entry.getKey().getZ()).serialize());
+            itemList.add(new RelativeObject(entry.getValue().name(), (int) entry.getKey().getX(), (int) entry.getKey().getY(), (int) entry.getKey().getZ()).serialize());
         }
 
         this.plugin.getStructuresYaml().getConfig().set("structures." + this.drop.getStructure().toString(), itemList);
@@ -528,10 +553,9 @@ class EditingStructureTask extends BukkitRunnable {
         this.p.spigot().sendMessage(ChatMessageType.ACTION_BAR,
                 TextComponent
                         .fromLegacyText(Message.M1.format(this.struct.getLb().getInternalName(), this.struct.getLb().indexOf(this.struct.getDrop()))));
-
     }
-
 }
+
 class EmptyChunkGenerator extends ChunkGenerator {
 
     @Override

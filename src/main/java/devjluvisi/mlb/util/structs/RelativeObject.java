@@ -4,8 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+
+import java.util.Arrays;
 
 /**
  * Represents an object that can be created when a user
@@ -24,11 +25,12 @@ public class RelativeObject {
 
     private final StringBuilder strBuild;
     private String name;
-    private Material m;
-    private EntityType t;
     private int x;
     private int y;
     private int z;
+
+    private Material material;
+    private EntityType entity;
 
     public RelativeObject() {
         super();
@@ -38,33 +40,20 @@ public class RelativeObject {
     /**
      * Create a relative object as a material, not an entity.
      *
-     * @param m The type of material.
      * @param x Relative X
      * @param y Relative Y
      * @param z Relative Z
      */
-    public RelativeObject(Material m, int x, int y, int z) {
+    public RelativeObject(String name, int x, int y, int z) {
         super();
-        this.name = m.name();
-        this.m = m;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        strBuild = new StringBuilder();
-    }
-
-    /**
-     * Create a relative object as an entity, not a material.
-     *
-     * @param type The type of the entity.
-     * @param x    Relative X
-     * @param y    Relative Y
-     * @param z    Relative Z
-     */
-    public RelativeObject(EntityType type, int x, int y, int z) {
-        super();
-        this.name = type.name();
-        this.t = type;
+        this.name = name;
+        if(Material.getMaterial(name) != null) {
+            this.material = Material.getMaterial(name);
+            this.entity = null;
+        }else{
+            this.entity = EntityType.valueOf(name);
+            this.material = null;
+        }
         this.x = x;
         this.y = y;
         this.z = z;
@@ -72,12 +61,16 @@ public class RelativeObject {
     }
 
     public final Material getMaterial() {
-        return m;
+        return material;
     }
 
     public final void setMaterial(Material m) {
-        this.m = m;
+        this.material = m;
     }
+
+    public final EntityType getEntity() { return entity; }
+
+    public final void setEntity(EntityType e) { this.entity = e; }
 
     public final int getX() {
         return x;
@@ -85,14 +78,6 @@ public class RelativeObject {
 
     public final void setX(int x) {
         this.x = x;
-    }
-
-    public final EntityType getEntity() {
-        return t;
-    }
-
-    public final void setEntity(EntityType t) {
-        this.t = t;
     }
 
     public final int getY() {
@@ -130,16 +115,14 @@ public class RelativeObject {
      * @param w The world to place the object in.
      */
     public void place(World w) {
-        if (t == null) {
-            w.getBlockAt(x, y, z).setType(m);
-        } else {
-            Entity wEntity = w.spawnEntity(w.getBlockAt(x, y + 2, z).getLocation(), t);
-            //e.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30000, 127));
-            wEntity.setInvulnerable(true);
-            wEntity.setSilent(true);
-            wEntity.setRotation(0, 0);
-
+        if(entity != null) {
+            if(w.getName().equals(DropStructure.getDefaultName())) {
+                return;
+            }
+            w.spawnEntity(new Location(w, x, y, z), entity);
+            return;
         }
+        w.getBlockAt(x, y, z).setType(material);
     }
 
     /**
@@ -178,10 +161,12 @@ public class RelativeObject {
         arg = arg.replace("[", StringUtils.EMPTY);
         arg = arg.replace("]", StringUtils.EMPTY);
         String[] split = arg.split(",");
-        if (Material.getMaterial(split[0]) == null) {
-            this.t = EntityType.valueOf(split[0]);
-        } else {
-            this.m = Material.getMaterial(split[0]);
+        if (Arrays.stream(EntityType.values()).noneMatch(e-> e.name().equals(split[0]))) {
+            this.material = Material.getMaterial(split[0]);
+            this.entity = null;
+        }else{
+            this.entity = EntityType.valueOf(split[0]);
+            this.material = null;
         }
         this.name = split[0];
 
@@ -193,8 +178,8 @@ public class RelativeObject {
 
     @Override
     public String toString() {
-        strBuild.append("RelativeBlock [m=");
-        strBuild.append(m);
+        strBuild.append("RelativeObject [m=");
+        strBuild.append(name);
         strBuild.append(", x=");
         strBuild.append(x);
         strBuild.append(", y=");

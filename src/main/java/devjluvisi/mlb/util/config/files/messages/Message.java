@@ -69,6 +69,7 @@ public enum Message {
     M4("\n&d&l[!] &fYou have entered structure editing mode.&7\nPlace blocks and spawn mobs to edit this structure.\nWhen finished, type &6/mlb save&7 to save your changes.\nType &6/mlb exit&7 to edit this editor.\n"),
     M5("&a&oLoaded your previously saved structure."),
     M6("&dYou have placed an entity \"{0}\" to spawn at ({1},{2},{3})."),
+    M6_2("&dYou have removed an entity \"{0}\" at ({1}, {2}, {3})."),
     M7("&cBuild Limit Reached >> {0}"),
     M8("&eYou broke the reference lucky block. Particles will spawn to indicate where the reference block is."),
     M9("&7&o[MoreLuckyBlocks: &8Changes Saved&7&o]"),
