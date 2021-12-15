@@ -300,9 +300,52 @@ public class LuckyBlock {
         if (manager.getDisabledWorlds().contains(Objects.requireNonNull(loc.getWorld()).getName())) {
             return false;
         }
+        if(!Objects.isNull(requiredTool) && !p.getInventory().getItemInMainHand().equals(requiredTool)) {
+            return false;
+        }
         // TODO: Add checks for break/place cooldowns
         return true;
     }
+
+    public boolean isAllowedToPlace(SettingsManager manager, Location loc, Player p) {
+        if (manager.getDisabledLuckyBlocks().contains(internalName)) {
+            return false;
+        }
+        if (StringUtils.isNotEmpty(breakPermission) && !p.hasPermission(breakPermission)) {
+            return false;
+        }
+        if (manager.getBannedPlayers().contains(p.getName()) || manager.getBannedPlayers().contains(p.getUniqueId().toString())) {
+            return false;
+        }
+        if (manager.getDisabledWorlds().contains(Objects.requireNonNull(loc.getWorld()).getName())) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean canExchange(SettingsManager manager, Player p) {
+        if (manager.getDisabledLuckyBlocks().contains(internalName)) {
+            return false;
+        }
+        if (manager.getBannedPlayers().contains(p.getName()) || manager.getBannedPlayers().contains(p.getUniqueId().toString())) {
+            return false;
+        }
+        if (manager.getDisabledWorlds().contains(Objects.requireNonNull(p.getWorld()).getName())) {
+            return false;
+        }
+        return p.hasPermission(getExchangePermission());
+    }
+
+    public boolean canView(SettingsManager manager, Player p) {
+        if (manager.getDisabledLuckyBlocks().contains(internalName)) {
+            return false;
+        }
+        if (manager.getBannedPlayers().contains(p.getName()) || manager.getBannedPlayers().contains(p.getUniqueId().toString())) {
+            return false;
+        }
+        return p.hasPermission(getViewPermission());
+    }
+
 
     /**
      * Saves a lucky block and all of its drops.

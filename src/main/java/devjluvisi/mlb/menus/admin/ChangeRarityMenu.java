@@ -22,6 +22,7 @@ public class ChangeRarityMenu extends MenuBuilder {
 
     public ChangeRarityMenu(MenuManager manager) {
         super(manager, "Change Rarity");
+        this.rarity = 50.0F;
     }
 
     @Override
@@ -45,11 +46,9 @@ public class ChangeRarityMenu extends MenuBuilder {
         lb = manager.getMenuData().getLuckyBlock();
         lbDrop = manager.getMenuData().getDrop();
         this.setMenuName("Change Rarity of Drop #" + lb.indexOf(lbDrop));
-        if (lb.getDroppableItems().size() <= lb.indexOf(lbDrop)) {
-            this.rarity = 50.0F; // default
-            return;
+        if(this.rarity == 50.0F) {
+            this.rarity = lbDrop.getRarity();
         }
-        this.rarity = lbDrop.getRarity();
     }
 
     @Override

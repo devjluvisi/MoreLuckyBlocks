@@ -111,7 +111,7 @@ public class DropStructure implements Listener {
                 .setSpawnLocation(new Location(this.structWorld, 0, this.structWorld.getHighestBlockYAt(0, 0) + 1, 0));
 
         // Set the attributes the world should have.
-        this.structWorld.setDifficulty(Difficulty.PEACEFUL);
+        this.structWorld.setDifficulty(Difficulty.NORMAL);
         this.structWorld.setPVP(false);
         this.structWorld.setAutoSave(false);
         this.structWorld.setSpawnFlags(false, false);
@@ -285,6 +285,9 @@ public class DropStructure implements Listener {
 
     @EventHandler
     public void interact(PlayerInteractEvent e) {
+        if (!(e.getPlayer().getLocation().getWorld().getUID().equals(this.structWorld.getUID()))) {
+            return;
+        }
         // Manage spawn egg placing.
         if(e.getItem() == null || e.getClickedBlock() == null || e.getClickedBlock().isEmpty() || e.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
@@ -302,6 +305,9 @@ public class DropStructure implements Listener {
     
     @EventHandler
     public void deleteEntity(PlayerInteractAtEntityEvent e) {
+        if (!(e.getPlayer().getLocation().getWorld().getUID().equals(this.structWorld.getUID()))) {
+            return;
+        }
         int castX = e.getRightClicked().getLocation().getBlockX();
         int castY = e.getRightClicked().getLocation().getBlockY();
         int castZ = e.getRightClicked().getLocation().getBlockZ();

@@ -30,6 +30,10 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
         if (Objects.isNull(lb)) {
             return;
         }
+        if(!lb.isAllowedToBreak(plugin.getSettingsManager(), e.getBlock().getLocation(),e.getPlayer())) {
+            e.getPlayer().sendMessage("You cannot break right now.");
+            return;
+        }
         if (lb.getDroppableItems().isEmpty()) {
             e.getPlayer().sendMessage(Message.NO_DROPS.get());
             e.setCancelled(true);
@@ -48,7 +52,7 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
         }
 
         Location l = e.getBlock().getLocation();
-        e.getPlayer().sendMessage(Message.BREAK_LUCKY.format(lb.getInternalName(), Objects.requireNonNull(l.getWorld()).getName(), l.getBlock(), l.getBlockY(), l.getBlockZ(), lb.getBlockLuck()));
+        e.getPlayer().sendMessage(Message.BREAK_LUCKY.format(lb.getInternalName(), Objects.requireNonNull(l.getWorld()).getName(), l.getBlock().getX(), l.getBlock().getY(), l.getBlock().getZ(), lb.getBlockLuck()));
         final LuckyBlockDrop drop = lb
                 .generateDrop(this.plugin.getPlayerManager().getPlayer(e.getPlayer().getName()).getLuck());
         drop.applyTo(e.getBlock().getLocation(), e.getPlayer());
@@ -63,7 +67,6 @@ public record BreakEvent(MoreLuckyBlocks plugin) implements Listener {
                 r.place(loc.getWorld());
             }
         }
-        Bukkit.broadcastMessage("Broken");
         this.plugin.getAudit().remove(e.getBlock().getLocation());
         plugin.getPlayerManager().incrementBlockBreak(e.getPlayer().getUniqueId());
         plugin.getPlayerManager().getPlayerLuckMap().putIfAbsent(e.getPlayer().getUniqueId(), new ArrayList<>());

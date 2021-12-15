@@ -61,6 +61,7 @@ public class SaveCommand implements SubCommand {
             return new CommandResult(ResultType.PASSED);
         }
         p.sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD + "Saved.");
+        this.plugin.getLuckyBlocks().save();
         this.plugin.getServerDropStructure().save();
         return new CommandResult(ResultType.PASSED);
     }
